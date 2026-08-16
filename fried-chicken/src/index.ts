@@ -3,15 +3,25 @@
 
 // src/index.ts
 import "dotenv/config";
-import "./config/env.js";
 
-import http from "http";
-import { createApp } from "./app.js";
-import { connectDB, disconnectDB } from "./config/db.js";
-import { createSocketServer, mountGateways } from "./realtime/socket.server.js";
-import redisClient, { disconnectRedis } from "./config/redis.js";
-import { env } from "./config/env.js";
-import { createModuleLogger, logError } from "./utils/logger.js";
+try {
+    await import("./config/env.js");
+} catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("\n❌ Invalid environment variables:\n");
+    // eslint-disable-next-line no-console
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+}
+
+const { default: http } = await import("http");
+const { createApp } = await import("./app.js");
+const { connectDB, disconnectDB } = await import("./config/db.js");
+const { createSocketServer, mountGateways } = await import("./realtime/socket.server.js");
+const { default: redisClient, disconnectRedis } = await import("./config/redis.js");
+const { env } = await import("./config/env.js");
+const { createModuleLogger, logError } = await import("./utils/logger.js");
+
 
 const log = createModuleLogger("bootstrap");
 const PORT = env.PORT;

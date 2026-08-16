@@ -2,57 +2,60 @@ import type { Server } from "socket.io";
 import * as matchmakingStore from "../matchmaking/matchmaking.store.js";
 import type { AuthedSocket } from "./webrtc.types.js";
 
-let io: Server | undefined;
-
-export function init(ioInstance: Server): void {
-    io = ioInstance;
+export interface WebrtcService {
+    relayOffer(socket: AuthedSocket, offer: unknown): Promise<void>;
+    relayAnswer(socket: AuthedSocket, answer: unknown): Promise<void>;
+    relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<void>;
+    relayMessage(socket: AuthedSocket, text: string): Promise<void>;
 }
 
-function getIo(): Server {
-    if (!io) {
-        throw new Error("WebRTC service used before init() was called");
+export function createWebrtcService(io: Server): WebrtcService {
+    async function getPeerSocketId(userId: string): Promise<string | null> {
+        const roomId = await matchmakingStore.getUserRoom(userId);
+        if (!roomId) return null;
+
+        const peerId = await matchmakingStore.getPeerId(roomId, userId);
+        if (!peerId) return null;
+
+        return matchmakingStore.getUserSocket(peerId);
     }
-    return io;
-}
 
-async function getPeerSocketId(userId: string): Promise<string | null> {
-    const roomId = await matchmakingStore.getUserRoom(userId);
-    if (!roomId) return null;
-
-    const peerId = await matchmakingStore.getPeerId(roomId, userId);
-    if (!peerId) return null;
-
-    return matchmakingStore.getUserSocket(peerId);
-}
-
-export async function relayOffer(socket: AuthedSocket, offer: unknown): Promise<void> {
-    const peerSocketId = await getPeerSocketId(socket.userId);
-    if (peerSocketId) {
-        getIo().to(peerSocketId).emit("offer", { offer });
+    async function relayOffer(socket: AuthedSocket, offer: unknown): Promise<void> {
+        const peerSocketId = await getPeerSocketId(socket.userId);
+        if (peerSocketId) {
+            io.to(peerSocketId).emit("offer", { offer });
+        }
     }
-}
 
-export async function relayAnswer(socket: AuthedSocket, answer: unknown): Promise<void> {
-    const peerSocketId = await getPeerSocketId(socket.userId);
-    if (peerSocketId) {
-        getIo().to(peerSocketId).emit("answer", { answer });
+    async function relayAnswer(socket: AuthedSocket, answer: unknown): Promise<void> {
+        const peerSocketId = await getPeerSocketId(socket.userId);
+        if (peerSocketId) {
+            io.to(peerSocketId).emit("answer", { answer });
+        }
     }
-}
 
-export async function relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<void> {
-    const peerSocketId = await getPeerSocketId(socket.userId);
-    if (peerSocketId) {
-        getIo().to(peerSocketId).emit("ice-candidate", { candidate });
+    async function relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<void> {
+        const peerSocketId = await getPeerSocketId(socket.userId);
+        if (peerSocketId) {
+            io.to(peerSocketId).emit("ice-candidate", { candidate });
+        }
     }
-}
 
-export async function relayMessage(socket: AuthedSocket, text: string): Promise<void> {
-    const trimmed = text.trim();
-    if (trimmed.length === 0 || trimmed.length > 500) return;
+    async function relayMessage(socket: AuthedSocket, text: string): Promise<void> {
+        const trimmed = text.trim();
+        if (trimmed.length === 0 || trimmed.length > 500) return;
 
-    const peerSocketId = await getPeerSocketId(socket.userId);
-    if (!peerSocketId) return;
+        const peerSocketId = await getPeerSocketId(socket.userId);
+        if (!peerSocketId) return;
 
-    getIo().to(peerSocketId).emit("receive-message", { text: trimmed, fromSelf: false });
-    getIo().to(socket.id).emit("receive-message", { text: trimmed, fromSelf: true });
+        io.to(peerSocketId).emit("receive-message", { text: trimmed, fromSelf: false });
+        io.to(socket.id).emit("receive-message", { text: trimmed, fromSelf: true });
+    }
+
+    return {
+        relayOffer,
+        relayAnswer,
+        relayIceCandidate,
+        relayMessage,
+    };
 }

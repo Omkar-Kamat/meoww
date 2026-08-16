@@ -49,16 +49,16 @@ async function attachRedisAdapter(io: Server): Promise<void> {
 }
 
 export function mountGateways(io: Server): void {
-    matchmakingService.init(io);
-    webrtcService.init(io);
+    const mmService = matchmakingService.createMatchmakingService(io);
+    const rtcService = webrtcService.createWebrtcService(io);
 
     io.on("connection", (socket: Socket) => {
         log.info({ userId: socket.userId }, "User connected");
 
         void handleConnectionSetup(io, socket);
 
-        registerMatchmakingHandlers(io, socket);
-        registerWebrtcHandlers(io, socket);
+        registerMatchmakingHandlers(mmService, socket);
+        registerWebrtcHandlers(rtcService, socket);
 
         socket.on("disconnect", () => {
             log.info({ userId: socket.userId }, "User disconnected");

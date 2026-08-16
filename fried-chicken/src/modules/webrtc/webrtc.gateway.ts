@@ -1,5 +1,5 @@
-import type { Server, Socket } from "socket.io";
-import * as webrtcService from "./webrtc.service.js";
+import type { Socket } from "socket.io";
+import type { WebrtcService } from "./webrtc.service.js";
 import { createModuleLogger } from "../../utils/logger.js";
 import type {
     AuthedSocket,
@@ -24,7 +24,7 @@ function safeHandler<Args extends unknown[]>(
     };
 }
 
-export function registerWebrtcHandlers(_io: Server, socket: Socket): void {
+export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): void {
     if (!socket.userId) return;
 
     const authedSocket: AuthedSocket = { id: socket.id, userId: socket.userId };
@@ -32,28 +32,28 @@ export function registerWebrtcHandlers(_io: Server, socket: Socket): void {
     socket.on(
         "offer",
         safeHandler(socket, "offer", (data: OfferPayload) =>
-            webrtcService.relayOffer(authedSocket, data.offer),
+            service.relayOffer(authedSocket, data.offer),
         ),
     );
 
     socket.on(
         "answer",
         safeHandler(socket, "answer", (data: AnswerPayload) =>
-            webrtcService.relayAnswer(authedSocket, data.answer),
+            service.relayAnswer(authedSocket, data.answer),
         ),
     );
 
     socket.on(
         "ice-candidate",
         safeHandler(socket, "ice-candidate", (data: IceCandidatePayload) =>
-            webrtcService.relayIceCandidate(authedSocket, data.candidate),
+            service.relayIceCandidate(authedSocket, data.candidate),
         ),
     );
 
     socket.on(
         "send-message",
         safeHandler(socket, "send-message", (data: MessagePayload) =>
-            webrtcService.relayMessage(authedSocket, data.text),
+            service.relayMessage(authedSocket, data.text),
         ),
     );
 }

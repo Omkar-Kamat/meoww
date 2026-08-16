@@ -44,6 +44,10 @@ export function createRateLimiter(options: RateLimitOptions): ReturnType<typeof 
         keyGenerator: makeKeyGenerator(perUser),
         standardHeaders: true,
         legacyHeaders: false,
+        // NOTE: requires redisClient.connect() to have been called before
+        // the first request hits this middleware. Safe under the normal
+        // index.ts boot sequence; do not import this module from a script
+        // or test that doesn't also connect Redis first.
         store: makeStore(name),
         message: { error: message },
         handler: (req, res, _next, opts) => {

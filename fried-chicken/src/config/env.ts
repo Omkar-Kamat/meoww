@@ -45,17 +45,10 @@ function loadEnv(): Env {
 
     if (!parsed.success) {
         const errors = parsed.error.issues
-            .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+            .map((issue) => `  ✗ ${issue.path.join(".")}: ${issue.message}`)
             .join("\n");
 
-        // eslint-disable-next-line no-console
-        console.error("\nInvalid environment variables:\n");
-        // eslint-disable-next-line no-console
-        console.error(errors);
-        // eslint-disable-next-line no-console
-        console.error("\nFix the above variables in your .env file and restart the server.\n");
-
-        process.exit(1);
+        throw new Error(`Invalid environment variables:\n${errors}`);
     }
 
     return parsed.data;

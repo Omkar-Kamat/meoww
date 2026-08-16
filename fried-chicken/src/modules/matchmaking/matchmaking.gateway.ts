@@ -1,8 +1,7 @@
 // registerMatchmakingHandlers(io: Server, socket: Socket) — binds socket.on("search", ...), socket.on("cancel-search", ...), socket.on("leave-room", ...), socket.on("disconnect", ...) to service calls
 
-// src/modules/matchmaking/matchmaking.gateway.ts
-import type { Server, Socket } from "socket.io";
-import * as matchmakingService from "./matchmaking.service.js";
+import type { Socket } from "socket.io";
+import type { MatchmakingService } from "./matchmaking.service.js";
 import { createModuleLogger } from "../../utils/logger.js";
 import type { AuthedSocket } from "./matchmaking.types.js";
 
@@ -21,7 +20,7 @@ function safeHandler<Args extends unknown[]>(
     };
 }
 
-export function registerMatchmakingHandlers(io: Server, socket: Socket): void {
+export function registerMatchmakingHandlers(service: MatchmakingService, socket: Socket): void {
     if (!socket.userId) {
         socket.disconnect(true);
         return;
@@ -31,27 +30,27 @@ export function registerMatchmakingHandlers(io: Server, socket: Socket): void {
 
     socket.on(
         "search",
-        safeHandler(socket, "search", () => matchmakingService.handleSearch(authedSocket)),
+        safeHandler(socket, "search", () => service.handleSearch(authedSocket)),
     );
 
     socket.on(
         "cancel-search",
         safeHandler(socket, "cancel-search", () =>
-            matchmakingService.handleCancelSearch(authedSocket.userId),
+            service.handleCancelSearch(authedSocket.userId),
         ),
     );
 
     socket.on(
         "leave-room",
         safeHandler(socket, "leave-room", () =>
-            matchmakingService.handleLeaveRoom(authedSocket.userId),
+            service.handleLeaveRoom(authedSocket.userId),
         ),
     );
 
     socket.on(
         "disconnect",
         safeHandler(socket, "disconnect", () =>
-            matchmakingService.handleDisconnect(authedSocket.userId),
+            service.handleDisconnect(authedSocket.userId),
         ),
     );
 }

@@ -9,7 +9,7 @@
 import type { CookieOptions, NextFunction, Request, Response } from "express";
 import * as authService from "./auth.service.js";
 import * as otpService from "../otp/otp.service.js";
-import UserModel, { type UserDocument, type UserFields } from "../user/user.model.js";
+import type { UserDocument, UserFields } from "../user/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
 import { sendVerificationEmail } from "../../services/email.service.js";
@@ -103,7 +103,7 @@ export async function verifySignupOtp(
             throw AppError.badRequest("Invalid or expired code.", "INVALID_OTP");
         }
 
-        const user = await UserModel.findOne({ email: email.toLowerCase() });
+        const user = await authService.findUserByEmail(email);
         if (!user) {
             throw AppError.notFound("User not found");
         }
@@ -131,7 +131,7 @@ export async function resendSignupOtp(
     try {
         const { email } = req.body as { email: string };
 
-        const user = await UserModel.findOne({ email: email.toLowerCase() });
+        const user = await authService.findUserByEmail(email);
         // Same "don't leak account existence" pattern as forgotPassword
         if (user && !user.isVerified) {
             const code = await otpService.generateOtp(user.email);
@@ -189,7 +189,7 @@ export async function forgotPassword(
 ): Promise<void> {
     try {
         const { email } = req.body as { email: string };
-        const user = await UserModel.findOne({ email: email.toLowerCase() });
+        const user = await authService.findUserByEmail(email);
 
         if (user) {
             await authService.createPasswordResetToken(String(user._id));
@@ -209,8 +209,8 @@ export async function resetPassword(
     next: NextFunction,
 ): Promise<void> {
     try {
-        const { token, password } = req.body as { token: string; password: string };
-        await authService.consumePasswordResetToken(token, password);
+        const { userId, token, password } = req.body as { userId: string,token: string; password: string };
+        await authService.consumePasswordResetToken(userId, token, password);
 
         res.clearCookie("access_token", CLEAR_COOKIE_OPTIONS);
         res.clearCookie("refresh_token", CLEAR_COOKIE_OPTIONS);

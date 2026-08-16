@@ -9,13 +9,14 @@
 // src/modules/auth/auth.service
 import bcrypt from "bcryptjs";
 import jwt, { type JwtPayload as JsonWebTokenPayload, type SignOptions } from "jsonwebtoken";
-import { randomBytes } from "crypto";
-import { Types } from "mongoose";
 import UserModel, { type UserDocument, type UserFields } from "../user/user.model.js";
-import { PasswordResetModel } from "./auth.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { env } from "../../config/env.js";
 import type { SignupInput } from "./auth.types.js";
+import { createToken, consumeToken } from "../token/token.service.js";
+
+const PASSWORD_RESET_PURPOSE = "password-reset";
+const PASSWORD_RESET_TTL_MS = 15 * 60 * 1000;
 
 export async function createUser(data: SignupInput): Promise<UserDocument> {
     const email = data.email.toLowerCase();
@@ -118,51 +119,30 @@ export async function markUserVerified(userId: string): Promise<UserDocument> {
 }
 
 export async function createPasswordResetToken(userId: string): Promise<string> {
-    const objectId = new Types.ObjectId(userId);
-
-    await PasswordResetModel.deleteMany({ userId: objectId });
-
-    const rawToken = randomBytes(32).toString("hex");
-    const tokenHash = await bcrypt.hash(rawToken, 10);
-
-    await PasswordResetModel.create({
-        userId: objectId,
-        tokenHash,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-    });
-
-    return rawToken;
+    return createToken({ purpose: PASSWORD_RESET_PURPOSE, identifier: userId, ttlMs: PASSWORD_RESET_TTL_MS });
 }
 
-export async function consumePasswordResetToken(token: string, newPassword: string): Promise<void> {
-    const candidates = await PasswordResetModel.find({ expiresAt: { $gt: new Date() } });
+export async function consumePasswordResetToken(userId: string, rawToken: string, newPassword: string): Promise<void> {
+    const isValid = await consumeToken(PASSWORD_RESET_PURPOSE, userId, rawToken);
 
-    let matchedUserId: Types.ObjectId | undefined;
-
-    for (const candidate of candidates) {
-        const isMatch = await bcrypt.compare(token, candidate.tokenHash);
-        if (isMatch) {
-            matchedUserId = candidate.userId;
-            break;
-        }
-    }
-
-    if (!matchedUserId) {
+    if (!isValid) {
         throw AppError.badRequest("Reset link is invalid or has expired.", "INVALID_RESET_TOKEN");
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 12);
 
-    await UserModel.findByIdAndUpdate(matchedUserId, {
+    await UserModel.findByIdAndUpdate(userId, {
         passwordHash: newPasswordHash,
         refreshTokenHash: null,
     });
-
-    await PasswordResetModel.deleteMany({ userId: matchedUserId });
 }
 
 function isDuplicateKeyError(
     err: unknown,
 ): err is { code: number; keyPattern?: Record<string, unknown> } {
     return typeof err === "object" && err !== null && "code" in err && err.code === 11000;
+}
+
+export async function findUserByEmail(email: string): Promise<UserDocument | null> {
+    return UserModel.findOne({ email: email.toLowerCase() });
 }

@@ -14,8 +14,10 @@
 
 // src/modules/matchmaking/matchmaking.store.ts
 import { v4 as uuidv4 } from "uuid";
-import redisClient from "../../config/redis.js";
 import type { RoomRecord } from "./matchmaking.types.js";
+import redisClient from "../../config/redis.js";
+import { POP_OR_ENQUEUE_SCRIPT, CREATE_ROOM_SCRIPT } from "./matchmaking.lua.js";
+
 
 const QUEUE_KEY = "mm:queue";
 const ROOM_TTL_SECONDS = 86400; // 24h
@@ -89,4 +91,23 @@ export async function getUserSocket(userId: string): Promise<string | null> {
 
 export async function clearUserSocket(userId: string): Promise<void> {
     await redisClient.del(userSocketKey(userId));
+}
+
+export async function popOrEnqueue(userId: string): Promise<string | null> {
+    const result = await redisClient.eval(POP_OR_ENQUEUE_SCRIPT, {
+        keys: [QUEUE_KEY],
+        arguments: [userId],
+    });
+    return typeof result === "string" ? result : null;
+}
+
+export async function createRoomAtomic(userA: string, userB: string): Promise<string> {
+    const roomId = uuidv4();
+
+    await redisClient.eval(CREATE_ROOM_SCRIPT, {
+        keys: [roomKey(roomId), userRoomKey(userA), userRoomKey(userB)],
+        arguments: [userA, userB, roomId, String(ROOM_TTL_SECONDS)],
+    });
+
+    return roomId;
 }
