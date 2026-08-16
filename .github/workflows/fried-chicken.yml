@@ -1,0 +1,59 @@
+name: fried-chicken CI
+
+on:
+  push:
+    paths:
+      - 'fried-chicken/**'
+      - '.github/workflows/fried-chicken.yml'
+  pull_request:
+    paths:
+      - 'fried-chicken/**'
+      - '.github/workflows/fried-chicken.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./fried-chicken
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'fried-chicken/package-lock.json'
+
+    - name: Start MongoDB & Redis for integration tests
+      uses: supercharge/mongodb-github-action@1.11.0
+      with:
+        mongodb-version: '7.0'
+    - uses: supercharge/redis-github-action@1.8.0
+      with:
+        redis-version: '7'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Linter
+      run: npx eslint .
+
+    - name: Check Formatting
+      run: npx prettier --check .
+
+    - name: Run TypeScript Compiler (Typecheck)
+      run: npx tsc --noEmit
+
+    - name: Run Tests
+      run: npm test
+      env:
+        TURN_DOMAIN: test.turn.com
+        TURN_SECRET: mock_secret_that_is_long_enough_for_zod_to_be_happy_32_chars!
