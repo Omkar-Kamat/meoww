@@ -1,27 +1,26 @@
-// createRedisClient(): RedisClientType — instantiates and connects the Redis client
+// createRedisClient(): RedisClientType — instantiates the Redis client (call
+//   redisClient.connect() separately at boot — see index.ts)
 // redisClient — exported singleton instance
+// disconnectRedis(): Promise<void> — used in graceful shutdown
 
 // src/config/redis
 import { createClient, type RedisClientType } from "redis";
 import { createModuleLogger, logError } from "../utils/logger.js";
+import { env } from "./env.js";
 
 const log = createModuleLogger("redis");
 
 function createRedisClient(): RedisClientType {
-    const host = process.env.REDIS_HOST;
-    const port = process.env.REDIS_PORT;
-    const password = process.env.REDIS_PASSWORD;
-
-    if (!host || !port) {
-        throw new Error("REDIS_HOST and REDIS_PORT environment variables are required");
-    }
+    const host = env.REDIS_HOST;
+    const port = env.REDIS_PORT;
+    const password = env.REDIS_PASSWORD;
 
     const client: RedisClientType = createClient({
         username: "default",
         ...(password && { password }),
         socket: {
             host,
-            port: Number(port),
+            port,
             reconnectStrategy: (retries) => {
                 if (retries > 10) {
                     log.error({ retries }, "Too many reconnection attempts. Giving up.");
@@ -50,5 +49,20 @@ function createRedisClient(): RedisClientType {
 
 const redisClient: RedisClientType = createRedisClient();
 
-export { createRedisClient, redisClient };
+async function disconnectRedis(): Promise<void> {
+    if (!redisClient.isOpen) {
+        // already disconnected — nothing to do
+        return;
+    }
+
+    try {
+        await redisClient.quit();
+        log.info("Disconnected cleanly");
+    } catch (err) {
+        logError(err, { context: "redis-disconnect" });
+        throw err;
+    }
+}
+
+export { createRedisClient, redisClient, disconnectRedis };
 export default redisClient;

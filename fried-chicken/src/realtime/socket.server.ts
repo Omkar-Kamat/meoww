@@ -1,4 +1,4 @@
-// createSocketServer(httpServer: HttpServer): Server — instantiates Socket.io, attaches Redis adapter
+// createSocketServer(httpServer: HttpServer): Promise<Server> — instantiates Socket.io, attaches Redis adapter
 // mountGateways(io: Server) — on each connection, calls registerMatchmakingHandlers (and future gateways)
 
 // src/realtime/socket.server.ts
@@ -17,7 +17,7 @@ import { registerWebrtcHandlers } from "../modules/webrtc/webrtc.gateway.js";
 const log = createModuleLogger("socket-server");
 const TOKEN_REFRESH_WARNING_MS = 2 * 60 * 1000;
 
-export function createSocketServer(httpServer: HttpServer): Server {
+export async function createSocketServer(httpServer: HttpServer): Promise<Server> {
     const io = new Server(httpServer, {
         cors: {
             origin: (origin, callback) => {
@@ -31,7 +31,9 @@ export function createSocketServer(httpServer: HttpServer): Server {
         },
     });
 
-    void attachRedisAdapter(io);
+    // Awaited here so no socket can connect (and get routed only to this
+    // process) before cross-process routing via Redis is actually live.
+    await attachRedisAdapter(io);
 
     io.use(socketAuthMiddleware);
 

@@ -9,7 +9,7 @@ import http from "http";
 import { createApp } from "./app.js";
 import { connectDB, disconnectDB } from "./config/db.js";
 import { createSocketServer, mountGateways } from "./realtime/socket.server.js";
-import redisClient from "./config/redis.js";
+import redisClient, { disconnectRedis } from "./config/redis.js";
 import { env } from "./config/env.js";
 import { createModuleLogger, logError } from "./utils/logger.js";
 
@@ -22,8 +22,9 @@ const server = http.createServer(app);
 
 async function bootstrap(): Promise<void> {
     await connectDB();
+    await redisClient.connect();
 
-    const io = createSocketServer(server);
+    const io = await createSocketServer(server);
     mountGateways(io);
 
     server.listen(PORT, () => {
@@ -45,8 +46,7 @@ function handleShutdown(signal: string): void {
             }
 
             try {
-                await redisClient.quit();
-                log.info("Redis connection closed");
+                await disconnectRedis();
             } catch (err) {
                 logError(err, { context: "shutdown-redis" });
             }
