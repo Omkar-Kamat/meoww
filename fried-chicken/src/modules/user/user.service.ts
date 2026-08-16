@@ -7,6 +7,7 @@
 import UserModel, { type UserDocument } from "./user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import type { UpdateUserInput } from "./user.types.js";
+import { isDuplicateKeyError } from "../../utils/mongoErrors.js";
 
 export async function findUserById(id: string): Promise<UserDocument | null> {
     const user = await UserModel.findById(id);
@@ -25,20 +26,29 @@ export async function updateUser(id: string, data: UpdateUserInput): Promise<Use
     if (data.name !== undefined) updates.name = data.name;
     if (data.username !== undefined) updates.username = data.username;
 
-    const user = await UserModel.findByIdAndUpdate(
-        id,
-        { $set: updates },
-        {
-            new: true,
-            runValidators: true,
-        },
-    );
+    try {
+        const user = await UserModel.findByIdAndUpdate(
+            id,
+            { $set: updates },
+            {
+                new: true,
+                runValidators: true,
+            },
+        );
 
-    if (!user) {
-        throw AppError.notFound("User not found");
+        if (!user) {
+            throw AppError.notFound("User not found");
+        }
+
+        return user;
+    } catch (err) {
+        if (isDuplicateKeyError(err)) {
+            const field = Object.keys(err.keyPattern ?? {})[0];
+            if (field === "username") throw AppError.conflict("Username already taken", "USERNAME_TAKEN");
+            throw AppError.conflict("Duplicate key error", "DUPLICATE_ERROR");
+        }
+        throw err;
     }
-
-    return user;
 }
 
 export async function setAvatar(id: string, imageUrl: string): Promise<UserDocument> {

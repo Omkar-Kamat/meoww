@@ -71,7 +71,7 @@ export function createMatchmakingService(
     async function handleSearch(socket: AuthedSocket): Promise<EmitAction[]> {
         const { userId } = socket;
 
-        const [existingRoom] = await Promise.all([store.getUserRoom(userId)]);
+        const existingRoom = await store.getUserRoom(userId);
         if (existingRoom) return [];
 
         const { match, actions } = await tryMatch(userId);

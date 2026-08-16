@@ -58,10 +58,5 @@ export function registerMatchmakingHandlers(service: MatchmakingService, socket:
         ),
     );
 
-    socket.on(
-        "disconnect",
-        safeHandler(authedSocket, "disconnect", () =>
-            service.handleDisconnect(authedSocket.userId),
-        ),
-    );
+
 }

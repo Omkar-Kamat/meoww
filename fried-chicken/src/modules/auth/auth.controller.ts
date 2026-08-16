@@ -6,7 +6,7 @@
 // resetPassword(req, res, next)
 
 // src/modules/auth/auth.controller
-import type { CookieOptions, NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import * as authService from "./auth.service.js";
 import * as otpService from "../otp/otp.service.js";
 import { toPublicUser } from "../user/user.model.js";
@@ -18,31 +18,7 @@ import { env } from "../../config/env.js";
 import type { LoginInput, SignupInput } from "./auth.types.js";
 import type { resetPasswordSchema } from "./auth.schema.js";
 import type { z } from "zod";
-
-const isProd = env.NODE_ENV === "production";
-const isCrossSite = env.CROSS_SITE;
-
-const COOKIE_OPTIONS: CookieOptions = {
-    httpOnly: true,
-    secure: isProd,
-    path: "/",
-    sameSite: isProd ? (isCrossSite ? "none" : "strict") : "lax",
-};
-
-const CLEAR_COOKIE_OPTIONS: CookieOptions = {
-    httpOnly: true,
-    secure: COOKIE_OPTIONS.secure,
-    path: "/",
-    sameSite: COOKIE_OPTIONS.sameSite,
-};
-
-function setAuthCookies(res: Response, accessToken: string, refreshToken: string): void {
-    res.cookie("access_token", accessToken, { ...COOKIE_OPTIONS, maxAge: 15 * 60 * 1000 });
-    res.cookie("refresh_token", refreshToken, {
-        ...COOKIE_OPTIONS,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-}
+import { setAuthCookies, clearAuthCookies } from "../../utils/cookies.js";
 
 /**
  * POST /api/auth/signup
@@ -154,8 +130,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
 }
 
 export function logout(req: Request, res: Response, _next: NextFunction): void {
-    res.clearCookie("access_token", CLEAR_COOKIE_OPTIONS);
-    res.clearCookie("refresh_token", CLEAR_COOKIE_OPTIONS);
+    clearAuthCookies(res);
     res.json({ message: "Logged out successfully" });
 }
 
@@ -215,8 +190,7 @@ export async function resetPassword(
         const { userId, token, password } = req.body as z.infer<typeof resetPasswordSchema>;
         await authService.consumePasswordResetToken(userId, token, password);
 
-        res.clearCookie("access_token", CLEAR_COOKIE_OPTIONS);
-        res.clearCookie("refresh_token", CLEAR_COOKIE_OPTIONS);
+        clearAuthCookies(res);
 
         res.json({
             message: "Password reset successful. Please log in with your new password.",

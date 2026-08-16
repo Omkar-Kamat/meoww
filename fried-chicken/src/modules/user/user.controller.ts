@@ -5,23 +5,12 @@
 
 // src/modules/user/user.controller.ts
 import type { NextFunction, Request, Response } from "express";
-import type { CookieOptions } from "express";
 import * as userService from "./user.service.js";
 import { toPublicUser } from "./user.model.js";
 import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
 import { AppError } from "../../utils/AppError.js";
-import { env } from "../../config/env.js";
 import type { UpdateUserInput } from "./user.types.js";
-
-const isProd = env.NODE_ENV === "production";
-const isCrossSite = env.CROSS_SITE;
-
-const CLEAR_COOKIE_OPTIONS: CookieOptions = {
-    httpOnly: true,
-    secure: isProd,
-    path: "/",
-    sameSite: isProd ? (isCrossSite ? "none" : "strict") : "lax",
-};
+import { clearAuthCookies } from "../../utils/cookies.js";
 
 function requireUserId(req: Request): string {
     if (!req.userId) {
@@ -90,8 +79,7 @@ export async function deleteAccount(
         const userId = requireUserId(req);
         await userService.deleteUser(userId);
 
-        res.clearCookie("access_token", CLEAR_COOKIE_OPTIONS);
-        res.clearCookie("refresh_token", CLEAR_COOKIE_OPTIONS);
+        clearAuthCookies(res);
 
         res.json({ message: "Account deleted successfully." });
     } catch (err) {

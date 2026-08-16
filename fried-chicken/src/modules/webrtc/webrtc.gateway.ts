@@ -5,9 +5,21 @@ import type { AuthedSocket } from "./webrtc.types.js";
 import type { EmitAction } from "../../realtime/socket.types.js";
 import { z } from "zod";
 
-const offerPayloadSchema = z.object({ offer: z.any() });
-const answerPayloadSchema = z.object({ answer: z.any() });
-const iceCandidatePayloadSchema = z.object({ candidate: z.any() });
+const sdpSchema = z.object({
+    type: z.enum(["offer", "answer", "pranswer", "rollback"]),
+    sdp: z.string().max(10000),
+});
+
+const iceCandidateSchema = z.object({
+    candidate: z.string().max(2000),
+    sdpMid: z.string().max(255).nullable().optional(),
+    sdpMLineIndex: z.number().nullable().optional(),
+    usernameFragment: z.string().max(255).nullable().optional(),
+});
+
+const offerPayloadSchema = z.object({ offer: sdpSchema });
+const answerPayloadSchema = z.object({ answer: sdpSchema });
+const iceCandidatePayloadSchema = z.object({ candidate: iceCandidateSchema });
 const messagePayloadSchema = z.object({ text: z.string().max(500) });
 
 const log = createModuleLogger("webrtc-gateway");
@@ -44,7 +56,10 @@ function parseSocketPayload<T>(schema: z.ZodType<T>, data: unknown): T {
 }
 
 export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): void {
-    if (!socket.userId) return;
+    if (!socket.userId) {
+        socket.disconnect(true);
+        return;
+    }
     const authedSocket = socket as AuthedSocket;
 
     socket.on(

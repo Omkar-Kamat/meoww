@@ -14,6 +14,8 @@ process.env.BASE_URL = "http://localhost:5000";
 process.env.REDIS_HOST = "localhost";
 process.env.REDIS_PORT = "6379";
 process.env.REDIS_PASSWORD = "mock";
+process.env.TURN_DOMAIN = "test.turn.com";
+process.env.TURN_SECRET = "mock_secret_that_is_long_enough_for_zod_to_be_happy_32_chars!";
 
 // Mock redis
 vi.mock("../src/config/redis.js", () => {

@@ -12,29 +12,16 @@ export function createWebrtcService(
     getPeerSocketId: (userId: string) => Promise<string | null>
 ): WebrtcService {
 
-    async function relayOffer(socket: AuthedSocket, offer: unknown): Promise<EmitAction[]> {
-        const peerSocketId = await getPeerSocketId(socket.userId);
-        if (peerSocketId) {
-            return [{ target: peerSocketId, event: "offer", payload: { offer } }];
-        }
-        return [];
+    function relay(eventName: string, payloadKey: string) {
+        return async (socket: AuthedSocket, payloadData: unknown): Promise<EmitAction[]> => {
+            const peerSocketId = await getPeerSocketId(socket.userId);
+            return peerSocketId ? [{ target: peerSocketId, event: eventName, payload: { [payloadKey]: payloadData } }] : [];
+        };
     }
 
-    async function relayAnswer(socket: AuthedSocket, answer: unknown): Promise<EmitAction[]> {
-        const peerSocketId = await getPeerSocketId(socket.userId);
-        if (peerSocketId) {
-            return [{ target: peerSocketId, event: "answer", payload: { answer } }];
-        }
-        return [];
-    }
-
-    async function relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<EmitAction[]> {
-        const peerSocketId = await getPeerSocketId(socket.userId);
-        if (peerSocketId) {
-            return [{ target: peerSocketId, event: "ice-candidate", payload: { candidate } }];
-        }
-        return [];
-    }
+    const relayOffer = relay("offer", "offer");
+    const relayAnswer = relay("answer", "answer");
+    const relayIceCandidate = relay("ice-candidate", "candidate");
 
     async function relayMessage(socket: AuthedSocket, text: string): Promise<EmitAction[]> {
         const trimmed = text.trim();

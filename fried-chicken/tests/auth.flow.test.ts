@@ -8,7 +8,6 @@ import { createApp } from "../src/app.js";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../src/services/email.service.js";
 import UserModel from "../src/modules/user/user.model.js";
 import { TokenModel } from "../src/modules/token/token.model.js";
-import otpModel from "../src/modules/otp/otp.model.js";
 
 describe("Auth Flow", () => {
     let mongoServer: MongoMemoryServer;
@@ -29,7 +28,6 @@ describe("Auth Flow", () => {
     beforeEach(async () => {
         await UserModel.deleteMany({});
         await TokenModel.deleteMany({});
-        await otpModel.deleteMany({});
         vi.clearAllMocks();
     });
 
@@ -47,7 +45,9 @@ describe("Auth Flow", () => {
         expect(signupRes.body).toHaveProperty("message");
         
         expect(sendVerificationEmail).toHaveBeenCalled();
-        const code = (sendVerificationEmail as Mock).mock.calls[0]![1] as string;
+        const verifyCallArgs = (sendVerificationEmail as Mock).mock.calls[0];
+        if (!verifyCallArgs) throw new Error("Expected verifyCallArgs");
+        const code = verifyCallArgs[1] as string;
 
         // 2. Verify
         const verifyRes = await request(app).post("/api/auth/verify").send({
@@ -77,7 +77,9 @@ describe("Auth Flow", () => {
 
         expect(forgotRes.status).toBe(200);
         expect(sendPasswordResetEmail).toHaveBeenCalled();
-        const resetLink = (sendPasswordResetEmail as Mock).mock.calls[0]![1] as string;
+        const resetCallArgs = (sendPasswordResetEmail as Mock).mock.calls[0];
+        if (!resetCallArgs) throw new Error("Expected resetCallArgs");
+        const resetLink = resetCallArgs[1] as string;
         
         const url = new URL(resetLink);
         const userId = url.searchParams.get("userId");

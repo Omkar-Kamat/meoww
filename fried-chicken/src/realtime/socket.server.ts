@@ -79,6 +79,11 @@ export function mountGateways(io: Server): void {
         socket.on("disconnect", () => {
             log.info({ userId: socket.userId }, "User disconnected");
             clearTokenTimers(socket);
+            if (socket.userId) {
+                mmService.handleDisconnect(socket.userId).catch((err: unknown) => {
+                    log.error({ err, userId: socket.userId, event: "disconnect" }, "Error in matchmaking disconnect handler");
+                });
+            }
         });
     });
 }

@@ -10,7 +10,6 @@ export interface UserFields {
     passwordHash: string;
     profileImage: string;
     isVerified: boolean;
-    refreshTokenHash: string | null;
     createdAt: Date;
 }
 
@@ -37,16 +36,14 @@ const userSchema = new Schema<UserDocument>({
     passwordHash: { type: String, required: true },
     profileImage: { type: String, default: "" },
     isVerified: { type: Boolean, default: false },
-    refreshTokenHash: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
 });
 
 export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>("User", userSchema);
 
-export function toPublicUser(user: UserDocument): Omit<UserFields, "passwordHash" | "refreshTokenHash"> {
+export function toPublicUser(user: UserDocument): Omit<UserFields, "passwordHash"> {
     const {
         passwordHash: _passwordHash,
-        refreshTokenHash: _refreshTokenHash,
         ...safeUser
     } = user.toObject<UserFields>();
     return safeUser;

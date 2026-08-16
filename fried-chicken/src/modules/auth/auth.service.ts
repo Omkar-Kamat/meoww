@@ -14,6 +14,7 @@ import { AppError } from "../../utils/AppError.js";
 import { env } from "../../config/env.js";
 import type { SignupInput } from "./auth.types.js";
 import { createToken, consumeToken } from "../token/token.service.js";
+import { isDuplicateKeyError } from "../../utils/mongoErrors.js";
 
 const PASSWORD_RESET_PURPOSE = "password-reset";
 const PASSWORD_RESET_TTL_MS = 15 * 60 * 1000;
@@ -133,15 +134,10 @@ export async function consumePasswordResetToken(userId: string, rawToken: string
 
     await UserModel.findByIdAndUpdate(userId, {
         passwordHash: newPasswordHash,
-        refreshTokenHash: null,
     });
 }
 
-function isDuplicateKeyError(
-    err: unknown,
-): err is { code: number; keyPattern?: Record<string, unknown> } {
-    return typeof err === "object" && err !== null && "code" in err && err.code === 11000;
-}
+
 
 export async function findUserByEmail(email: string): Promise<UserDocument | null> {
     return UserModel.findOne({ email: email.toLowerCase() });

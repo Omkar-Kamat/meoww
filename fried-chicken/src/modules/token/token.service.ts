@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
+import { randomBytes, randomInt } from "crypto";
 import { TokenModel } from "./token.model.js";
 import { AppError } from "../../utils/AppError.js";
 
@@ -19,7 +19,7 @@ export async function createToken(options: CreateTokenOptions): Promise<string> 
     await TokenModel.deleteMany({ purpose, identifier });
 
     const raw = numeric
-        ? String(Math.floor(100000 + Math.random() * 900000))
+        ? String(randomInt(100_000, 1_000_000))
         : randomBytes(32).toString("hex");
 
     const tokenHash = await bcrypt.hash(raw, 10);
