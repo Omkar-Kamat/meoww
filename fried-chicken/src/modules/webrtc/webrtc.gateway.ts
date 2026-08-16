@@ -1,8 +1,6 @@
 import type { Socket } from "socket.io";
 import type { WebrtcService } from "./webrtc.service.js";
-import { createModuleLogger } from "../../utils/logger.js";
 import type { AuthedSocket } from "./webrtc.types.js";
-import type { EmitAction } from "../../realtime/socket.types.js";
 import { z } from "zod";
 
 const sdpSchema = z.object({
@@ -22,30 +20,7 @@ const answerPayloadSchema = z.object({ answer: sdpSchema });
 const iceCandidatePayloadSchema = z.object({ candidate: iceCandidateSchema });
 const messagePayloadSchema = z.object({ text: z.string().max(500) });
 
-const log = createModuleLogger("webrtc-gateway");
-
-function safeHandler<Args extends unknown[]>(
-    socket: AuthedSocket,
-    eventName: string,
-    fn: (...args: Args) => Promise<EmitAction[]>,
-) {
-    return (...args: Args): void => {
-        fn(...args)
-            .then((actions) => {
-                for (const action of actions) {
-                    if (action.target === socket.id) {
-                        socket.emit(action.event, action.payload);
-                    } else {
-                        socket.to(action.target).emit(action.event, action.payload);
-                    }
-                }
-            })
-            .catch((err: unknown) => {
-                log.error({ err, userId: socket.userId, event: eventName }, "Error in socket handler");
-                socket.emit("error", { message: "An unexpected error occurred." });
-            });
-    };
-}
+import { safeHandler } from "../../realtime/socket.utils.js";
 
 function parseSocketPayload<T>(schema: z.ZodType<T>, data: unknown): T {
     const result = schema.safeParse(data);

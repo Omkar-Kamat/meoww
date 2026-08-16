@@ -12,9 +12,14 @@
 import { v4 as uuidv4 } from "uuid";
 import type { RoomRecord } from "./matchmaking.types.js";
 import redisClient from "../../config/redis.js";
-import { POP_OR_ENQUEUE_SCRIPT, CREATE_ROOM_SCRIPT } from "./matchmaking.lua.js";
+import { POP_OR_ENQUEUE_SCRIPT, CREATE_ROOM_SCRIPT, CHECK_AND_LOCK_SCRIPT } from "./matchmaking.lua.js";
 
-
+// Note on queue fairness:
+// We use a Redis Set (O(1) add/remove/pop) for the matchmaking queue rather than a FIFO List
+// or Sorted Set. This means `popOrEnqueue` selects an arbitrary waiting user, offering no
+// strict guarantees on wait times (the longest-waiting user isn't guaranteed to be matched first).
+// For a random-pairing app with high throughput and short wait times, this is an acceptable
+// trade-off for the simplicity and performance of O(1) SADD/SPOP operations.
 const QUEUE_KEY = "mm:queue";
 const ROOM_TTL_SECONDS = 86400; // 24h
 
@@ -77,4 +82,16 @@ export async function createRoomAtomic(userA: string, userB: string): Promise<st
     });
 
     return roomId;
+}
+
+export async function checkAndLock(userId: string): Promise<"OK" | "MATCHED" | "LOCKED"> {
+    const result = await redisClient.eval(CHECK_AND_LOCK_SCRIPT, {
+        keys: [userRoomKey(userId), `mm:lock:${userId}`],
+        arguments: [],
+    });
+    return result as "OK" | "MATCHED" | "LOCKED";
+}
+
+export async function releaseLock(userId: string): Promise<void> {
+    await redisClient.del(`mm:lock:${userId}`);
 }

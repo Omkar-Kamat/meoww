@@ -5,7 +5,7 @@
 import type { CorsOptions } from "cors";
 import { createModuleLogger } from "../utils/logger.js";
 
-const log = createModuleLogger("CORS");
+const log = createModuleLogger("cors");
 
 const rawOrigins = process.env.ALLOWED_ORIGINS ?? "";
 if (!rawOrigins) {

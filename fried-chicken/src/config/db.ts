@@ -5,7 +5,7 @@
 import mongoose, { ConnectionStates, type ConnectOptions } from "mongoose";
 import { createModuleLogger, logError } from "../utils/logger.js";
 
-const log = createModuleLogger("MongoDB");
+const log = createModuleLogger("mongodb");
 
 const MAX_RETRIES = 5;
 const INITIAL_DELAY = 1000;

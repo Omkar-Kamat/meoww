@@ -1,3 +1,18 @@
+export const CHECK_AND_LOCK_SCRIPT = `
+local roomKey = KEYS[1]
+local lockKey = KEYS[2]
+
+if redis.call('GET', roomKey) then
+    return 'MATCHED'
+end
+
+if not redis.call('SET', lockKey, '1', 'NX', 'PX', 2000) then
+    return 'LOCKED'
+end
+
+return 'OK'
+`;
+
 export const POP_OR_ENQUEUE_SCRIPT = `
 local queueKey = KEYS[1]
 local userId = ARGV[1]

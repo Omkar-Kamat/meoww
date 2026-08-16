@@ -71,26 +71,32 @@ export function createMatchmakingService(
     async function handleSearch(socket: AuthedSocket): Promise<EmitAction[]> {
         const { userId } = socket;
 
-        const existingRoom = await store.getUserRoom(userId);
-        if (existingRoom) return [];
-
-        const { match, actions } = await tryMatch(userId);
-
-        if (!match) {
-            actions.push({ target: socket.id, event: "queued", payload: {} });
-            return actions;
+        const lockStatus = await store.checkAndLock(userId);
+        if (lockStatus === "MATCHED" || lockStatus === "LOCKED") {
+            return [];
         }
 
-        actions.push({
-            target: socket.id,
-            event: "matched",
-            payload: {
-                roomId: match.roomId,
-                isInitiator: match.isInitiator,
-            }
-        });
+        try {
+            const { match, actions } = await tryMatch(userId);
 
-        return actions;
+            if (!match) {
+                actions.push({ target: socket.id, event: "queued", payload: {} });
+                return actions;
+            }
+
+            actions.push({
+                target: socket.id,
+                event: "matched",
+                payload: {
+                    roomId: match.roomId,
+                    isInitiator: match.isInitiator,
+                }
+            });
+
+            return actions;
+        } finally {
+            await store.releaseLock(userId);
+        }
     }
 
     async function handleCancelSearch(userId: string): Promise<EmitAction[]> {
