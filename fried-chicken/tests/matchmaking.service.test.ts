@@ -51,7 +51,7 @@ describe("MatchmakingService", () => {
             expect(result.match).not.toBeNull();
             expect(result.match?.roomId).toBe("room123");
             expect(result.match?.peerSocketId).toBe("socketB");
-            
+
             expect(result.actions).toHaveLength(1);
             expect(result.actions[0]?.target).toBe("socketB");
             expect(result.actions[0]?.event).toBe("matched");
@@ -62,7 +62,7 @@ describe("MatchmakingService", () => {
             vi.mocked(store.popOrEnqueue)
                 .mockResolvedValueOnce("userB")
                 .mockResolvedValueOnce("userC");
-            
+
             vi.mocked(sessionStore.getUserSocket).mockImplementation((userId) => {
                 if (userId === "userB") return Promise.resolve(null);
                 if (userId === "userC") return Promise.resolve("socketC");
@@ -82,13 +82,13 @@ describe("MatchmakingService", () => {
             vi.mocked(store.popOrEnqueue)
                 .mockResolvedValueOnce("userB")
                 .mockResolvedValueOnce("userC");
-            
+
             vi.mocked(sessionStore.getUserSocket).mockImplementation((userId) => {
                 if (userId === "userB") return Promise.resolve("socketB");
                 if (userId === "userC") return Promise.resolve("socketC");
                 return Promise.resolve(null);
             });
-            
+
             checkSocketLive.mockImplementation((socketId) => {
                 if (socketId === "socketB") return Promise.resolve(false);
                 if (socketId === "socketC") return Promise.resolve(true);

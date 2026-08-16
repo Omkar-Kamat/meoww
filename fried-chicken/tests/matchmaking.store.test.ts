@@ -6,7 +6,10 @@ const mockClient = new Redis();
 vi.mock("../src/config/redis.js", () => {
     return {
         default: {
-            eval: async (script: string, options: { keys?: string[], arguments?: string[] } = {}) => {
+            eval: async (
+                script: string,
+                options: { keys?: string[]; arguments?: string[] } = {},
+            ) => {
                 const keys = options.keys ?? [];
                 const args = options.arguments ?? [];
                 return mockClient.eval(script, keys.length, ...keys, ...args);
@@ -17,7 +20,7 @@ vi.mock("../src/config/redis.js", () => {
             get: async (key: string) => mockClient.get(key),
             del: async (key: string) => mockClient.del(key),
             hGetAll: async (key: string) => mockClient.hgetall(key),
-        }
+        },
     };
 });
 
@@ -58,7 +61,7 @@ describe("Matchmaking Lua Scripts Integration (via ioredis-mock)", () => {
     it("createRoomAtomic should create room and set user references", async () => {
         const roomId = await store.createRoomAtomic("userA", "userB");
         expect(roomId).toBeDefined();
-        
+
         const room = await mockClient.hgetall(`mm:room:${roomId}`);
         expect(room).toEqual({ user1: "userA", user2: "userB" });
 
@@ -69,24 +72,41 @@ describe("Matchmaking Lua Scripts Integration (via ioredis-mock)", () => {
     });
 
     it("checkAndLock should return OK and set lock if not matched", async () => {
-        const result = await store.checkAndLock("userA");
-        expect(result).toBe("OK");
+        const { status, token } = await store.checkAndLock("userA");
+        expect(status).toBe("OK");
+        expect(token).toBeDefined();
 
         const lock = await mockClient.get(`mm:lock:userA`);
-        expect(lock).toBe("1");
+        expect(lock).toBe(token);
     });
 
     it("checkAndLock should return MATCHED if user is already in a room", async () => {
         await mockClient.set(`mm:userroom:userA`, "room123");
-        
-        const result = await store.checkAndLock("userA");
-        expect(result).toBe("MATCHED");
+
+        const { status } = await store.checkAndLock("userA");
+        expect(status).toBe("MATCHED");
     });
 
     it("checkAndLock should return LOCKED if user is already searching", async () => {
         await mockClient.set(`mm:lock:userA`, "1");
-        
-        const result = await store.checkAndLock("userA");
-        expect(result).toBe("LOCKED");
+
+        const { status } = await store.checkAndLock("userA");
+        expect(status).toBe("LOCKED");
+    });
+
+    it("releaseLock should only delete the lock if the token matches", async () => {
+        const { status, token } = await store.checkAndLock("userA");
+        expect(status).toBe("OK");
+
+        // Try releasing with wrong token
+        await store.releaseLock("userA", "wrong-token");
+        let lock = await mockClient.get(`mm:lock:userA`);
+        expect(lock).toBe(token); // Should still exist
+
+        // Release with correct token
+        if (!token) throw new Error("Expected token to be defined");
+        await store.releaseLock("userA", token);
+        lock = await mockClient.get(`mm:lock:userA`);
+        expect(lock).toBeNull(); // Should be deleted
     });
 });

@@ -20,7 +20,6 @@ const { default: redisClient, disconnectRedis } = await import("./config/redis.j
 const { env } = await import("./config/env.js");
 const { createModuleLogger, logError } = await import("./utils/logger.js");
 
-
 const log = createModuleLogger("bootstrap");
 const PORT = env.PORT;
 const SHUTDOWN_TIMEOUT_MS = 10_000;

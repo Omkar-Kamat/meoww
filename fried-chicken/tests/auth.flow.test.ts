@@ -40,10 +40,9 @@ describe("Auth Flow", () => {
             password: "password123",
         });
 
-
         expect(signupRes.status).toBe(201);
         expect(signupRes.body).toHaveProperty("message");
-        
+
         expect(sendVerificationEmail).toHaveBeenCalled();
         const verifyCallArgs = (sendVerificationEmail as Mock).mock.calls[0];
         if (!verifyCallArgs) throw new Error("Expected verifyCallArgs");
@@ -80,7 +79,7 @@ describe("Auth Flow", () => {
         const resetCallArgs = (sendPasswordResetEmail as Mock).mock.calls[0];
         if (!resetCallArgs) throw new Error("Expected resetCallArgs");
         const resetLink = resetCallArgs[1] as string;
-        
+
         const url = new URL(resetLink);
         const userId = url.searchParams.get("userId");
         const token = url.searchParams.get("token");

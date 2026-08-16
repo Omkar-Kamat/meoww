@@ -24,11 +24,13 @@ export interface MatchmakingService {
 }
 
 export function createMatchmakingService(
-    checkSocketLive: (socketId: string) => Promise<boolean>
+    checkSocketLive: (socketId: string) => Promise<boolean>,
 ): MatchmakingService {
     const MAX_MATCH_ATTEMPTS = 5;
 
-    async function tryMatch(userId: string): Promise<{ match: MatchResult | null; actions: EmitAction[] }> {
+    async function tryMatch(
+        userId: string,
+    ): Promise<{ match: MatchResult | null; actions: EmitAction[] }> {
         const actions: EmitAction[] = [];
         for (let attempt = 0; attempt < MAX_MATCH_ATTEMPTS; attempt++) {
             const partnerId = await store.popOrEnqueue(userId);
@@ -54,12 +56,12 @@ export function createMatchmakingService(
             actions.push({
                 target: partnerSocketId,
                 event: "matched",
-                payload: { roomId, isInitiator: !isInitiator }
+                payload: { roomId, isInitiator: !isInitiator },
             });
 
             return {
                 match: { roomId, isInitiator, peerSocketId: partnerSocketId },
-                actions
+                actions,
             };
         }
 
@@ -71,8 +73,8 @@ export function createMatchmakingService(
     async function handleSearch(socket: AuthedSocket): Promise<EmitAction[]> {
         const { userId } = socket;
 
-        const lockStatus = await store.checkAndLock(userId);
-        if (lockStatus === "MATCHED" || lockStatus === "LOCKED") {
+        const { status, token } = await store.checkAndLock(userId);
+        if (status === "MATCHED" || status === "LOCKED") {
             return [];
         }
 
@@ -90,12 +92,14 @@ export function createMatchmakingService(
                 payload: {
                     roomId: match.roomId,
                     isInitiator: match.isInitiator,
-                }
+                },
             });
 
             return actions;
         } finally {
-            await store.releaseLock(userId);
+            if (token) {
+                await store.releaseLock(userId, token);
+            }
         }
     }
 
@@ -114,7 +118,11 @@ export function createMatchmakingService(
         if (peerId) {
             const peerSocketId = await sessionStore.getUserSocket(peerId);
             if (peerSocketId) {
-                actions.push({ target: peerSocketId, event: "peer-disconnected", payload: undefined });
+                actions.push({
+                    target: peerSocketId,
+                    event: "peer-disconnected",
+                    payload: undefined,
+                });
             }
             await store.clearUserRoom(peerId);
         }

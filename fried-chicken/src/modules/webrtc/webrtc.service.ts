@@ -9,13 +9,20 @@ export interface WebrtcService {
 }
 
 export function createWebrtcService(
-    getPeerSocketId: (userId: string) => Promise<string | null>
+    getPeerSocketId: (userId: string) => Promise<string | null>,
 ): WebrtcService {
-
     function relay(eventName: string, payloadKey: string) {
         return async (socket: AuthedSocket, payloadData: unknown): Promise<EmitAction[]> => {
             const peerSocketId = await getPeerSocketId(socket.userId);
-            return peerSocketId ? [{ target: peerSocketId, event: eventName, payload: { [payloadKey]: payloadData } }] : [];
+            return peerSocketId
+                ? [
+                      {
+                          target: peerSocketId,
+                          event: eventName,
+                          payload: { [payloadKey]: payloadData },
+                      },
+                  ]
+                : [];
         };
     }
 
@@ -31,8 +38,16 @@ export function createWebrtcService(
         if (!peerSocketId) return [];
 
         return [
-            { target: peerSocketId, event: "receive-message", payload: { text: trimmed, fromSelf: false } },
-            { target: socket.id, event: "receive-message", payload: { text: trimmed, fromSelf: true } }
+            {
+                target: peerSocketId,
+                event: "receive-message",
+                payload: { text: trimmed, fromSelf: false },
+            },
+            {
+                target: socket.id,
+                event: "receive-message",
+                payload: { text: trimmed, fromSelf: true },
+            },
         ];
     }
 

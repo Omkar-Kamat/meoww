@@ -19,7 +19,7 @@ describe("socket.server", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
         io = new Server();
         mockTo = vi.fn().mockReturnValue(io);
         mockEmit = vi.fn();
@@ -27,7 +27,7 @@ describe("socket.server", () => {
         io.emit = mockEmit as unknown as typeof io.emit;
 
         mockHandleDisconnect = vi.fn().mockResolvedValue([]);
-        
+
         (matchmakingService.createMatchmakingService as Mock).mockReturnValue({
             handleDisconnect: mockHandleDisconnect,
         } as unknown as ReturnType<typeof matchmakingService.createMatchmakingService>);
@@ -54,7 +54,7 @@ describe("socket.server", () => {
         const disconnectHandler = listeners["disconnect"] as () => void;
 
         mockHandleDisconnect.mockResolvedValue([
-            { target: "socketB", event: "peer-disconnected", payload: undefined }
+            { target: "socketB", event: "peer-disconnected", payload: undefined },
         ]);
 
         disconnectHandler();

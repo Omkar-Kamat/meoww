@@ -120,10 +120,18 @@ export async function markUserVerified(userId: string): Promise<UserDocument> {
 }
 
 export async function createPasswordResetToken(userId: string): Promise<string> {
-    return createToken({ purpose: PASSWORD_RESET_PURPOSE, identifier: userId, ttlMs: PASSWORD_RESET_TTL_MS });
+    return createToken({
+        purpose: PASSWORD_RESET_PURPOSE,
+        identifier: userId,
+        ttlMs: PASSWORD_RESET_TTL_MS,
+    });
 }
 
-export async function consumePasswordResetToken(userId: string, rawToken: string, newPassword: string): Promise<void> {
+export async function consumePasswordResetToken(
+    userId: string,
+    rawToken: string,
+    newPassword: string,
+): Promise<void> {
     const isValid = await consumeToken(PASSWORD_RESET_PURPOSE, userId, rawToken);
 
     if (!isValid) {
@@ -136,8 +144,6 @@ export async function consumePasswordResetToken(userId: string, rawToken: string
         passwordHash: newPasswordHash,
     });
 }
-
-
 
 export async function findUserByEmail(email: string): Promise<UserDocument | null> {
     return UserModel.findOne({ email: email.toLowerCase() });

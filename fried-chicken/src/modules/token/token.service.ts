@@ -15,12 +15,9 @@ interface CreateTokenOptions {
 export async function createToken(options: CreateTokenOptions): Promise<string> {
     const { purpose, identifier, ttlMs, numeric = false } = options;
 
-
     await TokenModel.deleteMany({ purpose, identifier });
 
-    const raw = numeric
-        ? String(randomInt(100_000, 1_000_000))
-        : randomBytes(32).toString("hex");
+    const raw = numeric ? String(randomInt(100_000, 1_000_000)) : randomBytes(32).toString("hex");
 
     const tokenHash = await bcrypt.hash(raw, 10);
 
@@ -38,7 +35,7 @@ export async function createToken(options: CreateTokenOptions): Promise<string> 
 export async function consumeToken(
     purpose: string,
     identifier: string,
-    rawToken: string
+    rawToken: string,
 ): Promise<boolean> {
     const record = await TokenModel.findOne({ purpose, identifier });
 
@@ -51,7 +48,10 @@ export async function consumeToken(
 
     if (record.attempts >= MAX_ATTEMPTS) {
         await record.deleteOne();
-        throw AppError.badRequest("Too many incorrect attempts. Please request a new one.", "TOKEN_LOCKED");
+        throw AppError.badRequest(
+            "Too many incorrect attempts. Please request a new one.",
+            "TOKEN_LOCKED",
+        );
     }
 
     const isMatch = await bcrypt.compare(rawToken, record.tokenHash);

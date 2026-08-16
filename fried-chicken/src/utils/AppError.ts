@@ -7,7 +7,12 @@ export class AppError extends Error {
     public readonly meta: Record<string, unknown>;
     public readonly isOperational: boolean;
 
-    constructor(message: string, statusCode = 400, code?: string, meta: Record<string, unknown> = {}) {
+    constructor(
+        message: string,
+        statusCode = 400,
+        code?: string,
+        meta: Record<string, unknown> = {},
+    ) {
         super(message);
         this.name = "AppError";
         this.statusCode = statusCode;
@@ -18,11 +23,19 @@ export class AppError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 
-    static badRequest(message: string, code?: string, meta: Record<string, unknown> = {}): AppError {
+    static badRequest(
+        message: string,
+        code?: string,
+        meta: Record<string, unknown> = {},
+    ): AppError {
         return new AppError(message, 400, code, meta);
     }
 
-    static unauthorized(message: string, code?: string, meta: Record<string, unknown> = {}): AppError {
+    static unauthorized(
+        message: string,
+        code?: string,
+        meta: Record<string, unknown> = {},
+    ): AppError {
         return new AppError(message, 401, code, meta);
     }
 

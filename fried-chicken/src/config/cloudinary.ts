@@ -65,11 +65,14 @@ export function uploadImageStream(
                     log.info({ publicId: result.public_id }, "Image uploaded via stream");
                     resolve(result);
                 } else {
-                    const err = error instanceof Error ? error : new Error(error?.message ?? "Cloudinary upload failed");
+                    const err =
+                        error instanceof Error
+                            ? error
+                            : new Error(error?.message ?? "Cloudinary upload failed");
                     log.error({ err }, "Image stream upload failed");
                     reject(err);
                 }
-            }
+            },
         );
         stream.end(buffer);
     });

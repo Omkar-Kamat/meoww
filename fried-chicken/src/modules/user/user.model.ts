@@ -42,10 +42,7 @@ const userSchema = new Schema<UserDocument>({
 export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>("User", userSchema);
 
 export function toPublicUser(user: UserDocument): Omit<UserFields, "passwordHash"> {
-    const {
-        passwordHash: _passwordHash,
-        ...safeUser
-    } = user.toObject<UserFields>();
+    const { passwordHash: _passwordHash, ...safeUser } = user.toObject<UserFields>();
     return safeUser;
 }
 

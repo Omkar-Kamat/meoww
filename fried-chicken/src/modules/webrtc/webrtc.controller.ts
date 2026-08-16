@@ -26,15 +26,31 @@ function generateTurnCredentials(userId: string): TurnCredentialsResponse {
     return {
         iceServers: [
             { urls: `stun:${env.TURN_DOMAIN}:${env.TURN_PORT}` },
-            { urls: `turn:${env.TURN_DOMAIN}:${env.TURN_PORT}?transport=udp`, username, credential },
-            { urls: `turn:${env.TURN_DOMAIN}:${env.TURN_PORT}?transport=tcp`, username, credential },
-            { urls: `turns:${env.TURN_DOMAIN}:${env.TURN_TLS_PORT}?transport=tcp`, username, credential },
+            {
+                urls: `turn:${env.TURN_DOMAIN}:${env.TURN_PORT}?transport=udp`,
+                username,
+                credential,
+            },
+            {
+                urls: `turn:${env.TURN_DOMAIN}:${env.TURN_PORT}?transport=tcp`,
+                username,
+                credential,
+            },
+            {
+                urls: `turns:${env.TURN_DOMAIN}:${env.TURN_TLS_PORT}?transport=tcp`,
+                username,
+                credential,
+            },
         ],
         expiresAt,
     };
 }
 
-export async function getTurnCredentials(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function getTurnCredentials(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> {
     try {
         const userId = req.userId;
         if (!userId) {
@@ -56,6 +72,10 @@ export async function getTurnCredentials(req: Request, res: Response, next: Next
         res.json(credentials);
     } catch (err) {
         logError(err, { context: "get-turn-credentials", userId: req.userId });
-        next(err instanceof AppError ? err : AppError.internal("Failed to retrieve TURN credentials"));
+        next(
+            err instanceof AppError
+                ? err
+                : AppError.internal("Failed to retrieve TURN credentials"),
+        );
     }
 }

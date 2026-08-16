@@ -44,7 +44,8 @@ export async function updateUser(id: string, data: UpdateUserInput): Promise<Use
     } catch (err) {
         if (isDuplicateKeyError(err)) {
             const field = Object.keys(err.keyPattern ?? {})[0];
-            if (field === "username") throw AppError.conflict("Username already taken", "USERNAME_TAKEN");
+            if (field === "username")
+                throw AppError.conflict("Username already taken", "USERNAME_TAKEN");
             throw AppError.conflict("Duplicate key error", "DUPLICATE_ERROR");
         }
         throw err;

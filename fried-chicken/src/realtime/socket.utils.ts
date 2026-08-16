@@ -25,7 +25,10 @@ export function safeHandler<Args extends unknown[]>(
                 }
             })
             .catch((err: unknown) => {
-                log.error({ err, userId: socket.userId, event: eventName }, "Error in socket handler");
+                log.error(
+                    { err, userId: socket.userId, event: eventName },
+                    "Error in socket handler",
+                );
                 socket.emit("error", { message: "An unexpected error occurred." });
             });
     };

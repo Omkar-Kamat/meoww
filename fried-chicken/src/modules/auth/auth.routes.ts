@@ -4,7 +4,12 @@
 import express, { type Router } from "express";
 import * as authController from "./auth.controller.js";
 import { upload } from "../../config/cloudinary.js";
-import { authRateLimiter, apiRateLimiter, resetPasswordRateLimiter, otpRateLimiter } from "../../middleware/rateLimit.middleware.js";
+import {
+    authRateLimiter,
+    apiRateLimiter,
+    resetPasswordRateLimiter,
+    otpRateLimiter,
+} from "../../middleware/rateLimit.middleware.js";
 import { validateBody } from "../../middleware/validate.middleware.js";
 import {
     signupSchema,
@@ -89,7 +94,12 @@ router.post(
  *     summary: Reset password using token
  *     tags: [Auth]
  */
-router.post("/reset-password", resetPasswordRateLimiter, validateBody(resetPasswordSchema), authController.resetPassword);
+router.post(
+    "/reset-password",
+    resetPasswordRateLimiter,
+    validateBody(resetPasswordSchema),
+    authController.resetPassword,
+);
 
 /**
  * @swagger

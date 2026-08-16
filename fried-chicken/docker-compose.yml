@@ -1,8 +1,8 @@
 services:
-  turn:
-    image: coturn/coturn:4.6.2-alpine
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - ./infra/turnserver.conf:/etc/coturn/turnserver.conf:ro
-    command: ["-c", "/etc/coturn/turnserver.conf"]
+    turn:
+        image: coturn/coturn:4.6.2-alpine
+        restart: unless-stopped
+        network_mode: host
+        volumes:
+            - ./infra/turnserver.conf:/etc/coturn/turnserver.conf:ro
+        command: ["-c", "/etc/coturn/turnserver.conf"]
