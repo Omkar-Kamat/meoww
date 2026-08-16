@@ -20,11 +20,11 @@ vi.mock("../src/config/redis.js", () => {
     const mockStore = new Map();
     return {
         default: {
-            get: vi.fn(async (k) => mockStore.get(k) ?? null),
-            set: vi.fn(async (k, v) => mockStore.set(k, v)),
-            setEx: vi.fn(async (k, t, v) => mockStore.set(k, v)),
-            del: vi.fn(async (k) => mockStore.delete(k)),
-            sendCommand: vi.fn(async () => []),
+            get: vi.fn((k: string) => Promise.resolve(mockStore.get(k) ?? null)),
+            set: vi.fn((k: string, v: string) => { mockStore.set(k, v); return Promise.resolve("OK"); }),
+            setEx: vi.fn((k: string, t: number, v: string) => { mockStore.set(k, v); return Promise.resolve("OK"); }),
+            del: vi.fn((k: string) => { mockStore.delete(k); return Promise.resolve(1); }),
+            sendCommand: vi.fn(() => Promise.resolve([])),
         },
     };
 });
@@ -32,15 +32,16 @@ vi.mock("../src/config/redis.js", () => {
 // Mock email service
 vi.mock("../src/services/email.service.js", () => {
     return {
-        sendVerificationEmail: vi.fn(async () => {}),
-        sendPasswordResetEmail: vi.fn(async () => {}),
-        sendEmail: vi.fn(async () => {}),
+        sendVerificationEmail: vi.fn(() => Promise.resolve()),
+        sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
+        sendEmail: vi.fn(() => Promise.resolve()),
     };
 });
 
 // Mock rate limiters
 vi.mock("../src/middleware/rateLimit.middleware.js", () => {
-    const dummy = (req: any, res: any, next: any) => next();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dummy = (req: any, res: any, next: () => void) => { next(); };
     return {
         createRateLimiter: vi.fn(() => dummy),
         authRateLimiter: dummy,

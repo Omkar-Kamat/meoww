@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, type Mock } from "vitest";
 import { validateBody } from "../src/middleware/validate.middleware.js";
 import { z } from "zod";
 import type { Request, Response, NextFunction } from "express";
@@ -53,7 +53,7 @@ describe("validateBody middleware", () => {
         middleware(req, res, next);
 
         expect(next).toHaveBeenCalled();
-        const err = (next as any).mock.calls[0][0];
+        const err = (next as Mock).mock.calls[0][0] as AppError;
         expect(err).toBeInstanceOf(AppError);
         expect(err.statusCode).toBe(400);
         expect(err.code).toBe("VALIDATION_ERROR");

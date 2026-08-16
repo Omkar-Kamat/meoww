@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi, type Mock } from "vitest";
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
 import { createApp } from "../src/app.js";
+import type { Express } from "express";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../src/services/email.service.js";
 import UserModel from "../src/modules/user/user.model.js";
 import { TokenModel } from "../src/modules/token/token.model.js";
@@ -11,7 +12,7 @@ import otpModel from "../src/modules/otp/otp.model.js";
 
 describe("Auth Flow", () => {
     let mongoServer: MongoMemoryServer;
-    let app: any;
+    let app: Express;
 
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create();
@@ -41,14 +42,12 @@ describe("Auth Flow", () => {
             password: "password123",
         });
 
-        if (signupRes.status !== 201) {
-            console.error("SIGNUP FAILED:", signupRes.body);
-        }
+
         expect(signupRes.status).toBe(201);
         expect(signupRes.body).toHaveProperty("message");
         
         expect(sendVerificationEmail).toHaveBeenCalled();
-        const code = (sendVerificationEmail as any).mock.calls[0][1];
+        const code = (sendVerificationEmail as Mock).mock.calls[0][1] as string;
 
         // 2. Verify
         const verifyRes = await request(app).post("/api/auth/verify").send({
@@ -57,7 +56,7 @@ describe("Auth Flow", () => {
         });
 
         expect(verifyRes.status).toBe(200);
-        expect(verifyRes.body.user.isVerified).toBe(true);
+        expect((verifyRes.body as { user: { isVerified: boolean } }).user.isVerified).toBe(true);
 
         const cookies = verifyRes.headers["set-cookie"];
         expect(cookies).toBeDefined();
@@ -69,7 +68,7 @@ describe("Auth Flow", () => {
         });
 
         expect(loginRes.status).toBe(200);
-        expect(loginRes.body.user.email).toBe("test@example.com");
+        expect((loginRes.body as { user: { email: string } }).user.email).toBe("test@example.com");
 
         // 4. Forgot Password
         const forgotRes = await request(app).post("/api/auth/forgot-password").send({
@@ -78,7 +77,7 @@ describe("Auth Flow", () => {
 
         expect(forgotRes.status).toBe(200);
         expect(sendPasswordResetEmail).toHaveBeenCalled();
-        const resetLink = (sendPasswordResetEmail as any).mock.calls[0][1];
+        const resetLink = (sendPasswordResetEmail as Mock).mock.calls[0][1] as string;
         
         const url = new URL(resetLink);
         const userId = url.searchParams.get("userId");

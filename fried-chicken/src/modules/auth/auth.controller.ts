@@ -16,8 +16,8 @@ import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../../services/email.service.js";
 import { env } from "../../config/env.js";
 import type { LoginInput, SignupInput } from "./auth.types.js";
-import { resetPasswordSchema } from "./auth.schema.js";
-import { z } from "zod";
+import type { resetPasswordSchema } from "./auth.schema.js";
+import type { z } from "zod";
 
 const isProd = env.NODE_ENV === "production";
 const isCrossSite = env.CROSS_SITE;

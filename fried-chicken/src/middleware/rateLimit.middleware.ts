@@ -5,7 +5,7 @@
 // src/middleware/rateLimit.middleware
 import rateLimit, { ipKeyGenerator, type Options } from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import type { Request, Response, NextFunction } from "express";
+import type { Request } from "express";
 import redisClient from "../config/redis.js";
 import { createModuleLogger } from "../utils/logger.js";
 
@@ -86,7 +86,8 @@ export const resetPasswordRateLimiter = createRateLimiter({
     message: "Too many password reset attempts, please try again later.",
     keyGenerator: (req: Request) => {
         const ip = req.ip ?? "unknown";
-        const email = typeof req.body?.email === "string" ? req.body.email : undefined;
+        const body = req.body as Record<string, unknown> | undefined;
+        const email = typeof body?.email === "string" ? body.email : undefined;
         return email ? `ip:${ip}:email:${email}` : ip;
     },
 });
@@ -98,7 +99,8 @@ export const otpRateLimiter = createRateLimiter({
     message: "Too many OTP requests, please try again later.",
     keyGenerator: (req: Request) => {
         const ip = req.ip ?? "unknown";
-        const identifier = typeof req.body?.identifier === "string" ? req.body.identifier : undefined;
+        const body = req.body as Record<string, unknown> | undefined;
+        const identifier = typeof body?.identifier === "string" ? body.identifier : undefined;
         return identifier ? `ip:${ip}:id:${identifier}` : ip;
     },
 });
