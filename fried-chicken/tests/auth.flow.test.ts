@@ -47,7 +47,7 @@ describe("Auth Flow", () => {
         expect(signupRes.body).toHaveProperty("message");
         
         expect(sendVerificationEmail).toHaveBeenCalled();
-        const code = (sendVerificationEmail as Mock).mock.calls[0][1] as string;
+        const code = (sendVerificationEmail as Mock).mock.calls[0]![1] as string;
 
         // 2. Verify
         const verifyRes = await request(app).post("/api/auth/verify").send({
@@ -77,7 +77,7 @@ describe("Auth Flow", () => {
 
         expect(forgotRes.status).toBe(200);
         expect(sendPasswordResetEmail).toHaveBeenCalled();
-        const resetLink = (sendPasswordResetEmail as Mock).mock.calls[0][1] as string;
+        const resetLink = (sendPasswordResetEmail as Mock).mock.calls[0]![1] as string;
         
         const url = new URL(resetLink);
         const userId = url.searchParams.get("userId");
