@@ -7,6 +7,7 @@
 import type { NextFunction, Request, Response } from "express";
 import type { CookieOptions } from "express";
 import * as userService from "./user.service.js";
+import { toPublicUser } from "./user.model.js";
 import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
 import { AppError } from "../../utils/AppError.js";
 import { env } from "../../config/env.js";
@@ -38,7 +39,7 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
             throw AppError.notFound("User not found");
         }
 
-        res.json({ user });
+        res.json({ user: toPublicUser(user) });
     } catch (err) {
         next(err);
     }
@@ -57,7 +58,7 @@ export async function updateProfile(
             ...(name !== undefined && { name }),
             ...(username !== undefined && { username }),
         });
-        res.json({ user });
+        res.json({ user: toPublicUser(user) });
     } catch (err) {
         next(err);
     }
@@ -74,7 +75,7 @@ export async function uploadAvatar(req: Request, res: Response, next: NextFuncti
         const imageUrl = await uploadBufferToCloudinary(req.file.buffer, req.file.originalname);
         const user = await userService.setAvatar(userId, imageUrl);
 
-        res.json({ user });
+        res.json({ user: toPublicUser(user) });
     } catch (err) {
         next(err);
     }

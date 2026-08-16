@@ -1,55 +1,51 @@
-import type { Server } from "socket.io";
-import * as matchmakingStore from "../matchmaking/matchmaking.store.js";
-import type { AuthedSocket } from "./webrtc.types.js";
+import type { AuthedSocket, EmitAction } from "./webrtc.types.js";
 
 export interface WebrtcService {
-    relayOffer(socket: AuthedSocket, offer: unknown): Promise<void>;
-    relayAnswer(socket: AuthedSocket, answer: unknown): Promise<void>;
-    relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<void>;
-    relayMessage(socket: AuthedSocket, text: string): Promise<void>;
+    relayOffer(socket: AuthedSocket, offer: unknown): Promise<EmitAction[]>;
+    relayAnswer(socket: AuthedSocket, answer: unknown): Promise<EmitAction[]>;
+    relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<EmitAction[]>;
+    relayMessage(socket: AuthedSocket, text: string): Promise<EmitAction[]>;
 }
 
-export function createWebrtcService(io: Server): WebrtcService {
-    async function getPeerSocketId(userId: string): Promise<string | null> {
-        const roomId = await matchmakingStore.getUserRoom(userId);
-        if (!roomId) return null;
+export function createWebrtcService(
+    getPeerSocketId: (userId: string) => Promise<string | null>
+): WebrtcService {
 
-        const peerId = await matchmakingStore.getPeerId(roomId, userId);
-        if (!peerId) return null;
-
-        return matchmakingStore.getUserSocket(peerId);
-    }
-
-    async function relayOffer(socket: AuthedSocket, offer: unknown): Promise<void> {
+    async function relayOffer(socket: AuthedSocket, offer: unknown): Promise<EmitAction[]> {
         const peerSocketId = await getPeerSocketId(socket.userId);
         if (peerSocketId) {
-            io.to(peerSocketId).emit("offer", { offer });
+            return [{ target: peerSocketId, event: "offer", payload: { offer } }];
         }
+        return [];
     }
 
-    async function relayAnswer(socket: AuthedSocket, answer: unknown): Promise<void> {
+    async function relayAnswer(socket: AuthedSocket, answer: unknown): Promise<EmitAction[]> {
         const peerSocketId = await getPeerSocketId(socket.userId);
         if (peerSocketId) {
-            io.to(peerSocketId).emit("answer", { answer });
+            return [{ target: peerSocketId, event: "answer", payload: { answer } }];
         }
+        return [];
     }
 
-    async function relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<void> {
+    async function relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<EmitAction[]> {
         const peerSocketId = await getPeerSocketId(socket.userId);
         if (peerSocketId) {
-            io.to(peerSocketId).emit("ice-candidate", { candidate });
+            return [{ target: peerSocketId, event: "ice-candidate", payload: { candidate } }];
         }
+        return [];
     }
 
-    async function relayMessage(socket: AuthedSocket, text: string): Promise<void> {
+    async function relayMessage(socket: AuthedSocket, text: string): Promise<EmitAction[]> {
         const trimmed = text.trim();
-        if (trimmed.length === 0 || trimmed.length > 500) return;
+        if (trimmed.length === 0 || trimmed.length > 500) return [];
 
         const peerSocketId = await getPeerSocketId(socket.userId);
-        if (!peerSocketId) return;
+        if (!peerSocketId) return [];
 
-        io.to(peerSocketId).emit("receive-message", { text: trimmed, fromSelf: false });
-        io.to(socket.id).emit("receive-message", { text: trimmed, fromSelf: true });
+        return [
+            { target: peerSocketId, event: "receive-message", payload: { text: trimmed, fromSelf: false } },
+            { target: socket.id, event: "receive-message", payload: { text: trimmed, fromSelf: true } }
+        ];
     }
 
     return {

@@ -11,6 +11,8 @@ import { socketAuthMiddleware } from "./socket.auth.js";
 import { createModuleLogger } from "../utils/logger.js";
 import * as matchmakingService from "../modules/matchmaking/matchmaking.service.js";
 import * as webrtcService from "../modules/webrtc/webrtc.service.js";
+import * as sessionStore from "./session.store.js";
+import * as matchmakingStore from "../modules/matchmaking/matchmaking.store.js";
 import { registerMatchmakingHandlers } from "../modules/matchmaking/matchmaking.gateway.js";
 import { registerWebrtcHandlers } from "../modules/webrtc/webrtc.gateway.js";
 
@@ -49,8 +51,22 @@ async function attachRedisAdapter(io: Server): Promise<void> {
 }
 
 export function mountGateways(io: Server): void {
-    const mmService = matchmakingService.createMatchmakingService(io);
-    const rtcService = webrtcService.createWebrtcService(io);
+    async function checkSocketLive(socketId: string): Promise<boolean> {
+        const liveSockets = await io.in(socketId).fetchSockets();
+        return liveSockets.length > 0;
+    }
+
+    const mmService = matchmakingService.createMatchmakingService(checkSocketLive);
+    
+    async function getPeerSocketId(userId: string): Promise<string | null> {
+        const roomId = await matchmakingStore.getUserRoom(userId);
+        if (!roomId) return null;
+        const peerId = await matchmakingStore.getPeerId(roomId, userId);
+        if (!peerId) return null;
+        return sessionStore.getUserSocket(peerId);
+    }
+
+    const rtcService = webrtcService.createWebrtcService(getPeerSocketId);
 
     io.on("connection", (socket: Socket) => {
         log.info({ userId: socket.userId }, "User connected");
@@ -70,13 +86,13 @@ export function mountGateways(io: Server): void {
 async function handleConnectionSetup(io: Server, socket: Socket): Promise<void> {
     if (!socket.userId) return;
 
-    const oldSocketId = await redisClient.get(`mm:usersocket:${socket.userId}`);
+    const oldSocketId = await sessionStore.getUserSocket(socket.userId);
     if (oldSocketId && oldSocketId !== socket.id) {
         io.to(oldSocketId).emit("session-terminated", { reason: "another_session_detected" });
         io.in(oldSocketId).disconnectSockets(true);
     }
 
-    await redisClient.set(`mm:usersocket:${socket.userId}`, socket.id);
+    await sessionStore.setUserSocket(socket.userId, socket.id);
 
     scheduleTokenExpiry(socket);
 }

@@ -34,6 +34,7 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
+    userId: z.string().length(24).regex(/^[0-9a-f]+$/),
     token: z
         .string()
         .length(64, "Invalid reset token")

@@ -16,6 +16,7 @@ import swaggerSpec from "./config/swagger.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import otpRoutes from "./modules/otp/otp.routes.js";
+import webrtcRoutes from "./modules/webrtc/webrtc.routes.js";
 import { httpLogger, createModuleLogger } from "./utils/logger.js";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware.js";
 import { env } from "./config/env.js";
@@ -90,6 +91,7 @@ export function createApp(): Application {
     app.use("/api/auth", authRoutes);
     app.use("/api/users", userRoutes);
     app.use("/api/otp", otpRoutes);
+    app.use("/api/webrtc", webrtcRoutes);
 
     registerHealthRoutes(app);
 

@@ -8,9 +8,8 @@
 // setUserRoom(userId: string, roomId: string): Promise<void>
 // getUserRoom(userId: string): Promise<string | null>
 // clearUserRoom(userId: string): Promise<void>
-// setUserSocket(userId: string, socketId: string): Promise<void>
-// getUserSocket(userId: string): Promise<string | null>
-// clearUserSocket(userId: string): Promise<void>
+// getUserRoom(userId: string): Promise<string | null>
+// clearUserRoom(userId: string): Promise<void>
 
 // src/modules/matchmaking/matchmaking.store.ts
 import { v4 as uuidv4 } from "uuid";
@@ -24,7 +23,6 @@ const ROOM_TTL_SECONDS = 86400; // 24h
 
 const roomKey = (id: string): string => `mm:room:${id}`;
 const userRoomKey = (id: string): string => `mm:userroom:${id}`;
-const userSocketKey = (id: string): string => `mm:usersocket:${id}`;
 
 export async function addToQueue(userId: string): Promise<void> {
     await redisClient.sAdd(QUEUE_KEY, userId);
@@ -34,21 +32,7 @@ export async function removeFromQueue(userId: string): Promise<void> {
     await redisClient.sRem(QUEUE_KEY, userId);
 }
 
-export async function popFromQueue(): Promise<string | null> {
-    const result = await redisClient.sPop(QUEUE_KEY);
-    return result ?? null;
-}
 
-export async function createRoom(userA: string, userB: string): Promise<string> {
-    const roomId = uuidv4();
-
-    await Promise.all([
-        redisClient.hSet(roomKey(roomId), { user1: userA, user2: userB }),
-        redisClient.expire(roomKey(roomId), ROOM_TTL_SECONDS),
-    ]);
-
-    return roomId;
-}
 
 export async function getRoom(roomId: string): Promise<RoomRecord | null> {
     const room = await redisClient.hGetAll(roomKey(roomId));
@@ -80,18 +64,7 @@ export async function clearUserRoom(userId: string): Promise<void> {
     await redisClient.del(userRoomKey(userId));
 }
 
-export async function setUserSocket(userId: string, socketId: string): Promise<void> {
-    await redisClient.set(userSocketKey(userId), socketId);
-}
 
-export async function getUserSocket(userId: string): Promise<string | null> {
-    const result = await redisClient.get(userSocketKey(userId));
-    return result ?? null;
-}
-
-export async function clearUserSocket(userId: string): Promise<void> {
-    await redisClient.del(userSocketKey(userId));
-}
 
 export async function popOrEnqueue(userId: string): Promise<string | null> {
     const result = await redisClient.eval(POP_OR_ENQUEUE_SCRIPT, {

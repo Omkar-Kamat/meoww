@@ -7,108 +7,127 @@
 
 // src/modules/matchmaking/matchmaking.service.ts
 import * as store from "./matchmaking.store.js";
+import * as sessionStore from "../../realtime/session.store.js";
 import { createModuleLogger } from "../../utils/logger.js";
-import type { AuthedSocket, MatchResult } from "./matchmaking.types.js";
-import type { Server } from "socket.io";
+import type { AuthedSocket, MatchResult, EmitAction } from "./matchmaking.types.js";
 
 const log = createModuleLogger("matchmaking");
 
 export interface MatchmakingService {
-    tryMatch(userId: string): Promise<MatchResult | null>;
-    handleSearch(socket: AuthedSocket): Promise<void>;
-    handleCancelSearch(userId: string): Promise<void>;
-    handleLeaveRoom(userId: string): Promise<void>;
-    fullCleanup(userId: string): Promise<void>;
-    handleDisconnect(userId: string): Promise<void>;
+    tryMatch(userId: string): Promise<{ match: MatchResult | null; actions: EmitAction[] }>;
+    handleSearch(socket: AuthedSocket): Promise<EmitAction[]>;
+    handleCancelSearch(userId: string): Promise<EmitAction[]>;
+    handleLeaveRoom(userId: string): Promise<EmitAction[]>;
+    fullCleanup(userId: string): Promise<EmitAction[]>;
+    handleDisconnect(userId: string): Promise<EmitAction[]>;
 }
 
-export function createMatchmakingService(io: Server): MatchmakingService {
+export function createMatchmakingService(
+    checkSocketLive: (socketId: string) => Promise<boolean>
+): MatchmakingService {
     const MAX_MATCH_ATTEMPTS = 5;
 
-    async function tryMatch(userId: string): Promise<MatchResult | null> {
+    async function tryMatch(userId: string): Promise<{ match: MatchResult | null; actions: EmitAction[] }> {
+        const actions: EmitAction[] = [];
         for (let attempt = 0; attempt < MAX_MATCH_ATTEMPTS; attempt++) {
             const partnerId = await store.popOrEnqueue(userId);
 
             if (!partnerId) {
-                return null;
+                return { match: null, actions };
             }
 
-            const partnerSocketId = await store.getUserSocket(partnerId);
+            const partnerSocketId = await sessionStore.getUserSocket(partnerId);
             if (!partnerSocketId) {
                 continue;
             }
 
-            const liveSockets = await io.in(partnerSocketId).fetchSockets();
-            if (liveSockets.length === 0) {
-                await store.clearUserSocket(partnerId);
+            const isLive = await checkSocketLive(partnerSocketId);
+            if (!isLive) {
+                await sessionStore.clearUserSocket(partnerId);
                 continue;
             }
 
             const roomId = await store.createRoomAtomic(userId, partnerId);
             const isInitiator = Math.random() > 0.5;
 
-            io.to(partnerSocketId).emit("matched", { roomId, isInitiator: !isInitiator });
+            actions.push({
+                target: partnerSocketId,
+                event: "matched",
+                payload: { roomId, isInitiator: !isInitiator }
+            });
 
-            return { roomId, isInitiator, peerSocketId: partnerSocketId };
+            return {
+                match: { roomId, isInitiator, peerSocketId: partnerSocketId },
+                actions
+            };
         }
 
         await store.addToQueue(userId);
         log.warn({ userId, attempts: MAX_MATCH_ATTEMPTS }, "tryMatch exhausted retries, queued");
-        return null;
+        return { match: null, actions: [] };
     }
 
-    async function handleSearch(socket: AuthedSocket): Promise<void> {
+    async function handleSearch(socket: AuthedSocket): Promise<EmitAction[]> {
         const { userId } = socket;
 
-        await store.setUserSocket(userId, socket.id);
-
         const [existingRoom] = await Promise.all([store.getUserRoom(userId)]);
-        if (existingRoom) return;
+        if (existingRoom) return [];
 
-        const match = await tryMatch(userId);
+        const { match, actions } = await tryMatch(userId);
 
         if (!match) {
-            io.to(socket.id).emit("queued", {});
-            return;
+            actions.push({ target: socket.id, event: "queued", payload: {} });
+            return actions;
         }
 
-        io.to(socket.id).emit("matched", {
-            roomId: match.roomId,
-            isInitiator: match.isInitiator,
+        actions.push({
+            target: socket.id,
+            event: "matched",
+            payload: {
+                roomId: match.roomId,
+                isInitiator: match.isInitiator,
+            }
         });
+
+        return actions;
     }
 
-    async function handleCancelSearch(userId: string): Promise<void> {
+    async function handleCancelSearch(userId: string): Promise<EmitAction[]> {
         await store.removeFromQueue(userId);
+        return [];
     }
 
-    async function handleLeaveRoom(userId: string): Promise<void> {
+    async function handleLeaveRoom(userId: string): Promise<EmitAction[]> {
+        const actions: EmitAction[] = [];
         const roomId = await store.getUserRoom(userId);
-        if (!roomId) return;
+        if (!roomId) return actions;
 
         const peerId = await store.getPeerId(roomId, userId);
 
         if (peerId) {
-            const peerSocketId = await store.getUserSocket(peerId);
+            const peerSocketId = await sessionStore.getUserSocket(peerId);
             if (peerSocketId) {
-                io.to(peerSocketId).emit("peer-disconnected");
+                actions.push({ target: peerSocketId, event: "peer-disconnected", payload: undefined });
             }
             await store.clearUserRoom(peerId);
         }
 
         await store.deleteRoom(roomId);
         await store.clearUserRoom(userId);
+        return actions;
     }
 
-    async function fullCleanup(userId: string): Promise<void> {
+    async function fullCleanup(userId: string): Promise<EmitAction[]> {
         await store.removeFromQueue(userId);
-        await handleLeaveRoom(userId);
-        await store.clearUserSocket(userId);
+        const actions = await handleLeaveRoom(userId);
+        await sessionStore.clearUserSocket(userId);
+        return actions;
     }
 
-    async function handleDisconnect(userId: string): Promise<void> {
-        await fullCleanup(userId);
+    async function handleDisconnect(userId: string): Promise<EmitAction[]> {
+        const actions = await fullCleanup(userId);
         log.info({ userId }, "User disconnected, cleanup complete");
+        return actions;
     }
 
     return {

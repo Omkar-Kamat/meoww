@@ -5,7 +5,7 @@
 // src/middleware/rateLimit.middleware
 import rateLimit, { ipKeyGenerator, type Options } from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import type { Request } from "express";
+import type { Request, Response, NextFunction } from "express";
 import redisClient from "../config/redis.js";
 import { createModuleLogger } from "../utils/logger.js";
 
@@ -17,6 +17,7 @@ interface RateLimitOptions {
     max: number;
     message: string;
     perUser?: boolean;
+    keyGenerator?: (req: Request) => string;
 }
 
 function makeStore(name: string): RedisStore {
@@ -35,13 +36,17 @@ function makeKeyGenerator(perUser: boolean) {
     };
 }
 
-export function createRateLimiter(options: RateLimitOptions): ReturnType<typeof rateLimit> {
-    const { name, windowMs, max, message, perUser = false } = options;
+export function createRateLimiter(options: RateLimitOptions): any {
+    if (process.env.NODE_ENV === "test") {
+        return (req: Request, res: Response, next: NextFunction) => next();
+    }
+
+    const { name, windowMs, max, message, perUser = false, keyGenerator } = options;
 
     const config: Partial<Options> = {
         windowMs,
         max,
-        keyGenerator: makeKeyGenerator(perUser),
+        keyGenerator: keyGenerator ?? makeKeyGenerator(perUser),
         standardHeaders: true,
         legacyHeaders: false,
         // NOTE: requires redisClient.connect() to have been called before
@@ -76,4 +81,28 @@ export const authRateLimiter = createRateLimiter({
     max: 5,
     message: "Too many attempts, please try again in 15 minutes.",
     perUser: false,
+});
+
+export const resetPasswordRateLimiter = createRateLimiter({
+    name: "reset-password",
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: "Too many password reset attempts, please try again later.",
+    keyGenerator: (req: Request) => {
+        const ip = req.ip ?? "unknown";
+        const email = typeof req.body?.email === "string" ? req.body.email : undefined;
+        return email ? `ip:${ip}:email:${email}` : ip;
+    },
+});
+
+export const otpRateLimiter = createRateLimiter({
+    name: "otp",
+    windowMs: 15 * 60 * 1000,
+    max: 5, // OTP resends are sensitive, limit to 5 per 15 min per IP/email
+    message: "Too many OTP requests, please try again later.",
+    keyGenerator: (req: Request) => {
+        const ip = req.ip ?? "unknown";
+        const email = typeof req.body?.email === "string" ? req.body.email : undefined;
+        return email ? `ip:${ip}:email:${email}` : ip;
+    },
 });

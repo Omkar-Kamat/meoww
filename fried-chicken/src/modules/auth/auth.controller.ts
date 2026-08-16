@@ -9,12 +9,14 @@
 import type { CookieOptions, NextFunction, Request, Response } from "express";
 import * as authService from "./auth.service.js";
 import * as otpService from "../otp/otp.service.js";
-import type { UserDocument, UserFields } from "../user/user.model.js";
+import { type UserDocument, type UserFields, toPublicUser } from "../user/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
-import { sendVerificationEmail } from "../../services/email.service.js";
+import { sendVerificationEmail, sendPasswordResetEmail } from "../../services/email.service.js";
 import { env } from "../../config/env.js";
 import type { LoginInput, SignupInput } from "./auth.types.js";
+import { resetPasswordSchema } from "./auth.schema.js";
+import { z } from "zod";
 
 const isProd = env.NODE_ENV === "production";
 const isCrossSite = env.CROSS_SITE;
@@ -39,15 +41,6 @@ function setAuthCookies(res: Response, accessToken: string, refreshToken: string
         ...COOKIE_OPTIONS,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-}
-
-function sanitizeUser(user: UserDocument): Omit<UserFields, "passwordHash" | "refreshTokenHash"> {
-    const {
-        passwordHash: _passwordHash,
-        refreshTokenHash: _refreshTokenHash,
-        ...safeUser
-    } = user.toObject<UserFields>();
-    return safeUser;
 }
 
 /**
@@ -96,14 +89,14 @@ export async function verifySignupOtp(
     next: NextFunction,
 ): Promise<void> {
     try {
-        const { email, code } = req.body as { email: string; code: string };
+        const { identifier, code } = req.body as { identifier: string; code: string };
 
-        const isValid = await otpService.verifyOtp(email, code);
+        const isValid = await otpService.verifyOtp(identifier, code);
         if (!isValid) {
             throw AppError.badRequest("Invalid or expired code.", "INVALID_OTP");
         }
 
-        const user = await authService.findUserByEmail(email);
+        const user = await authService.findUserByEmail(identifier);
         if (!user) {
             throw AppError.notFound("User not found");
         }
@@ -114,7 +107,7 @@ export async function verifySignupOtp(
         const refreshToken = authService.generateRefreshToken(String(verifiedUser._id));
         setAuthCookies(res, accessToken, refreshToken);
 
-        res.json({ message: "Email verified.", user: sanitizeUser(verifiedUser) });
+        res.json({ message: "Email verified.", user: toPublicUser(verifiedUser) });
     } catch (err) {
         next(err);
     }
@@ -129,9 +122,9 @@ export async function resendSignupOtp(
     next: NextFunction,
 ): Promise<void> {
     try {
-        const { email } = req.body as { email: string };
+        const { identifier } = req.body as { identifier: string };
 
-        const user = await authService.findUserByEmail(email);
+        const user = await authService.findUserByEmail(identifier);
         // Same "don't leak account existence" pattern as forgotPassword
         if (user && !user.isVerified) {
             const code = await otpService.generateOtp(user.email);
@@ -153,7 +146,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
         const accessToken = authService.generateAccessToken(String(user._id));
         const refreshToken = authService.generateRefreshToken(String(user._id));
         setAuthCookies(res, accessToken, refreshToken);
-        res.json({ user: sanitizeUser(user) });
+        res.json({ user: toPublicUser(user) });
     } catch (err) {
         next(err);
     }
@@ -192,7 +185,14 @@ export async function forgotPassword(
         const user = await authService.findUserByEmail(email);
 
         if (user) {
-            await authService.createPasswordResetToken(String(user._id));
+            const token = await authService.createPasswordResetToken(String(user._id));
+            const frontendUrl = env.FRONTEND_URL ?? "http://localhost:3000";
+            const resetLink = `${frontendUrl}/reset-password?userId=${user._id}&token=${token}`;
+            try {
+                await sendPasswordResetEmail(user.email, resetLink);
+            } catch (err) {
+                // Swallow email errors so we don't leak account existence
+            }
         }
 
         res.json({
@@ -209,7 +209,7 @@ export async function resetPassword(
     next: NextFunction,
 ): Promise<void> {
     try {
-        const { userId, token, password } = req.body as { userId: string,token: string; password: string };
+        const { userId, token, password } = req.body as z.infer<typeof resetPasswordSchema>;
         await authService.consumePasswordResetToken(userId, token, password);
 
         res.clearCookie("access_token", CLEAR_COOKIE_OPTIONS);

@@ -9,3 +9,8 @@ declare module "socket.io" {
         tokenExpiryTimer?: NodeJS.Timeout | undefined;
     }
 }
+
+export interface AuthedSocket {
+    id: string;
+    userId: string;
+}

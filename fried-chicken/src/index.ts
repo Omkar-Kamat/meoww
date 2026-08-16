@@ -8,8 +8,6 @@ try {
     await import("./config/env.js");
 } catch (err) {
     // eslint-disable-next-line no-console
-    console.error("\n❌ Invalid environment variables:\n");
-    // eslint-disable-next-line no-console
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
 }

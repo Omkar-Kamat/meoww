@@ -3,20 +3,32 @@
 import type { Socket } from "socket.io";
 import type { MatchmakingService } from "./matchmaking.service.js";
 import { createModuleLogger } from "../../utils/logger.js";
-import type { AuthedSocket } from "./matchmaking.types.js";
+import type { AuthedSocket, EmitAction } from "./matchmaking.types.js";
 
 const log = createModuleLogger("matchmaking-gateway");
 
 function safeHandler<Args extends unknown[]>(
     socket: Socket,
     eventName: string,
-    fn: (...args: Args) => Promise<void>,
+    fn: (...args: Args) => Promise<EmitAction[] | void>,
 ) {
     return (...args: Args): void => {
-        fn(...args).catch((err: unknown) => {
-            log.error({ err, userId: socket.userId, event: eventName }, "Error in socket handler");
-            socket.emit("error", { message: "An unexpected error occurred." });
-        });
+        fn(...args)
+            .then((actions) => {
+                if (actions && Array.isArray(actions)) {
+                    for (const action of actions) {
+                        if (action.target === socket.id) {
+                            socket.emit(action.event, action.payload);
+                        } else {
+                            socket.to(action.target).emit(action.event, action.payload);
+                        }
+                    }
+                }
+            })
+            .catch((err: unknown) => {
+                log.error({ err, userId: socket.userId, event: eventName }, "Error in socket handler");
+                socket.emit("error", { message: "An unexpected error occurred." });
+            });
     };
 }
 

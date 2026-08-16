@@ -43,4 +43,13 @@ const userSchema = new Schema<UserDocument>({
 
 export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>("User", userSchema);
 
+export function toPublicUser(user: UserDocument): Omit<UserFields, "passwordHash" | "refreshTokenHash"> {
+    const {
+        passwordHash: _passwordHash,
+        refreshTokenHash: _refreshTokenHash,
+        ...safeUser
+    } = user.toObject<UserFields>();
+    return safeUser;
+}
+
 export default UserModel;

@@ -1,0 +1,1309 @@
+
+ RUN  v4.1.10 /home/rythm/Desktop/meoww/fried-chicken
+
+[2026-08-16 21:50:11.340 +0530] [32mINFO[39m: [36m[CORS] Allowed origins loaded[39m
+    [35mmodule[39m: "CORS"
+    [35mallowedOrigins[39m: [
+      "http://localhost:3000"
+    ]
+[2026-08-16 21:50:14.365 +0530] [32mINFO[39m: [36m[app] Swagger docs available at /api-docs[39m
+    [35mmodule[39m: "app"
+[2026-08-16 21:50:18.096 +0530] [31mERROR[39m: [36m[] Request failed with status code 401[39m
+    [35mcontext[39m: "send-email"
+    [35mto[39m: "test@example.com"
+    [35msubject[39m: "Your Meoww verification code"
+    err: {
+      "code": "ERR_BAD_REQUEST",
+      "config": {
+        "adapter": [
+          "xhr",
+          "http",
+          "fetch"
+        ],
+        "allowAbsoluteUrls": true,
+        "baseURL": "https://api.brevo.com/v3",
+        "data": "{\"sender\":{\"name\":\"Meoww\",\"email\":\"test@example.com\"},\"to\":[{\"email\":\"test@example.com\"}],\"subject\":\"Your Meoww verification code\",\"htmlContent\":\"\\n    <div style=\\\"font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #ffffff;\\\">\\n        <h2 style=\\\"color: #1B1A55; margin-top: 0;\\\">Meoww</h2>\\n        \\n        <h3 style=\\\"color: #1B1A55;\\\">Verify your account</h3>\\n        <p>Your one-time verification code is:</p>\\n        <div style=\\\"\\n            display: inline-block;\\n            letter-spacing: 8px;\\n            color: #535C91;\\n            font-size: 36px;\\n            font-weight: bold;\\n            margin: 16px 0;\\n        \\\">626059</div>\\n        <p style=\\\"color: #888; font-size: 13px;\\\">\\n            This code expires in <strong>10 minutes</strong>. Do not share it with anyone.\\n        </p>\\n    \\n        <p style=\\\"color: #aaa; font-size: 12px; margin-top: 32px;\\\">\\n            If you didn't request this, you can safely ignore this email.\\n        </p>\\n    </div>\\n\"}",
+        "env": {},
+        "headers": {
+          "Accept": "application/json",
+          "Accept-Encoding": "gzip, compress, deflate, br",
+          "Content-Length": "1032",
+          "Content-Type": "application/json",
+          "User-Agent": "axios/1.19.0",
+          "api-key": "mockkey"
+        },
+        "maxBodyLength": -1,
+        "maxContentLength": -1,
+        "method": "post",
+        "timeout": 0,
+        "transformRequest": [
+          null
+        ],
+        "transformResponse": [
+          null
+        ],
+        "transitional": {
+          "advertiseZstdAcceptEncoding": false,
+          "clarifyTimeoutError": false,
+          "forcedJSONParsing": true,
+          "legacyInterceptorReqResOrdering": true,
+          "silentJSONParsing": true,
+          "validateStatusUndefinedResolves": true
+        },
+        "url": "/smtp/email",
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN"
+      },
+      "isAxiosError": true,
+      "message": "Request failed with status code 401",
+      "name": "AxiosError",
+      "request": {
+        "_closed": true,
+        "_contentLength": 1032,
+        "_defaultKeepAlive": true,
+        "_ended": true,
+        "_events": {},
+        "_eventsCount": 7,
+        "_hasBody": true,
+        "_header": "POST /v3/smtp/email HTTP/1.1\r\nAccept: application/json\r\nContent-Type: application/json\r\napi-key: mockkey\r\nUser-Agent: axios/1.19.0\r\nContent-Length: 1032\r\nAccept-Encoding: gzip, compress, deflate, br\r\nHost: api.brevo.com\r\nConnection: keep-alive\r\n\r\n",
+        "_headerSent": true,
+        "_keepAliveTimeout": 0,
+        "_last": false,
+        "_redirectable": {
+          "_currentRequest": "[Circular]",
+          "_currentUrl": "https://api.brevo.com/v3/smtp/email",
+          "_ended": true,
+          "_ending": true,
+          "_events": {
+            "socket": [
+              null,
+              null
+            ]
+          },
+          "_eventsCount": 4,
+          "_headerFilter": {},
+          "_options": {
+            "agents": {},
+            "beforeRedirects": {},
+            "headers": {
+              "Accept": "application/json",
+              "Accept-Encoding": "gzip, compress, deflate, br",
+              "Content-Length": "1032",
+              "Content-Type": "application/json",
+              "User-Agent": "axios/1.19.0",
+              "api-key": "mockkey"
+            },
+            "hostname": "api.brevo.com",
+            "insecureHTTPParser": false,
+            "maxBodyLength": null,
+            "maxRedirects": 21,
+            "method": "POST",
+            "nativeProtocols": {
+              "http:": "[Object]",
+              "https:": "[Object]"
+            },
+            "path": "/v3/smtp/email",
+            "pathname": "/v3/smtp/email",
+            "port": "",
+            "protocol": "https:",
+            "sensitiveHeaders": []
+          },
+          "_redirectCount": 0,
+          "_redirects": [],
+          "_requestBodyBuffers": [],
+          "_requestBodyLength": 1032,
+          "_timeout": null,
+          "_writableState": {
+            "bufferedIndex": 0,
+            "corked": 0,
+            "highWaterMark": 65536,
+            "length": 0,
+            "pendingcb": 0,
+            "writelen": 0
+          }
+        },
+        "_removedConnection": false,
+        "_removedContLen": false,
+        "_removedTE": false,
+        "_trailer": "",
+        "aborted": false,
+        "agent": {
+          "_events": {},
+          "_eventsCount": 2,
+          "_sessionCache": {
+            "list": [],
+            "map": {}
+          },
+          "agentKeepAliveTimeoutBuffer": 1000,
+          "defaultPort": 443,
+          "freeSockets": {
+            "api.brevo.com:443:::::::::::::::::::::": [
+              "[Object]"
+            ]
+          },
+          "keepAlive": true,
+          "keepAliveMsecs": 1000,
+          "maxCachedSessions": 100,
+          "maxFreeSockets": 256,
+          "maxSockets": null,
+          "maxTotalSockets": null,
+          "options": {
+            "defaultPort": 443,
+            "keepAlive": true,
+            "noDelay": true,
+            "path": null,
+            "protocol": "https:",
+            "scheduling": "lifo",
+            "timeout": 5000
+          },
+          "protocol": "https:",
+          "requests": {},
+          "scheduling": "lifo",
+          "sockets": {},
+          "totalSocketCount": 1
+        },
+        "chunkedEncoding": false,
+        "destroyed": true,
+        "finished": true,
+        "host": "api.brevo.com",
+        "insecureHTTPParser": false,
+        "maxHeadersCount": null,
+        "maxRequestsOnConnectionReached": false,
+        "method": "POST",
+        "outputData": [],
+        "outputSize": 0,
+        "parser": null,
+        "protocol": "https:",
+        "res": {
+          "_consuming": false,
+          "_dumped": false,
+          "_events": {
+            "end": [
+              null,
+              null
+            ]
+          },
+          "_eventsCount": 4,
+          "_readableState": {
+            "awaitDrainWriters": null,
+            "buffer": [],
+            "bufferIndex": 0,
+            "highWaterMark": 65536,
+            "length": 0,
+            "pipes": []
+          },
+          "aborted": false,
+          "client": {
+            "_SNICallback": null,
+            "_closeAfterHandlingError": false,
+            "_controlReleased": true,
+            "_events": {
+              "close": "[Array]",
+              "error": "[Array]",
+              "newListener": "[Array]",
+              "timeout": "[Array]"
+            },
+            "_eventsCount": 9,
+            "_hadError": false,
+            "_host": "api.brevo.com",
+            "_httpMessage": null,
+            "_newSessionPending": false,
+            "_parent": null,
+            "_pendingData": null,
+            "_pendingEncoding": "",
+            "_readableState": {
+              "awaitDrainWriters": null,
+              "buffer": [],
+              "bufferIndex": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pipes": []
+            },
+            "_rejectUnauthorized": true,
+            "_requestCert": true,
+            "_secureEstablished": true,
+            "_securePending": false,
+            "_server": null,
+            "_sockname": null,
+            "_tlsOptions": {
+              "isServer": false,
+              "keepAlive": true,
+              "keepAliveInitialDelay": 1000,
+              "noDelay": true,
+              "pipe": false,
+              "rejectUnauthorized": true,
+              "requestCert": true,
+              "secureContext": "[Object]"
+            },
+            "_writableState": {
+              "bufferedIndex": 0,
+              "corked": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pendingcb": 0,
+              "writelen": 0
+            },
+            "allowHalfOpen": false,
+            "alpnProtocol": false,
+            "authorizationError": null,
+            "authorized": true,
+            "autoSelectFamilyAttemptedAddresses": [
+              "2a06:98c1:3200::90:82:443",
+              "141.101.90.107:443",
+              "2a06:98c1:3200::90:80:443",
+              "141.101.90.106:443",
+              "2a06:98c1:3200::90:81:443",
+              "141.101.90.104:443",
+              "2a06:98c1:3200::90:83:443",
+              "141.101.90.105:443"
+            ],
+            "connecting": false,
+            "encrypted": true,
+            "handle": {
+              "_parent": "[Object]",
+              "_parentWrap": null,
+              "_secureContext": "[Object]",
+              "reading": true
+            },
+            "parser": null,
+            "secureConnecting": false,
+            "servername": "api.brevo.com",
+            "ssl": null,
+            "timeout": 5000
+          },
+          "complete": true,
+          "httpVersion": "1.1",
+          "httpVersionMajor": 1,
+          "httpVersionMinor": 1,
+          "method": null,
+          "rawHeaders": [
+            "Date",
+            "Sun, 16 Aug 2026 16:20:18 GMT",
+            "Content-Type",
+            "application/json",
+            "Content-Length",
+            "50",
+            "Connection",
+            "keep-alive",
+            "access-control-allow-credentials",
+            "true",
+            "sib-request-id",
+            "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+            "access-control-allow-origin",
+            "*",
+            "access-control-allow-headers",
+            "*",
+            "access-control-allow-methods",
+            "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+            "x-envoy-upstream-service-time",
+            "4",
+            "server",
+            "cloudflare",
+            "cf-cache-status",
+            "DYNAMIC",
+            "CF-RAY",
+            "a2c1c3fcd89c8d72-HEL"
+          ],
+          "rawTrailers": [],
+          "redirects": [],
+          "req": "[Circular]",
+          "responseUrl": "https://api.brevo.com/v3/smtp/email",
+          "socket": null,
+          "statusCode": 401,
+          "statusMessage": "Unauthorized",
+          "upgrade": false,
+          "url": ""
+        },
+        "reusedSocket": false,
+        "sendDate": false,
+        "shouldKeepAlive": true,
+        "strictContentLength": false,
+        "timeoutCb": null,
+        "upgradeOrConnect": false,
+        "useChunkedEncodingByDefault": true,
+        "writable": true
+      },
+      "response": {
+        "config": {
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "allowAbsoluteUrls": true,
+          "baseURL": "https://api.brevo.com/v3",
+          "data": "{\"sender\":{\"name\":\"Meoww\",\"email\":\"test@example.com\"},\"to\":[{\"email\":\"test@example.com\"}],\"subject\":\"Your Meoww verification code\",\"htmlContent\":\"\\n    <div style=\\\"font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #ffffff;\\\">\\n        <h2 style=\\\"color: #1B1A55; margin-top: 0;\\\">Meoww</h2>\\n        \\n        <h3 style=\\\"color: #1B1A55;\\\">Verify your account</h3>\\n        <p>Your one-time verification code is:</p>\\n        <div style=\\\"\\n            display: inline-block;\\n            letter-spacing: 8px;\\n            color: #535C91;\\n            font-size: 36px;\\n            font-weight: bold;\\n            margin: 16px 0;\\n        \\\">626059</div>\\n        <p style=\\\"color: #888; font-size: 13px;\\\">\\n            This code expires in <strong>10 minutes</strong>. Do not share it with anyone.\\n        </p>\\n    \\n        <p style=\\\"color: #aaa; font-size: 12px; margin-top: 32px;\\\">\\n            If you didn't request this, you can safely ignore this email.\\n        </p>\\n    </div>\\n\"}",
+          "env": {},
+          "headers": {
+            "Accept": "application/json",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Content-Length": "1032",
+            "Content-Type": "application/json",
+            "User-Agent": "axios/1.19.0",
+            "api-key": "mockkey"
+          },
+          "maxBodyLength": -1,
+          "maxContentLength": -1,
+          "method": "post",
+          "timeout": 0,
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "transitional": {
+            "advertiseZstdAcceptEncoding": false,
+            "clarifyTimeoutError": false,
+            "forcedJSONParsing": true,
+            "legacyInterceptorReqResOrdering": true,
+            "silentJSONParsing": true,
+            "validateStatusUndefinedResolves": true
+          },
+          "url": "/smtp/email",
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN"
+        },
+        "data": {
+          "code": "unauthorized",
+          "message": "Key not found"
+        },
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-headers": "*",
+          "access-control-allow-methods": "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+          "access-control-allow-origin": "*",
+          "cf-cache-status": "DYNAMIC",
+          "cf-ray": "a2c1c3fcd89c8d72-HEL",
+          "connection": "keep-alive",
+          "content-length": "50",
+          "content-type": "application/json",
+          "date": "Sun, 16 Aug 2026 16:20:18 GMT",
+          "server": "cloudflare",
+          "sib-request-id": "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+          "x-envoy-upstream-service-time": "4"
+        },
+        "request": {
+          "_closed": true,
+          "_contentLength": 1032,
+          "_defaultKeepAlive": true,
+          "_ended": true,
+          "_events": {},
+          "_eventsCount": 7,
+          "_hasBody": true,
+          "_header": "POST /v3/smtp/email HTTP/1.1\r\nAccept: application/json\r\nContent-Type: application/json\r\napi-key: mockkey\r\nUser-Agent: axios/1.19.0\r\nContent-Length: 1032\r\nAccept-Encoding: gzip, compress, deflate, br\r\nHost: api.brevo.com\r\nConnection: keep-alive\r\n\r\n",
+          "_headerSent": true,
+          "_keepAliveTimeout": 0,
+          "_last": false,
+          "_redirectable": {
+            "_currentRequest": "[Circular]",
+            "_currentUrl": "https://api.brevo.com/v3/smtp/email",
+            "_ended": true,
+            "_ending": true,
+            "_events": {
+              "socket": "[Array]"
+            },
+            "_eventsCount": 4,
+            "_headerFilter": {},
+            "_options": {
+              "agents": "[Object]",
+              "beforeRedirects": "[Object]",
+              "headers": "[Object]",
+              "hostname": "api.brevo.com",
+              "insecureHTTPParser": false,
+              "maxBodyLength": null,
+              "maxRedirects": 21,
+              "method": "POST",
+              "nativeProtocols": "[Object]",
+              "path": "/v3/smtp/email",
+              "pathname": "/v3/smtp/email",
+              "port": "",
+              "protocol": "https:",
+              "sensitiveHeaders": []
+            },
+            "_redirectCount": 0,
+            "_redirects": [],
+            "_requestBodyBuffers": [],
+            "_requestBodyLength": 1032,
+            "_timeout": null,
+            "_writableState": {
+              "bufferedIndex": 0,
+              "corked": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pendingcb": 0,
+              "writelen": 0
+            }
+          },
+          "_removedConnection": false,
+          "_removedContLen": false,
+          "_removedTE": false,
+          "_trailer": "",
+          "aborted": false,
+          "agent": {
+            "_events": {},
+            "_eventsCount": 2,
+            "_sessionCache": {
+              "list": [],
+              "map": {}
+            },
+            "agentKeepAliveTimeoutBuffer": 1000,
+            "defaultPort": 443,
+            "freeSockets": {
+              "api.brevo.com:443:::::::::::::::::::::": "[Array]"
+            },
+            "keepAlive": true,
+            "keepAliveMsecs": 1000,
+            "maxCachedSessions": 100,
+            "maxFreeSockets": 256,
+            "maxSockets": null,
+            "maxTotalSockets": null,
+            "options": {
+              "defaultPort": 443,
+              "keepAlive": true,
+              "noDelay": true,
+              "path": null,
+              "protocol": "https:",
+              "scheduling": "lifo",
+              "timeout": 5000
+            },
+            "protocol": "https:",
+            "requests": {},
+            "scheduling": "lifo",
+            "sockets": {},
+            "totalSocketCount": 1
+          },
+          "chunkedEncoding": false,
+          "destroyed": true,
+          "finished": true,
+          "host": "api.brevo.com",
+          "insecureHTTPParser": false,
+          "maxHeadersCount": null,
+          "maxRequestsOnConnectionReached": false,
+          "method": "POST",
+          "outputData": [],
+          "outputSize": 0,
+          "parser": null,
+          "protocol": "https:",
+          "res": {
+            "_consuming": false,
+            "_dumped": false,
+            "_events": {
+              "end": "[Array]"
+            },
+            "_eventsCount": 4,
+            "_readableState": {
+              "awaitDrainWriters": null,
+              "buffer": [],
+              "bufferIndex": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pipes": []
+            },
+            "aborted": false,
+            "client": {
+              "_SNICallback": null,
+              "_closeAfterHandlingError": false,
+              "_controlReleased": true,
+              "_events": "[Object]",
+              "_eventsCount": 9,
+              "_hadError": false,
+              "_host": "api.brevo.com",
+              "_httpMessage": null,
+              "_newSessionPending": false,
+              "_parent": null,
+              "_pendingData": null,
+              "_pendingEncoding": "",
+              "_readableState": "[Object]",
+              "_rejectUnauthorized": true,
+              "_requestCert": true,
+              "_secureEstablished": true,
+              "_securePending": false,
+              "_server": null,
+              "_sockname": null,
+              "_tlsOptions": "[Object]",
+              "_writableState": "[Object]",
+              "allowHalfOpen": false,
+              "alpnProtocol": false,
+              "authorizationError": null,
+              "authorized": true,
+              "autoSelectFamilyAttemptedAddresses": "[Array]",
+              "connecting": false,
+              "encrypted": true,
+              "handle": "[Object]",
+              "parser": null,
+              "secureConnecting": false,
+              "servername": "api.brevo.com",
+              "ssl": null,
+              "timeout": 5000
+            },
+            "complete": true,
+            "httpVersion": "1.1",
+            "httpVersionMajor": 1,
+            "httpVersionMinor": 1,
+            "method": null,
+            "rawHeaders": [
+              "Date",
+              "Sun, 16 Aug 2026 16:20:18 GMT",
+              "Content-Type",
+              "application/json",
+              "Content-Length",
+              "50",
+              "Connection",
+              "keep-alive",
+              "access-control-allow-credentials",
+              "true",
+              "sib-request-id",
+              "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+              "access-control-allow-origin",
+              "*",
+              "access-control-allow-headers",
+              "*",
+              "access-control-allow-methods",
+              "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+              "x-envoy-upstream-service-time",
+              "4",
+              "server",
+              "cloudflare",
+              "cf-cache-status",
+              "DYNAMIC",
+              "CF-RAY",
+              "a2c1c3fcd89c8d72-HEL"
+            ],
+            "rawTrailers": [],
+            "redirects": [],
+            "req": "[Circular]",
+            "responseUrl": "https://api.brevo.com/v3/smtp/email",
+            "socket": null,
+            "statusCode": 401,
+            "statusMessage": "Unauthorized",
+            "upgrade": false,
+            "url": ""
+          },
+          "reusedSocket": false,
+          "sendDate": false,
+          "shouldKeepAlive": true,
+          "strictContentLength": false,
+          "timeoutCb": null,
+          "upgradeOrConnect": false,
+          "useChunkedEncodingByDefault": true,
+          "writable": true
+        },
+        "status": 401,
+        "statusText": "Unauthorized"
+      },
+      "stack":
+          AxiosError: Request failed with status code 401
+              at settle (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/settle.js:19:12)
+              at IncomingMessage.handleStreamEnd (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/adapters/http.js:1226:13)
+              at IncomingMessage.emit (node:events:521:24)
+              at endReadableNT (node:internal/streams/readable:1729:12)
+              at processTicksAndRejections (node:internal/process/task_queues:90:21)
+              at Axios.request (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/Axios.js:46:41)
+              at processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at sendEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:43:9)
+              at sendVerificationEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:74:5)
+              at signup (/home/rythm/Desktop/meoww/fried-chicken/src/modules/auth/auth.controller.ts:69:9)
+      "status": 401,
+      "type": "AxiosError"
+    }
+[2026-08-16 21:50:18.101 +0530] [31mERROR[39m: [36m[] Request failed with status code 401[39m
+    [35mroute[39m: "/api/auth/signup"
+    [35mmethod[39m: "POST"
+    [35mstatusCode[39m: 500
+    [35mcode[39m: "INTERNAL_ERROR"
+    err: {
+      "code": "ERR_BAD_REQUEST",
+      "config": {
+        "adapter": [
+          "xhr",
+          "http",
+          "fetch"
+        ],
+        "allowAbsoluteUrls": true,
+        "baseURL": "https://api.brevo.com/v3",
+        "data": "{\"sender\":{\"name\":\"Meoww\",\"email\":\"test@example.com\"},\"to\":[{\"email\":\"test@example.com\"}],\"subject\":\"Your Meoww verification code\",\"htmlContent\":\"\\n    <div style=\\\"font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #ffffff;\\\">\\n        <h2 style=\\\"color: #1B1A55; margin-top: 0;\\\">Meoww</h2>\\n        \\n        <h3 style=\\\"color: #1B1A55;\\\">Verify your account</h3>\\n        <p>Your one-time verification code is:</p>\\n        <div style=\\\"\\n            display: inline-block;\\n            letter-spacing: 8px;\\n            color: #535C91;\\n            font-size: 36px;\\n            font-weight: bold;\\n            margin: 16px 0;\\n        \\\">626059</div>\\n        <p style=\\\"color: #888; font-size: 13px;\\\">\\n            This code expires in <strong>10 minutes</strong>. Do not share it with anyone.\\n        </p>\\n    \\n        <p style=\\\"color: #aaa; font-size: 12px; margin-top: 32px;\\\">\\n            If you didn't request this, you can safely ignore this email.\\n        </p>\\n    </div>\\n\"}",
+        "env": {},
+        "headers": {
+          "Accept": "application/json",
+          "Accept-Encoding": "gzip, compress, deflate, br",
+          "Content-Length": "1032",
+          "Content-Type": "application/json",
+          "User-Agent": "axios/1.19.0",
+          "api-key": "mockkey"
+        },
+        "maxBodyLength": -1,
+        "maxContentLength": -1,
+        "method": "post",
+        "timeout": 0,
+        "transformRequest": [
+          null
+        ],
+        "transformResponse": [
+          null
+        ],
+        "transitional": {
+          "advertiseZstdAcceptEncoding": false,
+          "clarifyTimeoutError": false,
+          "forcedJSONParsing": true,
+          "legacyInterceptorReqResOrdering": true,
+          "silentJSONParsing": true,
+          "validateStatusUndefinedResolves": true
+        },
+        "url": "/smtp/email",
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN"
+      },
+      "isAxiosError": true,
+      "message": "Request failed with status code 401",
+      "name": "AxiosError",
+      "request": {
+        "_closed": true,
+        "_contentLength": 1032,
+        "_defaultKeepAlive": true,
+        "_ended": true,
+        "_events": {},
+        "_eventsCount": 7,
+        "_hasBody": true,
+        "_header": "POST /v3/smtp/email HTTP/1.1\r\nAccept: application/json\r\nContent-Type: application/json\r\napi-key: mockkey\r\nUser-Agent: axios/1.19.0\r\nContent-Length: 1032\r\nAccept-Encoding: gzip, compress, deflate, br\r\nHost: api.brevo.com\r\nConnection: keep-alive\r\n\r\n",
+        "_headerSent": true,
+        "_keepAliveTimeout": 0,
+        "_last": false,
+        "_redirectable": {
+          "_currentRequest": "[Circular]",
+          "_currentUrl": "https://api.brevo.com/v3/smtp/email",
+          "_ended": true,
+          "_ending": true,
+          "_events": {
+            "socket": [
+              null,
+              null
+            ]
+          },
+          "_eventsCount": 4,
+          "_headerFilter": {},
+          "_options": {
+            "agents": {},
+            "beforeRedirects": {},
+            "headers": {
+              "Accept": "application/json",
+              "Accept-Encoding": "gzip, compress, deflate, br",
+              "Content-Length": "1032",
+              "Content-Type": "application/json",
+              "User-Agent": "axios/1.19.0",
+              "api-key": "mockkey"
+            },
+            "hostname": "api.brevo.com",
+            "insecureHTTPParser": false,
+            "maxBodyLength": null,
+            "maxRedirects": 21,
+            "method": "POST",
+            "nativeProtocols": {
+              "http:": "[Object]",
+              "https:": "[Object]"
+            },
+            "path": "/v3/smtp/email",
+            "pathname": "/v3/smtp/email",
+            "port": "",
+            "protocol": "https:",
+            "sensitiveHeaders": []
+          },
+          "_redirectCount": 0,
+          "_redirects": [],
+          "_requestBodyBuffers": [],
+          "_requestBodyLength": 1032,
+          "_timeout": null,
+          "_writableState": {
+            "bufferedIndex": 0,
+            "corked": 0,
+            "highWaterMark": 65536,
+            "length": 0,
+            "pendingcb": 0,
+            "writelen": 0
+          }
+        },
+        "_removedConnection": false,
+        "_removedContLen": false,
+        "_removedTE": false,
+        "_trailer": "",
+        "aborted": false,
+        "agent": {
+          "_events": {},
+          "_eventsCount": 2,
+          "_sessionCache": {
+            "list": [],
+            "map": {}
+          },
+          "agentKeepAliveTimeoutBuffer": 1000,
+          "defaultPort": 443,
+          "freeSockets": {
+            "api.brevo.com:443:::::::::::::::::::::": [
+              "[Object]"
+            ]
+          },
+          "keepAlive": true,
+          "keepAliveMsecs": 1000,
+          "maxCachedSessions": 100,
+          "maxFreeSockets": 256,
+          "maxSockets": null,
+          "maxTotalSockets": null,
+          "options": {
+            "defaultPort": 443,
+            "keepAlive": true,
+            "noDelay": true,
+            "path": null,
+            "protocol": "https:",
+            "scheduling": "lifo",
+            "timeout": 5000
+          },
+          "protocol": "https:",
+          "requests": {},
+          "scheduling": "lifo",
+          "sockets": {},
+          "totalSocketCount": 1
+        },
+        "chunkedEncoding": false,
+        "destroyed": true,
+        "finished": true,
+        "host": "api.brevo.com",
+        "insecureHTTPParser": false,
+        "maxHeadersCount": null,
+        "maxRequestsOnConnectionReached": false,
+        "method": "POST",
+        "outputData": [],
+        "outputSize": 0,
+        "parser": null,
+        "protocol": "https:",
+        "res": {
+          "_consuming": false,
+          "_dumped": false,
+          "_events": {
+            "end": [
+              null,
+              null
+            ]
+          },
+          "_eventsCount": 4,
+          "_readableState": {
+            "awaitDrainWriters": null,
+            "buffer": [],
+            "bufferIndex": 0,
+            "highWaterMark": 65536,
+            "length": 0,
+            "pipes": []
+          },
+          "aborted": false,
+          "client": {
+            "_SNICallback": null,
+            "_closeAfterHandlingError": false,
+            "_controlReleased": true,
+            "_events": {
+              "close": "[Array]",
+              "error": "[Array]",
+              "newListener": "[Array]",
+              "timeout": "[Array]"
+            },
+            "_eventsCount": 9,
+            "_hadError": false,
+            "_host": "api.brevo.com",
+            "_httpMessage": null,
+            "_newSessionPending": false,
+            "_parent": null,
+            "_pendingData": null,
+            "_pendingEncoding": "",
+            "_readableState": {
+              "awaitDrainWriters": null,
+              "buffer": [],
+              "bufferIndex": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pipes": []
+            },
+            "_rejectUnauthorized": true,
+            "_requestCert": true,
+            "_secureEstablished": true,
+            "_securePending": false,
+            "_server": null,
+            "_sockname": null,
+            "_tlsOptions": {
+              "isServer": false,
+              "keepAlive": true,
+              "keepAliveInitialDelay": 1000,
+              "noDelay": true,
+              "pipe": false,
+              "rejectUnauthorized": true,
+              "requestCert": true,
+              "secureContext": "[Object]"
+            },
+            "_writableState": {
+              "bufferedIndex": 0,
+              "corked": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pendingcb": 0,
+              "writelen": 0
+            },
+            "allowHalfOpen": false,
+            "alpnProtocol": false,
+            "authorizationError": null,
+            "authorized": true,
+            "autoSelectFamilyAttemptedAddresses": [
+              "2a06:98c1:3200::90:82:443",
+              "141.101.90.107:443",
+              "2a06:98c1:3200::90:80:443",
+              "141.101.90.106:443",
+              "2a06:98c1:3200::90:81:443",
+              "141.101.90.104:443",
+              "2a06:98c1:3200::90:83:443",
+              "141.101.90.105:443"
+            ],
+            "connecting": false,
+            "encrypted": true,
+            "handle": {
+              "_parent": "[Object]",
+              "_parentWrap": null,
+              "_secureContext": "[Object]",
+              "reading": true
+            },
+            "parser": null,
+            "secureConnecting": false,
+            "servername": "api.brevo.com",
+            "ssl": null,
+            "timeout": 5000
+          },
+          "complete": true,
+          "httpVersion": "1.1",
+          "httpVersionMajor": 1,
+          "httpVersionMinor": 1,
+          "method": null,
+          "rawHeaders": [
+            "Date",
+            "Sun, 16 Aug 2026 16:20:18 GMT",
+            "Content-Type",
+            "application/json",
+            "Content-Length",
+            "50",
+            "Connection",
+            "keep-alive",
+            "access-control-allow-credentials",
+            "true",
+            "sib-request-id",
+            "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+            "access-control-allow-origin",
+            "*",
+            "access-control-allow-headers",
+            "*",
+            "access-control-allow-methods",
+            "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+            "x-envoy-upstream-service-time",
+            "4",
+            "server",
+            "cloudflare",
+            "cf-cache-status",
+            "DYNAMIC",
+            "CF-RAY",
+            "a2c1c3fcd89c8d72-HEL"
+          ],
+          "rawTrailers": [],
+          "redirects": [],
+          "req": "[Circular]",
+          "responseUrl": "https://api.brevo.com/v3/smtp/email",
+          "socket": null,
+          "statusCode": 401,
+          "statusMessage": "Unauthorized",
+          "upgrade": false,
+          "url": ""
+        },
+        "reusedSocket": false,
+        "sendDate": false,
+        "shouldKeepAlive": true,
+        "strictContentLength": false,
+        "timeoutCb": null,
+        "upgradeOrConnect": false,
+        "useChunkedEncodingByDefault": true,
+        "writable": true
+      },
+      "response": {
+        "config": {
+          "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+          ],
+          "allowAbsoluteUrls": true,
+          "baseURL": "https://api.brevo.com/v3",
+          "data": "{\"sender\":{\"name\":\"Meoww\",\"email\":\"test@example.com\"},\"to\":[{\"email\":\"test@example.com\"}],\"subject\":\"Your Meoww verification code\",\"htmlContent\":\"\\n    <div style=\\\"font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #ffffff;\\\">\\n        <h2 style=\\\"color: #1B1A55; margin-top: 0;\\\">Meoww</h2>\\n        \\n        <h3 style=\\\"color: #1B1A55;\\\">Verify your account</h3>\\n        <p>Your one-time verification code is:</p>\\n        <div style=\\\"\\n            display: inline-block;\\n            letter-spacing: 8px;\\n            color: #535C91;\\n            font-size: 36px;\\n            font-weight: bold;\\n            margin: 16px 0;\\n        \\\">626059</div>\\n        <p style=\\\"color: #888; font-size: 13px;\\\">\\n            This code expires in <strong>10 minutes</strong>. Do not share it with anyone.\\n        </p>\\n    \\n        <p style=\\\"color: #aaa; font-size: 12px; margin-top: 32px;\\\">\\n            If you didn't request this, you can safely ignore this email.\\n        </p>\\n    </div>\\n\"}",
+          "env": {},
+          "headers": {
+            "Accept": "application/json",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Content-Length": "1032",
+            "Content-Type": "application/json",
+            "User-Agent": "axios/1.19.0",
+            "api-key": "mockkey"
+          },
+          "maxBodyLength": -1,
+          "maxContentLength": -1,
+          "method": "post",
+          "timeout": 0,
+          "transformRequest": [
+            null
+          ],
+          "transformResponse": [
+            null
+          ],
+          "transitional": {
+            "advertiseZstdAcceptEncoding": false,
+            "clarifyTimeoutError": false,
+            "forcedJSONParsing": true,
+            "legacyInterceptorReqResOrdering": true,
+            "silentJSONParsing": true,
+            "validateStatusUndefinedResolves": true
+          },
+          "url": "/smtp/email",
+          "xsrfCookieName": "XSRF-TOKEN",
+          "xsrfHeaderName": "X-XSRF-TOKEN"
+        },
+        "data": {
+          "code": "unauthorized",
+          "message": "Key not found"
+        },
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-headers": "*",
+          "access-control-allow-methods": "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+          "access-control-allow-origin": "*",
+          "cf-cache-status": "DYNAMIC",
+          "cf-ray": "a2c1c3fcd89c8d72-HEL",
+          "connection": "keep-alive",
+          "content-length": "50",
+          "content-type": "application/json",
+          "date": "Sun, 16 Aug 2026 16:20:18 GMT",
+          "server": "cloudflare",
+          "sib-request-id": "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+          "x-envoy-upstream-service-time": "4"
+        },
+        "request": {
+          "_closed": true,
+          "_contentLength": 1032,
+          "_defaultKeepAlive": true,
+          "_ended": true,
+          "_events": {},
+          "_eventsCount": 7,
+          "_hasBody": true,
+          "_header": "POST /v3/smtp/email HTTP/1.1\r\nAccept: application/json\r\nContent-Type: application/json\r\napi-key: mockkey\r\nUser-Agent: axios/1.19.0\r\nContent-Length: 1032\r\nAccept-Encoding: gzip, compress, deflate, br\r\nHost: api.brevo.com\r\nConnection: keep-alive\r\n\r\n",
+          "_headerSent": true,
+          "_keepAliveTimeout": 0,
+          "_last": false,
+          "_redirectable": {
+            "_currentRequest": "[Circular]",
+            "_currentUrl": "https://api.brevo.com/v3/smtp/email",
+            "_ended": true,
+            "_ending": true,
+            "_events": {
+              "socket": "[Array]"
+            },
+            "_eventsCount": 4,
+            "_headerFilter": {},
+            "_options": {
+              "agents": "[Object]",
+              "beforeRedirects": "[Object]",
+              "headers": "[Object]",
+              "hostname": "api.brevo.com",
+              "insecureHTTPParser": false,
+              "maxBodyLength": null,
+              "maxRedirects": 21,
+              "method": "POST",
+              "nativeProtocols": "[Object]",
+              "path": "/v3/smtp/email",
+              "pathname": "/v3/smtp/email",
+              "port": "",
+              "protocol": "https:",
+              "sensitiveHeaders": []
+            },
+            "_redirectCount": 0,
+            "_redirects": [],
+            "_requestBodyBuffers": [],
+            "_requestBodyLength": 1032,
+            "_timeout": null,
+            "_writableState": {
+              "bufferedIndex": 0,
+              "corked": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pendingcb": 0,
+              "writelen": 0
+            }
+          },
+          "_removedConnection": false,
+          "_removedContLen": false,
+          "_removedTE": false,
+          "_trailer": "",
+          "aborted": false,
+          "agent": {
+            "_events": {},
+            "_eventsCount": 2,
+            "_sessionCache": {
+              "list": [],
+              "map": {}
+            },
+            "agentKeepAliveTimeoutBuffer": 1000,
+            "defaultPort": 443,
+            "freeSockets": {
+              "api.brevo.com:443:::::::::::::::::::::": "[Array]"
+            },
+            "keepAlive": true,
+            "keepAliveMsecs": 1000,
+            "maxCachedSessions": 100,
+            "maxFreeSockets": 256,
+            "maxSockets": null,
+            "maxTotalSockets": null,
+            "options": {
+              "defaultPort": 443,
+              "keepAlive": true,
+              "noDelay": true,
+              "path": null,
+              "protocol": "https:",
+              "scheduling": "lifo",
+              "timeout": 5000
+            },
+            "protocol": "https:",
+            "requests": {},
+            "scheduling": "lifo",
+            "sockets": {},
+            "totalSocketCount": 1
+          },
+          "chunkedEncoding": false,
+          "destroyed": true,
+          "finished": true,
+          "host": "api.brevo.com",
+          "insecureHTTPParser": false,
+          "maxHeadersCount": null,
+          "maxRequestsOnConnectionReached": false,
+          "method": "POST",
+          "outputData": [],
+          "outputSize": 0,
+          "parser": null,
+          "protocol": "https:",
+          "res": {
+            "_consuming": false,
+            "_dumped": false,
+            "_events": {
+              "end": "[Array]"
+            },
+            "_eventsCount": 4,
+            "_readableState": {
+              "awaitDrainWriters": null,
+              "buffer": [],
+              "bufferIndex": 0,
+              "highWaterMark": 65536,
+              "length": 0,
+              "pipes": []
+            },
+            "aborted": false,
+            "client": {
+              "_SNICallback": null,
+              "_closeAfterHandlingError": false,
+              "_controlReleased": true,
+              "_events": "[Object]",
+              "_eventsCount": 9,
+              "_hadError": false,
+              "_host": "api.brevo.com",
+              "_httpMessage": null,
+              "_newSessionPending": false,
+              "_parent": null,
+              "_pendingData": null,
+              "_pendingEncoding": "",
+              "_readableState": "[Object]",
+              "_rejectUnauthorized": true,
+              "_requestCert": true,
+              "_secureEstablished": true,
+              "_securePending": false,
+              "_server": null,
+              "_sockname": null,
+              "_tlsOptions": "[Object]",
+              "_writableState": "[Object]",
+              "allowHalfOpen": false,
+              "alpnProtocol": false,
+              "authorizationError": null,
+              "authorized": true,
+              "autoSelectFamilyAttemptedAddresses": "[Array]",
+              "connecting": false,
+              "encrypted": true,
+              "handle": "[Object]",
+              "parser": null,
+              "secureConnecting": false,
+              "servername": "api.brevo.com",
+              "ssl": null,
+              "timeout": 5000
+            },
+            "complete": true,
+            "httpVersion": "1.1",
+            "httpVersionMajor": 1,
+            "httpVersionMinor": 1,
+            "method": null,
+            "rawHeaders": [
+              "Date",
+              "Sun, 16 Aug 2026 16:20:18 GMT",
+              "Content-Type",
+              "application/json",
+              "Content-Length",
+              "50",
+              "Connection",
+              "keep-alive",
+              "access-control-allow-credentials",
+              "true",
+              "sib-request-id",
+              "f8683cd4-8645-9826-b2b5-ef927b3fc69d",
+              "access-control-allow-origin",
+              "*",
+              "access-control-allow-headers",
+              "*",
+              "access-control-allow-methods",
+              "PUT, POST, GET, DELETE, PATCH, OPTIONS",
+              "x-envoy-upstream-service-time",
+              "4",
+              "server",
+              "cloudflare",
+              "cf-cache-status",
+              "DYNAMIC",
+              "CF-RAY",
+              "a2c1c3fcd89c8d72-HEL"
+            ],
+            "rawTrailers": [],
+            "redirects": [],
+            "req": "[Circular]",
+            "responseUrl": "https://api.brevo.com/v3/smtp/email",
+            "socket": null,
+            "statusCode": 401,
+            "statusMessage": "Unauthorized",
+            "upgrade": false,
+            "url": ""
+          },
+          "reusedSocket": false,
+          "sendDate": false,
+          "shouldKeepAlive": true,
+          "strictContentLength": false,
+          "timeoutCb": null,
+          "upgradeOrConnect": false,
+          "useChunkedEncodingByDefault": true,
+          "writable": true
+        },
+        "status": 401,
+        "statusText": "Unauthorized"
+      },
+      "stack":
+          AxiosError: Request failed with status code 401
+              at settle (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/settle.js:19:12)
+              at IncomingMessage.handleStreamEnd (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/adapters/http.js:1226:13)
+              at IncomingMessage.emit (node:events:521:24)
+              at endReadableNT (node:internal/streams/readable:1729:12)
+              at processTicksAndRejections (node:internal/process/task_queues:90:21)
+              at Axios.request (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/Axios.js:46:41)
+              at processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at sendEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:43:9)
+              at sendVerificationEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:74:5)
+              at signup (/home/rythm/Desktop/meoww/fried-chicken/src/modules/auth/auth.controller.ts:69:9)
+      "status": 401,
+      "type": "AxiosError"
+    }
+[2026-08-16 21:50:18.111 +0530] [31mERROR[39m: [36m[] request errored[39m
+    [35mreq[39m: {
+      "id": 1,
+      "method": "POST",
+      "url": "/api/auth/signup",
+      "query": {},
+      "params": {},
+      "headers": {
+        "host": "127.0.0.1:33083",
+        "accept-encoding": "gzip, deflate",
+        "content-type": "application/json",
+        "content-length": "97",
+        "connection": "close"
+      },
+      "remoteAddress": "::ffff:127.0.0.1",
+      "remotePort": 49384
+    }
+    [35mres[39m: {
+      "statusCode": 500,
+      "headers": {
+        "content-security-policy": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data: https://res.cloudinary.com;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' 'unsafe-inline';upgrade-insecure-requests;connect-src 'self' http://localhost:3000;media-src 'self' blob:",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "vary": "Origin, Accept-Encoding",
+        "access-control-allow-credentials": "true",
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"42f-+fBmAKAlwS5BwqoElFUUh7rPLAc\"",
+        "content-encoding": "gzip"
+      }
+    }
+    [35mresponseTime[39m: 3567
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/home/rythm/Desktop/meoww/fried-chicken/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/home/rythm/Desktop/meoww/fried-chicken/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:521:24)
+              at onFinish (node:_http_outgoing:1031:10)
+              at afterWrite (node:internal/streams/writable:708:5)
+              at afterWriteTick (node:internal/streams/writable:694:10)
+              at processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+stderr | tests/auth.flow.test.ts > Auth Flow > should complete the full auth flow
+SIGNUP FAILED: {
+  success: false,
+  message: 'Request failed with status code 401',
+  code: 'INTERNAL_ERROR',
+  stack: 'AxiosError: Request failed with status code 401\n' +
+    '    at settle (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/settle.js:19:12)\n' +
+    '    at IncomingMessage.handleStreamEnd (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/adapters/http.js:1226:13)\n' +
+    '    at IncomingMessage.emit (node:events:521:24)\n' +
+    '    at endReadableNT (node:internal/streams/readable:1729:12)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:90:21)\n' +
+    '    at Axios.request (file:///home/rythm/Desktop/meoww/fried-chicken/node_modules/axios/lib/core/Axios.js:46:41)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n' +
+    '    at sendEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:43:9)\n' +
+    '    at sendVerificationEmail (/home/rythm/Desktop/meoww/fried-chicken/src/services/email.service.ts:74:5)\n' +
+    '    at signup (/home/rythm/Desktop/meoww/fried-chicken/src/modules/auth/auth.controller.ts:69:9)'
+}
+
+ ❯ tests/auth.flow.test.ts (1 test | 1 failed) 4322ms
+     × should complete the full auth flow 3747ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/auth.flow.test.ts > Auth Flow > should complete the full auth flow
+AssertionError: expected 500 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 500
+
+ ❯ tests/auth.flow.test.ts:46:34
+     44|             console.error("SIGNUP FAILED:", signupRes.body);
+     45|         }
+     46|         expect(signupRes.status).toBe(201);
+       |                                  ^
+     47|         expect(signupRes.body).toHaveProperty("message");
+     48|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:50:08
+   Duration  9.27s (transform 821ms, setup 195ms, import 4.28s, tests 4.32s, environment 0ms)
+

@@ -9,7 +9,7 @@ import { AppError } from "../../utils/AppError.js";
 import type { UpdateUserInput } from "./user.types.js";
 
 export async function findUserById(id: string): Promise<UserDocument | null> {
-    const user = await UserModel.findById(id).select("-passwordHash -refreshTokenHash");
+    const user = await UserModel.findById(id);
     return user;
 }
 
@@ -32,7 +32,7 @@ export async function updateUser(id: string, data: UpdateUserInput): Promise<Use
             new: true,
             runValidators: true,
         },
-    ).select("-passwordHash -refreshTokenHash");
+    );
 
     if (!user) {
         throw AppError.notFound("User not found");
@@ -46,7 +46,7 @@ export async function setAvatar(id: string, imageUrl: string): Promise<UserDocum
         id,
         { $set: { profileImage: imageUrl } },
         { new: true, runValidators: true },
-    ).select("-passwordHash -refreshTokenHash");
+    );
 
     if (!user) {
         throw AppError.notFound("User not found");
