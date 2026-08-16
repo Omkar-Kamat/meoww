@@ -1,0 +1,130 @@
+// createSocketServer(httpServer: HttpServer): Server — instantiates Socket.io, attaches Redis adapter
+// mountGateways(io: Server) — on each connection, calls registerMatchmakingHandlers (and future gateways)
+
+// src/realtime/socket.server.ts
+import type { Server as HttpServer } from "node:http";
+import { Server, type Socket } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
+import redisClient from "../config/redis.js";
+import { allowedOrigins } from "../config/cors.js";
+import { socketAuthMiddleware } from "./socket.auth.js";
+import { createModuleLogger } from "../utils/logger.js";
+import * as matchmakingService from "../modules/matchmaking/matchmaking.service.js";
+import * as webrtcService from "../modules/webrtc/webrtc.service.js";
+import { registerMatchmakingHandlers } from "../modules/matchmaking/matchmaking.gateway.js";
+import { registerWebrtcHandlers } from "../modules/webrtc/webrtc.gateway.js";
+
+const log = createModuleLogger("socket-server");
+const TOKEN_REFRESH_WARNING_MS = 2 * 60 * 1000;
+
+export function createSocketServer(httpServer: HttpServer): Server {
+    const io = new Server(httpServer, {
+        cors: {
+            origin: (origin, callback) => {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error("Not allowed by CORS"));
+                }
+            },
+            credentials: true,
+        },
+    });
+
+    void attachRedisAdapter(io);
+
+    io.use(socketAuthMiddleware);
+
+    return io;
+}
+
+async function attachRedisAdapter(io: Server): Promise<void> {
+    const pubClient = redisClient.duplicate();
+    const subClient = redisClient.duplicate();
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+    io.adapter(createAdapter(pubClient, subClient));
+    log.info("Redis adapter connected");
+}
+
+export function mountGateways(io: Server): void {
+    matchmakingService.init(io);
+    webrtcService.init(io);
+
+    io.on("connection", (socket: Socket) => {
+        log.info({ userId: socket.userId }, "User connected");
+
+        void handleConnectionSetup(io, socket);
+
+        registerMatchmakingHandlers(io, socket);
+        registerWebrtcHandlers(io, socket);
+
+        socket.on("disconnect", () => {
+            log.info({ userId: socket.userId }, "User disconnected");
+            clearTokenTimers(socket);
+        });
+    });
+}
+
+async function handleConnectionSetup(io: Server, socket: Socket): Promise<void> {
+    if (!socket.userId) return;
+
+    const oldSocketId = await redisClient.get(`mm:usersocket:${socket.userId}`);
+    if (oldSocketId && oldSocketId !== socket.id) {
+        io.to(oldSocketId).emit("session-terminated", { reason: "another_session_detected" });
+        io.in(oldSocketId).disconnectSockets(true);
+    }
+
+    await redisClient.set(`mm:usersocket:${socket.userId}`, socket.id);
+
+    scheduleTokenExpiry(socket);
+}
+
+function scheduleTokenExpiry(socket: Socket): void {
+    if (!socket.tokenExp) return;
+
+    const nowMs = Date.now();
+    const expiresInMs = socket.tokenExp * 1000 - nowMs;
+
+    if (expiresInMs <= 1000) {
+        socket.emit("token-expired", {
+            code: "TOKEN_EXPIRED",
+            message: "Session expired. Please refresh and reconnect.",
+        });
+        socket.disconnect(true);
+        return;
+    }
+
+    const warningInMs = expiresInMs - TOKEN_REFRESH_WARNING_MS;
+    if (warningInMs > 0) {
+        socket.tokenWarningTimer = setTimeout(() => {
+            if (socket.connected) {
+                socket.emit("token-expiring-soon", {
+                    code: "TOKEN_EXPIRING_SOON",
+                    message: "Your session is about to expire. Please refresh.",
+                    expiresInMs: TOKEN_REFRESH_WARNING_MS,
+                });
+            }
+        }, warningInMs);
+    }
+
+    socket.tokenExpiryTimer = setTimeout(() => {
+        if (socket.connected) {
+            socket.emit("token-expired", {
+                code: "TOKEN_EXPIRED",
+                message: "Session expired. Please refresh and reconnect.",
+            });
+            socket.disconnect(true);
+        }
+    }, expiresInMs);
+}
+
+function clearTokenTimers(socket: Socket): void {
+    if (socket.tokenWarningTimer) {
+        clearTimeout(socket.tokenWarningTimer);
+        socket.tokenWarningTimer = undefined;
+    }
+    if (socket.tokenExpiryTimer) {
+        clearTimeout(socket.tokenExpiryTimer);
+        socket.tokenExpiryTimer = undefined;
+    }
+}

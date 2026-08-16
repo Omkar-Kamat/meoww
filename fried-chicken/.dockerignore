@@ -1,0 +1,26 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Version control
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+
+# Editor/OS files
+.vscode
+.idea
+.DS_Store
+
+# Logs
+npm-debug.log*
+*.log
+
+# Docker files
+Dockerfile
+.dockerignore
