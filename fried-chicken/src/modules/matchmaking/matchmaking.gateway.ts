@@ -9,7 +9,7 @@ import type { EmitAction } from "../../realtime/socket.types.js";
 const log = createModuleLogger("matchmaking-gateway");
 
 function safeHandler<Args extends unknown[]>(
-    socket: Socket,
+    socket: AuthedSocket,
     eventName: string,
     fn: (...args: Args) => Promise<EmitAction[]>,
 ) {
@@ -37,30 +37,30 @@ export function registerMatchmakingHandlers(service: MatchmakingService, socket:
         return;
     }
 
-    const authedSocket: AuthedSocket = { id: socket.id, userId: socket.userId };
+    const authedSocket = socket as AuthedSocket;
 
     socket.on(
         "search",
-        safeHandler(socket, "search", () => service.handleSearch(authedSocket)),
+        safeHandler(authedSocket, "search", () => service.handleSearch(authedSocket)),
     );
 
     socket.on(
         "cancel-search",
-        safeHandler(socket, "cancel-search", () =>
+        safeHandler(authedSocket, "cancel-search", () =>
             service.handleCancelSearch(authedSocket.userId),
         ),
     );
 
     socket.on(
         "leave-room",
-        safeHandler(socket, "leave-room", () =>
+        safeHandler(authedSocket, "leave-room", () =>
             service.handleLeaveRoom(authedSocket.userId),
         ),
     );
 
     socket.on(
         "disconnect",
-        safeHandler(socket, "disconnect", () =>
+        safeHandler(authedSocket, "disconnect", () =>
             service.handleDisconnect(authedSocket.userId),
         ),
     );

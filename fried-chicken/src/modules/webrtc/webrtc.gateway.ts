@@ -45,12 +45,11 @@ function parseSocketPayload<T>(schema: z.ZodType<T>, data: unknown): T {
 
 export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): void {
     if (!socket.userId) return;
-
-    const authedSocket: AuthedSocket = { id: socket.id, userId: socket.userId };
+    const authedSocket = socket as AuthedSocket;
 
     socket.on(
         "offer",
-        safeHandler(socket, "offer", (data: unknown) => {
+        safeHandler(authedSocket, "offer", (data: unknown) => {
             const parsed = parseSocketPayload(offerPayloadSchema, data);
             return service.relayOffer(authedSocket, parsed.offer);
         }),
@@ -58,7 +57,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
 
     socket.on(
         "answer",
-        safeHandler(socket, "answer", (data: unknown) => {
+        safeHandler(authedSocket, "answer", (data: unknown) => {
             const parsed = parseSocketPayload(answerPayloadSchema, data);
             return service.relayAnswer(authedSocket, parsed.answer);
         }),
@@ -66,7 +65,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
 
     socket.on(
         "ice-candidate",
-        safeHandler(socket, "ice-candidate", (data: unknown) => {
+        safeHandler(authedSocket, "ice-candidate", (data: unknown) => {
             const parsed = parseSocketPayload(iceCandidatePayloadSchema, data);
             return service.relayIceCandidate(authedSocket, parsed.candidate);
         }),
@@ -74,7 +73,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
 
     socket.on(
         "send-message",
-        safeHandler(socket, "send-message", (data: unknown) => {
+        safeHandler(authedSocket, "send-message", (data: unknown) => {
             const parsed = parseSocketPayload(messagePayloadSchema, data);
             return service.relayMessage(authedSocket, parsed.text);
         }),

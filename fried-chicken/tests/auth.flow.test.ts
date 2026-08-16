@@ -4,7 +4,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
 import { createApp } from "../src/app.js";
-import type { Express } from "express";
+
 import { sendVerificationEmail, sendPasswordResetEmail } from "../src/services/email.service.js";
 import UserModel from "../src/modules/user/user.model.js";
 import { TokenModel } from "../src/modules/token/token.model.js";
@@ -12,7 +12,7 @@ import otpModel from "../src/modules/otp/otp.model.js";
 
 describe("Auth Flow", () => {
     let mongoServer: MongoMemoryServer;
-    let app: Express;
+    let app: ReturnType<typeof createApp>;
 
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create();

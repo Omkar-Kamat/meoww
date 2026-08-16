@@ -12,7 +12,7 @@ declare module "socket.io" {
 }
 
 export interface AuthedSocket extends Socket {
-    userId?: string;
+    userId: string;
 }
 
 export interface EmitAction {
