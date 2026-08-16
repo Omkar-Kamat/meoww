@@ -21,12 +21,12 @@ export const signupSchema = z.object({
             message: "This username is not allowed",
         }),
     email: z.email(),
-    password: z.string().min(6).max(100),
+    password: z.string().min(8).max(100),
 });
 
 export const loginSchema = z.object({
     email: z.email(),
-    password: z.string().min(6),
+    password: z.string().min(8),
 });
 
 export const forgotPasswordSchema = z.object({
@@ -41,6 +41,6 @@ export const resetPasswordSchema = z.object({
         .regex(/^[a-f0-9]+$/, "Invalid reset token"),
     password: z
         .string()
-        .min(6, "Password must be at least 6 characters")
+        .min(8, "Password must be at least 8 characters")
         .max(100, "Password is too long"),
 });

@@ -47,10 +47,7 @@ export async function getPeerId(roomId: string, userId: string): Promise<string 
     return room.user1 === userId ? room.user2 : room.user1;
 }
 
-export async function setUserRoom(userId: string, roomId: string): Promise<void> {
-    await redisClient.set(userRoomKey(userId), roomId);
-    await redisClient.expire(userRoomKey(userId), ROOM_TTL_SECONDS);
-}
+
 
 export async function getUserRoom(userId: string): Promise<string | null> {
     const result = await redisClient.get(userRoomKey(userId));
