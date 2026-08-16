@@ -3,14 +3,6 @@ import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
-// Mock email service
-vi.mock("../src/services/email.service.js", () => {
-    return {
-        sendVerificationEmail: vi.fn(async () => {}),
-        sendPasswordResetEmail: vi.fn(async () => {}),
-        sendEmail: vi.fn(async () => {}),
-    };
-});
 import { createApp } from "../src/app.js";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../src/services/email.service.js";
 import UserModel from "../src/modules/user/user.model.js";
@@ -111,13 +103,5 @@ describe("Auth Flow", () => {
         });
 
         expect(newLoginRes.status).toBe(200);
-    const dummy = (req: any, res: any, next: any) => next();
-    return {
-        createRateLimiter: vi.fn(() => dummy),
-        authRateLimiter: dummy,
-        apiRateLimiter: dummy,
-        resetPasswordRateLimiter: dummy,
-        otpRateLimiter: dummy,
-    };
-});
+    });
 });

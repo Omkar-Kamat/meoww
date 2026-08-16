@@ -16,7 +16,7 @@ process.env.REDIS_PORT = "6379";
 process.env.REDIS_PASSWORD = "mock";
 
 // Mock redis
-vi.mock("./src/config/redis.js", () => {
+vi.mock("../src/config/redis.js", () => {
     const mockStore = new Map();
     return {
         default: {
@@ -30,7 +30,7 @@ vi.mock("./src/config/redis.js", () => {
 });
 
 // Mock email service
-vi.mock("./src/services/email.service.js", () => {
+vi.mock("../src/services/email.service.js", () => {
     return {
         sendVerificationEmail: vi.fn(async () => {}),
         sendPasswordResetEmail: vi.fn(async () => {}),
@@ -39,7 +39,7 @@ vi.mock("./src/services/email.service.js", () => {
 });
 
 // Mock rate limiters
-vi.mock("./src/middleware/rateLimit.middleware.js", () => {
+vi.mock("../src/middleware/rateLimit.middleware.js", () => {
     const dummy = (req: any, res: any, next: any) => next();
     return {
         createRateLimiter: vi.fn(() => dummy),

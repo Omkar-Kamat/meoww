@@ -1,14 +1,8 @@
 import type { Socket } from "socket.io";
 import type { WebrtcService } from "./webrtc.service.js";
 import { createModuleLogger } from "../../utils/logger.js";
-import type {
-    AuthedSocket,
-    OfferPayload,
-    AnswerPayload,
-    IceCandidatePayload,
-    MessagePayload,
-    EmitAction,
-} from "./webrtc.types.js";
+import type { AuthedSocket } from "./webrtc.types.js";
+import type { EmitAction } from "../../realtime/socket.types.js";
 import { z } from "zod";
 
 const offerPayloadSchema = z.object({ offer: z.any() });
@@ -19,20 +13,18 @@ const messagePayloadSchema = z.object({ text: z.string().max(500) });
 const log = createModuleLogger("webrtc-gateway");
 
 function safeHandler<Args extends unknown[]>(
-    socket: Socket,
+    socket: AuthedSocket,
     eventName: string,
-    fn: (...args: Args) => Promise<EmitAction[] | void>,
+    fn: (...args: Args) => Promise<EmitAction[]>,
 ) {
     return (...args: Args): void => {
         fn(...args)
             .then((actions) => {
-                if (actions && Array.isArray(actions)) {
-                    for (const action of actions) {
-                        if (action.target === socket.id) {
-                            socket.emit(action.event, action.payload);
-                        } else {
-                            socket.to(action.target).emit(action.event, action.payload);
-                        }
+                for (const action of actions) {
+                    if (action.target === socket.id) {
+                        socket.emit(action.event, action.payload);
+                    } else {
+                        socket.to(action.target).emit(action.event, action.payload);
                     }
                 }
             })

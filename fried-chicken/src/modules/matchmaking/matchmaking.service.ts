@@ -9,7 +9,8 @@
 import * as store from "./matchmaking.store.js";
 import * as sessionStore from "../../realtime/session.store.js";
 import { createModuleLogger } from "../../utils/logger.js";
-import type { AuthedSocket, MatchResult, EmitAction } from "./matchmaking.types.js";
+import type { AuthedSocket, MatchResult } from "./matchmaking.types.js";
+import type { EmitAction } from "../../realtime/socket.types.js";
 
 const log = createModuleLogger("matchmaking");
 

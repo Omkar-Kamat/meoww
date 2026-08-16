@@ -9,8 +9,9 @@
 import type { CookieOptions, NextFunction, Request, Response } from "express";
 import * as authService from "./auth.service.js";
 import * as otpService from "../otp/otp.service.js";
-import { type UserDocument, type UserFields, toPublicUser } from "../user/user.model.js";
+import { toPublicUser } from "../user/user.model.js";
 import { AppError } from "../../utils/AppError.js";
+import { logError } from "../../utils/logger.js";
 import { uploadBufferToCloudinary } from "../../utils/uploadHelper.js";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../../services/email.service.js";
 import { env } from "../../config/env.js";
@@ -187,11 +188,13 @@ export async function forgotPassword(
         if (user) {
             const token = await authService.createPasswordResetToken(String(user._id));
             const frontendUrl = env.FRONTEND_URL ?? "http://localhost:3000";
-            const resetLink = `${frontendUrl}/reset-password?userId=${user._id}&token=${token}`;
+            const resetLink = `${frontendUrl}/reset-password?userId=${String(user._id)}&token=${token}`;
             try {
                 await sendPasswordResetEmail(user.email, resetLink);
             } catch (err) {
-                // Swallow email errors so we don't leak account existence
+                // Swallow from the client's perspective (don't leak account existence),
+                // but still log so a broken email provider doesn't fail silently.
+                logError(err, { context: "forgot-password-email-send", userId: String(user._id) });
             }
         }
 

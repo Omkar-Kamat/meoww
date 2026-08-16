@@ -10,7 +10,12 @@ declare module "socket.io" {
     }
 }
 
-export interface AuthedSocket {
-    id: string;
-    userId: string;
+export interface AuthedSocket extends Socket {
+    userId?: string;
+}
+
+export interface EmitAction {
+    target: string;
+    event: string;
+    payload: unknown;
 }

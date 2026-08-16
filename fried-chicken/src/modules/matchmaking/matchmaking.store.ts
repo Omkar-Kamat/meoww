@@ -1,16 +1,13 @@
 // addToQueue(userId: string): Promise<void>
 // removeFromQueue(userId: string): Promise<void>
-// popFromQueue(): Promise<string | null>
-// createRoom(userA: string, userB: string): Promise<string>
-// getRoom(roomId: string): Promise<{ user1: string; user2: string } | null>
+// popOrEnqueue(userId: string): Promise<string | null>
+// createRoomAtomic(userA: string, userB: string): Promise<string>
+// getRoom(roomId: string): Promise<RoomRecord | null>
 // deleteRoom(roomId: string): Promise<void>
 // getPeerId(roomId: string, userId: string): Promise<string | null>
 // setUserRoom(userId: string, roomId: string): Promise<void>
 // getUserRoom(userId: string): Promise<string | null>
 // clearUserRoom(userId: string): Promise<void>
-// getUserRoom(userId: string): Promise<string | null>
-// clearUserRoom(userId: string): Promise<void>
-
 // src/modules/matchmaking/matchmaking.store.ts
 import { v4 as uuidv4 } from "uuid";
 import type { RoomRecord } from "./matchmaking.types.js";

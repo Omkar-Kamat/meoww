@@ -36,11 +36,7 @@ function makeKeyGenerator(perUser: boolean) {
     };
 }
 
-export function createRateLimiter(options: RateLimitOptions): any {
-    if (process.env.NODE_ENV === "test") {
-        return (req: Request, res: Response, next: NextFunction) => next();
-    }
-
+export function createRateLimiter(options: RateLimitOptions): ReturnType<typeof rateLimit> {
     const { name, windowMs, max, message, perUser = false, keyGenerator } = options;
 
     const config: Partial<Options> = {
@@ -102,7 +98,7 @@ export const otpRateLimiter = createRateLimiter({
     message: "Too many OTP requests, please try again later.",
     keyGenerator: (req: Request) => {
         const ip = req.ip ?? "unknown";
-        const email = typeof req.body?.email === "string" ? req.body.email : undefined;
-        return email ? `ip:${ip}:email:${email}` : ip;
+        const identifier = typeof req.body?.identifier === "string" ? req.body.identifier : undefined;
+        return identifier ? `ip:${ip}:id:${identifier}` : ip;
     },
 });

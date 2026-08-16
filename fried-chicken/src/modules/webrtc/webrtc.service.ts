@@ -1,4 +1,5 @@
-import type { AuthedSocket, EmitAction } from "./webrtc.types.js";
+import type { AuthedSocket } from "./webrtc.types.js";
+import type { EmitAction } from "../../realtime/socket.types.js";
 
 export interface WebrtcService {
     relayOffer(socket: AuthedSocket, offer: unknown): Promise<EmitAction[]>;

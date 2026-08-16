@@ -3,25 +3,24 @@
 import type { Socket } from "socket.io";
 import type { MatchmakingService } from "./matchmaking.service.js";
 import { createModuleLogger } from "../../utils/logger.js";
-import type { AuthedSocket, EmitAction } from "./matchmaking.types.js";
+import type { AuthedSocket } from "./matchmaking.types.js";
+import type { EmitAction } from "../../realtime/socket.types.js";
 
 const log = createModuleLogger("matchmaking-gateway");
 
 function safeHandler<Args extends unknown[]>(
     socket: Socket,
     eventName: string,
-    fn: (...args: Args) => Promise<EmitAction[] | void>,
+    fn: (...args: Args) => Promise<EmitAction[]>,
 ) {
-    return (...args: Args): void => {
+    return (...args: Args) => {
         fn(...args)
             .then((actions) => {
-                if (actions && Array.isArray(actions)) {
-                    for (const action of actions) {
-                        if (action.target === socket.id) {
-                            socket.emit(action.event, action.payload);
-                        } else {
-                            socket.to(action.target).emit(action.event, action.payload);
-                        }
+                for (const action of actions) {
+                    if (action.target === socket.id) {
+                        socket.emit(action.event, action.payload);
+                    } else {
+                        socket.to(action.target).emit(action.event, action.payload);
                     }
                 }
             })

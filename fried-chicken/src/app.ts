@@ -68,9 +68,9 @@ export function createApp(): Application {
                     connectSrc: [
                         "'self'",
                         ...allowedOrigins,
-                        ...(env.METERED_DOMAIN
-                            ? [`wss://${env.METERED_DOMAIN}`, `https://${env.METERED_DOMAIN}`]
-                            : []),
+                        `stun:${env.TURN_DOMAIN}:${env.TURN_PORT}`,
+                        `turn:${env.TURN_DOMAIN}:${env.TURN_PORT}`,
+                        `turns:${env.TURN_DOMAIN}:${env.TURN_TLS_PORT}`,
                     ],
                     mediaSrc: ["'self'", "blob:"],
                     imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],

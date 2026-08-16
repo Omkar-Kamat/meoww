@@ -22,8 +22,10 @@ const envSchema = z.object({
     CLOUDINARY_API_KEY: z.string().min(1, "CLOUDINARY_API_KEY is required"),
     CLOUDINARY_API_SECRET: z.string().min(1, "CLOUDINARY_API_SECRET is required"),
 
-    METERED_DOMAIN: z.string().min(1, "METERED_DOMAIN is required").optional(),
-    METERED_API_KEY: z.string().min(1, "METERED_API_KEY is required").optional(),
+    TURN_DOMAIN: z.string().min(1, "TURN_DOMAIN is required").default("localhost"),
+    TURN_SECRET: z.string().min(10, "TURN_SECRET must be at least 10 characters").default("mock_secret"),
+    TURN_PORT: z.coerce.number().int().positive().default(3478),
+    TURN_TLS_PORT: z.coerce.number().int().positive().default(5349),
 
     FRONTEND_URL: z.url("FRONTEND_URL must be a valid URL").optional(),
     BASE_URL: z.url("BASE_URL must be a valid URL").optional(),

@@ -14,9 +14,3 @@ export interface MatchResult {
     isInitiator: boolean;
     peerSocketId: string;
 }
-
-export interface EmitAction {
-    target: string;
-    event: string;
-    payload: unknown;
-}
