@@ -105,6 +105,7 @@ export function createMatchmakingService(
 
     async function handleCancelSearch(userId: string): Promise<EmitAction[]> {
         await store.removeFromQueue(userId);
+        await store.forceReleaseLock(userId);
         return [];
     }
 

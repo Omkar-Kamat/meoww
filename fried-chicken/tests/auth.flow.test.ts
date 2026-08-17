@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi, type Mock } from "vitest";
 import request from "supertest";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 import { createApp } from "../src/app.js";
 
@@ -10,12 +10,12 @@ import UserModel from "../src/modules/user/user.model.js";
 import { TokenModel } from "../src/modules/token/token.model.js";
 
 describe("Auth Flow", () => {
-    let mongoServer: MongoMemoryServer;
     let app: ReturnType<typeof createApp>;
+    let mongoServer: MongoMemoryServer;
 
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
+        const uri = process.env.MONGODB_URI ?? mongoServer.getUri();
         await mongoose.connect(uri);
         app = createApp();
     });

@@ -14,7 +14,8 @@ export function safeHandler<Args extends unknown[]>(
     fn: (...args: Args) => Promise<EmitAction[]>,
 ) {
     return (...args: Args): void => {
-        fn(...args)
+        Promise.resolve()
+            .then(() => fn(...args))
             .then((actions) => {
                 for (const action of actions) {
                     if (action.target === socket.id) {
