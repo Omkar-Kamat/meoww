@@ -57,3 +57,4 @@ jobs:
       env:
         TURN_DOMAIN: test.turn.com
         TURN_SECRET: mock_secret_that_is_long_enough_for_zod_to_be_happy_32_chars!
+        MONGODB_URI: mongodb://localhost:27017/test
