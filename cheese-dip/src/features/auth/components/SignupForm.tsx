@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
+import { getApiError } from "../../../shared/utils/error";
+import { RULES } from "../../../shared/utils/ui.config";
 
 export const SignupForm = () => {
   const [name, setName] = useState("");
@@ -10,11 +12,15 @@ export const SignupForm = () => {
   const [password, setPassword] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setUsernameError("");
+    setEmailError("");
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -28,7 +34,14 @@ export const SignupForm = () => {
       await authApi.signup(formData);
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Signup failed");
+      const apiErr = getApiError(err);
+      if (apiErr?.code === "USERNAME_EXISTS") {
+        setUsernameError(apiErr.message);
+      } else if (apiErr?.code === "EMAIL_EXISTS") {
+        setEmailError(apiErr.message);
+      } else {
+        setError(apiErr?.message || "Signup failed");
+      }
     }
   };
 
@@ -40,14 +53,14 @@ export const SignupForm = () => {
           <FieldRow label="Name">
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
           </FieldRow>
-          <FieldRow label="Username">
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+          <FieldRow label="Username" error={usernameError}>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={RULES.USERNAME_MIN_LENGTH} maxLength={RULES.USERNAME_MAX_LENGTH} style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
           </FieldRow>
-          <FieldRow label="Email">
+          <FieldRow label="Email" error={emailError}>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
           </FieldRow>
           <FieldRow label="Password">
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={RULES.PASSWORD_MIN_LENGTH} style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
           </FieldRow>
           <FieldRow label="Profile Photo (Optional)" error={error}>
             <input type="file" onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)} style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} accept="image/*" />

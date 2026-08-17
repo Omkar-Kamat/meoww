@@ -10,13 +10,13 @@ export interface SessionUser {
 export interface LoginRequest {
   email?: string;
   username?: string;
-  password?: string;
+  password: string;
 }
 
 export interface ResetPasswordRequest {
   userId?: string;
   token?: string;
-  password?: string;
+  password: string;
 }
 
 export interface AuthState {

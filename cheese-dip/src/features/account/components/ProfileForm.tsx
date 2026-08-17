@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
+import { getErrorMessage } from "../../../shared/utils/error";
 
 export const ProfileForm = () => {
   const { user, fetchMe } = useAuthSession();
@@ -28,7 +29,7 @@ export const ProfileForm = () => {
       await fetchMe();
       setMsg("Profile updated successfully!");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to update profile");
+      setError(getErrorMessage(err, "Failed to update profile"));
     }
   };
 

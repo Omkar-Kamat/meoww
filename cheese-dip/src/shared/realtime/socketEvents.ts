@@ -9,6 +9,7 @@ export interface ServerToClientEvents {
   "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => void;
   "receive-message": (message: { text: string; fromSelf: boolean }) => void;
   "token-expired": () => void;
+  "session-terminated": () => void;
 }
 
 export interface ClientToServerEvents {
@@ -17,8 +18,8 @@ export interface ClientToServerEvents {
   "leave-room": () => void;
   
   // Stubs for future features
-  offer: (payload: { offer: RTCSessionDescriptionInit; roomId: string }) => void;
-  answer: (payload: { answer: RTCSessionDescriptionInit; roomId: string }) => void;
-  "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId: string }) => void;
+  offer: (payload: { offer: RTCSessionDescriptionInit }) => void;
+  answer: (payload: { answer: RTCSessionDescriptionInit }) => void;
+  "ice-candidate": (payload: { candidate: RTCIceCandidateInit }) => void;
   "send-message": (payload: { text: string }) => void;
 }

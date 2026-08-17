@@ -63,14 +63,14 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            socketClient.emit("ice-candidate", { candidate: event.candidate, roomId });
+            socketClient.emit("ice-candidate", { candidate: event.candidate });
           }
         };
 
         if (isInitiator) {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socketClient.emit("offer", { offer, roomId });
+          socketClient.emit("offer", { offer });
         }
       } catch (err) {
         console.error("Failed to init WebRTC", err);
@@ -110,7 +110,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
-      socketClient.emit("answer", { answer, roomId });
+      socketClient.emit("answer", { answer });
     };
 
     const handleAnswer = async (payload: { answer: RTCSessionDescriptionInit; roomId?: string }) => {

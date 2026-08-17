@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getErrorMessage } from "../../../shared/utils/error";
+import { RULES } from "../../../shared/utils/ui.config";
 
 export const ResetPasswordForm = () => {
   const [password, setPassword] = useState("");
@@ -34,7 +36,7 @@ export const ResetPasswordForm = () => {
       setMsg("Password reset successful. Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to reset password");
+      setError(getErrorMessage(err, "Failed to reset password"));
     }
   };
 
@@ -49,6 +51,7 @@ export const ResetPasswordForm = () => {
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
+              minLength={RULES.PASSWORD_MIN_LENGTH}
               style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
             />
           </FieldRow>
@@ -58,6 +61,7 @@ export const ResetPasswordForm = () => {
               value={confirmPassword} 
               onChange={(e) => setConfirmPassword(e.target.value)} 
               required 
+              minLength={RULES.PASSWORD_MIN_LENGTH}
               style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
             />
           </FieldRow>

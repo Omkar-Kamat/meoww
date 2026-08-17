@@ -3,6 +3,7 @@ import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, Link } from "react-router-dom";
+import { getApiError } from "../../../shared/utils/error";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,12 @@ export const LoginForm = () => {
       await fetchMe();
       navigate("/chat");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Login failed");
+      const apiErr = getApiError(err);
+      if (apiErr?.code === "EMAIL_NOT_VERIFIED") {
+        navigate("/verify-otp", { state: { email } });
+        return;
+      }
+      setError(apiErr?.message || "Login failed");
     }
   };
 

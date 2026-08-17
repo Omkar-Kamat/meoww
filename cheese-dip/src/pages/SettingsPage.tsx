@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ProfileForm, AvatarUpload, accountApi } from "../features/account";
 import { useAuthSession } from "../features/auth";
 import { useNavigate, Link } from "react-router-dom";
+import { getErrorMessage } from "../shared/utils/error";
 
 export const SettingsPage = () => {
   const { user, logout } = useAuthSession();
@@ -17,7 +18,7 @@ export const SettingsPage = () => {
       await logout();
       navigate("/");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to delete account");
+      setError(getErrorMessage(err, "Failed to delete account"));
     }
   };
 

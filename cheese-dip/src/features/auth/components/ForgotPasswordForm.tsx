@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { Link } from "react-router-dom";
+import { getErrorMessage } from "../../../shared/utils/error";
 
 export const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export const ForgotPasswordForm = () => {
       await authApi.forgotPassword({ email });
       setMsg("If an account with that email exists, a reset link has been sent.");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to request password reset");
+      setError(getErrorMessage(err, "Failed to request password reset"));
     }
   };
 

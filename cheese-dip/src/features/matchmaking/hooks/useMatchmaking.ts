@@ -7,11 +7,6 @@ export const useMatchmaking = () => {
   const [matchData, setMatchData] = useState<MatchedPayload | null>(null);
 
   useEffect(() => {
-    // Ensure socket is connected if we are using this hook
-    if (!socketClient.connected) {
-      socketClient.connect();
-    }
-
     const onQueued = () => {
       setStatus("queued");
     };
@@ -34,7 +29,6 @@ export const useMatchmaking = () => {
       socketClient.off("queued", onQueued);
       socketClient.off("matched", onMatched);
       socketClient.off("peer-disconnected", onPeerDisconnected);
-      socketClient.disconnect();
     };
   }, []);
 

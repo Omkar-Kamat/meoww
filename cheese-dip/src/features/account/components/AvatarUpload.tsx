@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
+import { getErrorMessage } from "../../../shared/utils/error";
 
 export const AvatarUpload = () => {
   const { user, fetchMe } = useAuthSession();
@@ -23,7 +24,7 @@ export const AvatarUpload = () => {
       setMsg("Avatar updated successfully!");
       setFile(null);
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to upload avatar");
+      setError(getErrorMessage(err, "Failed to upload avatar"));
     }
   };
 

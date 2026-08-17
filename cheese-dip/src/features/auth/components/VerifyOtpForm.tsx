@@ -3,6 +3,7 @@ import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getErrorMessage } from "../../../shared/utils/error";
 
 export const VerifyOtpForm = () => {
   const [code, setCode] = useState("");
@@ -30,7 +31,7 @@ export const VerifyOtpForm = () => {
       await fetchMe();
       navigate("/chat");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Verification failed");
+      setError(getErrorMessage(err, "Verification failed"));
     }
   };
 
@@ -41,7 +42,7 @@ export const VerifyOtpForm = () => {
       await authApi.resendOtp({ identifier: email });
       setMsg("OTP sent successfully");
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to resend OTP");
+      setError(getErrorMessage(err, "Failed to resend OTP"));
     }
   };
 
