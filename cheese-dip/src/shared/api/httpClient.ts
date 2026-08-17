@@ -1,9 +1,13 @@
 import axios from "axios";
 
+import { API_URL } from "../config/env";
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  baseURL: API_URL,
   withCredentials: true,
 });
+
+let refreshPromise: Promise<unknown> | null = null;
 
 api.interceptors.response.use(
   (response) => response,
@@ -15,7 +19,12 @@ api.interceptors.response.use(
       }
       originalRequest._retry = true;
       try {
-        await api.post("/api/auth/refresh");
+        if (!refreshPromise) {
+          refreshPromise = api.post("/api/auth/refresh").finally(() => {
+            refreshPromise = null;
+          });
+        }
+        await refreshPromise;
         return api(originalRequest);
       } catch (refreshError) {
         // Handle refresh failure (e.g., redirect to login)

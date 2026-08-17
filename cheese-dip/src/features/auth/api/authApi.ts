@@ -1,8 +1,8 @@
 import { api } from "../../../shared/api/httpClient";
-import type { SessionUser } from "../types";
+import type { SessionUser, LoginRequest, ResetPasswordRequest } from "../types";
 
 export const authApi = {
-  login: async (credentials: Record<string, unknown>) => {
+  login: async (credentials: LoginRequest) => {
     const res = await api.post("/api/auth/login", credentials);
     return res.data;
   },
@@ -24,7 +24,7 @@ export const authApi = {
     const res = await api.post("/api/auth/forgot-password", data);
     return res.data;
   },
-  resetPassword: async (data: Record<string, unknown>) => {
+  resetPassword: async (data: ResetPasswordRequest) => {
     const res = await api.post("/api/auth/reset-password", data);
     return res.data;
   },

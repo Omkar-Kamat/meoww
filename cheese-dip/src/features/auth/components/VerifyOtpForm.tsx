@@ -13,10 +13,13 @@ export const VerifyOtpForm = () => {
   const location = useLocation();
   const email = location.state?.email || "";
 
-  if (!email) {
-    navigate("/signup");
-    return null;
-  }
+  React.useEffect(() => {
+    if (!email) {
+      navigate("/signup");
+    }
+  }, [email, navigate]);
+
+  if (!email) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

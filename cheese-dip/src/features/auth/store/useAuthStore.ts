@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { AuthState, SessionUser } from "../types";
 import { authApi } from "../api/authApi";
+import { socketClient } from "../../../shared/realtime/socketClient";
 
 interface AuthStore extends AuthState {
   fetchMe: () => Promise<void>;
@@ -27,6 +28,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       // ignore
     } finally {
       set({ user: null });
+      socketClient.disconnect();
     }
   },
 }));

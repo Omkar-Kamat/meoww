@@ -7,6 +7,18 @@ export interface SessionUser {
   profilePhotoUrl?: string;
 }
 
+export interface LoginRequest {
+  email?: string;
+  username?: string;
+  password?: string;
+}
+
+export interface ResetPasswordRequest {
+  userId?: string;
+  token?: string;
+  password?: string;
+}
+
 export interface AuthState {
   user: SessionUser | null;
   isAuthChecked: boolean;

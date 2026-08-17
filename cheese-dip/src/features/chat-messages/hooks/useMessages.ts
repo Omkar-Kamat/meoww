@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { socketClient } from "../../../shared/realtime/socketClient";
 import type { ChatMessage } from "../types";
+import { generateId } from "../../../shared/utils/id";
 
 export const useMessages = (roomId: string | undefined) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prevRoomId, setPrevRoomId] = useState<string | undefined>(roomId);
 
+  // We reset state during render to avoid an extra render cycle that a useEffect would cause.
+  // This is React's recommended pattern for deriving state from props/arguments.
   if (roomId !== prevRoomId) {
     setPrevRoomId(roomId);
     setMessages([]);
@@ -18,7 +21,7 @@ export const useMessages = (roomId: string | undefined) => {
       setMessages((prev) => [
         ...prev,
         {
-          id: Math.random().toString(36).substring(7),
+          id: generateId(),
           text: payload.text,
           fromSelf: payload.fromSelf,
           timestamp: Date.now(),

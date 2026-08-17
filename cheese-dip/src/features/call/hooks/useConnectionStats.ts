@@ -33,13 +33,16 @@ export const useConnectionStats = () => {
       if (bytesSent > 0 && lastBytesSent > 0) {
         const bytes = bytesSent - lastBytesSent;
         const time = timestamp - lastTimestamp;
-        const bitrate = (bytes * 8) / time; // kbps roughly
         
-        let quality: ConnectionStats["quality"] = "good";
-        if (bitrate < 100) quality = "poor";
-        if (bitrate === 0) quality = "offline";
+        if (time > 0) {
+          const bitrate = (bytes * 8) / time; // kbps roughly
+          
+          let quality: ConnectionStats["quality"] = "good";
+          if (bitrate < 100) quality = "poor";
+          if (bitrate === 0) quality = "offline";
 
-        setStats({ bitrate: Math.round(bitrate), quality });
+          setStats({ bitrate: Math.round(bitrate), quality });
+        }
       }
 
       lastBytesSent = bytesSent;

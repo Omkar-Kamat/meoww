@@ -11,6 +11,8 @@ export const ProfileForm = () => {
 
   const [prevUserId, setPrevUserId] = useState(user?.id);
 
+  // We reset state during render to avoid an extra render cycle that a useEffect would cause.
+  // This is React's recommended pattern for deriving state from props/arguments.
   if (user && user.id !== prevUserId) {
     setName(user.name);
     setUsername(user.username);

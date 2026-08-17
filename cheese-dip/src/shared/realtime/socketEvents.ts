@@ -4,9 +4,9 @@ export interface ServerToClientEvents {
   "peer-disconnected": () => void;
   
   // Stubs for future features (WebRTC, chat)
-  offer: (payload: { offer: RTCSessionDescriptionInit }) => void;
-  answer: (payload: { answer: RTCSessionDescriptionInit }) => void;
-  "ice-candidate": (payload: { candidate: RTCIceCandidateInit }) => void;
+  offer: (payload: { offer: RTCSessionDescriptionInit; roomId?: string }) => void;
+  answer: (payload: { answer: RTCSessionDescriptionInit; roomId?: string }) => void;
+  "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => void;
   "receive-message": (message: { text: string; fromSelf: boolean }) => void;
   "token-expired": () => void;
 }
@@ -17,8 +17,8 @@ export interface ClientToServerEvents {
   "leave-room": () => void;
   
   // Stubs for future features
-  offer: (payload: { offer: RTCSessionDescriptionInit }) => void;
-  answer: (payload: { answer: RTCSessionDescriptionInit }) => void;
-  "ice-candidate": (payload: { candidate: RTCIceCandidateInit }) => void;
+  offer: (payload: { offer: RTCSessionDescriptionInit; roomId: string }) => void;
+  answer: (payload: { answer: RTCSessionDescriptionInit; roomId: string }) => void;
+  "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId: string }) => void;
   "send-message": (payload: { text: string }) => void;
 }

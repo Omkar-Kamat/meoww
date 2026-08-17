@@ -34,6 +34,7 @@ export const useMatchmaking = () => {
       socketClient.off("queued", onQueued);
       socketClient.off("matched", onMatched);
       socketClient.off("peer-disconnected", onPeerDisconnected);
+      socketClient.disconnect();
     };
   }, []);
 
