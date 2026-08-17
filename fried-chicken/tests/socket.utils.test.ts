@@ -13,15 +13,17 @@ describe("socket.utils", () => {
                 to: toMock,
             } as unknown as BaseAuthedSocket;
 
-            const fn = vi.fn().mockResolvedValue([
-                { target: "socketSelf", event: "test-event", payload: { data: 123 } },
-            ]);
+            const fn = vi
+                .fn()
+                .mockResolvedValue([
+                    { target: "socketSelf", event: "test-event", payload: { data: 123 } },
+                ]);
 
             const handler = safeHandler(socket, "test-action", fn);
             handler("arg1");
 
             // Wait for promise resolution
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
 
             expect(fn).toHaveBeenCalledWith("arg1");
             expect(emitMock).toHaveBeenCalledWith("test-event", { data: 123 });
@@ -40,14 +42,16 @@ describe("socket.utils", () => {
                 to: toMock,
             } as unknown as BaseAuthedSocket;
 
-            const fn = vi.fn().mockResolvedValue([
-                { target: "socketOther", event: "test-event-other", payload: { data: 456 } },
-            ]);
+            const fn = vi
+                .fn()
+                .mockResolvedValue([
+                    { target: "socketOther", event: "test-event-other", payload: { data: 456 } },
+                ]);
 
             const handler = safeHandler(socket, "test-action", fn);
             handler("arg2");
 
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
 
             expect(fn).toHaveBeenCalledWith("arg2");
             expect(emitMock).not.toHaveBeenCalled();
@@ -72,11 +76,13 @@ describe("socket.utils", () => {
             const handler = safeHandler(socket, "test-action", fn);
             handler();
 
-            await new Promise(resolve => setTimeout(resolve, 0)); // Allow promise rejection to handle
+            await new Promise((resolve) => setTimeout(resolve, 0)); // Allow promise rejection to handle
 
-            expect(emitMock).toHaveBeenCalledWith("error", { message: "An unexpected error occurred." });
+            expect(emitMock).toHaveBeenCalledWith("error", {
+                message: "An unexpected error occurred.",
+            });
         });
-        
+
         it("should catch synchronous errors inside handler (e.g., Zod throws)", async () => {
             const emitMock = vi.fn();
             const toMock = vi.fn();
@@ -94,12 +100,14 @@ describe("socket.utils", () => {
             });
 
             const handler = safeHandler(socket, "test-action", fn);
-            
+
             handler();
 
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
 
-            expect(emitMock).toHaveBeenCalledWith("error", { message: "An unexpected error occurred." });
+            expect(emitMock).toHaveBeenCalledWith("error", {
+                message: "An unexpected error occurred.",
+            });
         });
     });
 });
