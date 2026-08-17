@@ -11,18 +11,23 @@ import { TokenModel } from "../src/modules/token/token.model.js";
 
 describe("Auth Flow", () => {
     let app: ReturnType<typeof createApp>;
-    let mongoServer: MongoMemoryServer;
+    let mongoServer: MongoMemoryServer | undefined;
 
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = process.env.MONGODB_URI ?? mongoServer.getUri();
+        let uri = process.env.MONGODB_URI;
+        if (!uri) {
+            mongoServer = await MongoMemoryServer.create();
+            uri = mongoServer.getUri();
+        }
         await mongoose.connect(uri);
         app = createApp();
     });
 
     afterAll(async () => {
         await mongoose.disconnect();
-        await mongoServer.stop();
+        if (mongoServer) {
+            await mongoServer.stop();
+        }
     });
 
     beforeEach(async () => {

@@ -1,7 +1,4 @@
-// loadEnv() — validates required env vars are present (ideally via Zod schema), throws on startup if missing
-// env — exported typed config object (e.g. { PORT, MONGO_URI, REDIS_URL, JWT_SECRET, ... })
-
-// src/config/env
+// src/config/env.ts
 import { z } from "zod";
 
 const envSchema = z.object({

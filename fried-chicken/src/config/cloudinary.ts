@@ -1,7 +1,3 @@
-// configureCloudinary() — sets Cloudinary credentials from env
-// uploadImage(filePath: string, options?: object): Promise<UploadResult>
-// deleteImage(publicId: string): Promise<void>
-
 // src/config/cloudinary
 import { v2 as cloudinary, type UploadApiOptions, type UploadApiResponse } from "cloudinary";
 import { createModuleLogger } from "../utils/logger.js";

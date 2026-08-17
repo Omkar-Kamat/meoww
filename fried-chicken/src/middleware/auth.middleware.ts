@@ -1,7 +1,4 @@
-// requireAuth(req, res, next) — verifies JWT from cookie/header, attaches req.userId
-// optionalAuth(req, res, next) — same, but doesn't reject if token is absent
-
-// src/middleware/auth.middleware
+// src/middleware/auth.middleware.ts
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError.js";
@@ -65,7 +62,7 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
     try {
         req.userId = verifyToken(token);
     } catch {
-        // token present but invalid/expired — proceed unauthenticated rather than reject
+        // ignore invalid tokens in optional auth
     }
 
     next();

@@ -1,8 +1,4 @@
-// validateBody(schema: ZodSchema) — middleware factory, parses req.body against a Zod schema
-// validateParams(schema: ZodSchema)
-// validateQuery(schema: ZodSchema)
-
-// src/middleware/validate.middleware
+// src/middleware/validate.middleware.ts
 import type { NextFunction, Request, Response } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
 import type { ZodError } from "zod";

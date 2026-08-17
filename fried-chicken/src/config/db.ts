@@ -1,7 +1,4 @@
-// connectDB(): Promise<void> — establishes Mongoose connection
-// disconnectDB(): Promise<void> — used in graceful shutdown and tests
-
-// src/config/db
+// src/config/db.ts
 import mongoose, { ConnectionStates, type ConnectOptions } from "mongoose";
 import { createModuleLogger, logError } from "../utils/logger.js";
 

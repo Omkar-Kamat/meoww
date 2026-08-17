@@ -8,7 +8,7 @@
 // setUserRoom(userId: string, roomId: string): Promise<void>
 // getUserRoom(userId: string): Promise<string | null>
 // clearUserRoom(userId: string): Promise<void>
-// forceReleaseLock(userId: string): Promise<void>
+
 // src/modules/matchmaking/matchmaking.store.ts
 import { v4 as uuidv4 } from "uuid";
 import type { RoomRecord } from "./matchmaking.types.js";
@@ -103,8 +103,4 @@ export async function releaseLock(userId: string, token: string): Promise<void> 
         keys: [`mm:lock:${userId}`],
         arguments: [token],
     });
-}
-
-export async function forceReleaseLock(userId: string): Promise<void> {
-    await redisClient.del(`mm:lock:${userId}`);
 }

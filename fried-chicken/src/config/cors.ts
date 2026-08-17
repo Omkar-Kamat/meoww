@@ -1,7 +1,4 @@
-// corsOptions — exported CORS config object
-// allowedOrigins — exported array/list used by both CORS and CSP headers
-
-// src/config/cors
+// src/config/cors.ts
 import type { CorsOptions } from "cors";
 import { createModuleLogger } from "../utils/logger.js";
 

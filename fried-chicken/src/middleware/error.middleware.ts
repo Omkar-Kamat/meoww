@@ -1,7 +1,4 @@
-// errorHandler(err, req, res, next) — global error handler (Multer errors, AppError, unhandled)
-// notFoundHandler(req, res) — 404 fallback for unmatched routes
-
-// src/middleware/error.middleware
+// src/middleware/error.middleware.ts
 import type { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
 import { AppError } from "../utils/AppError.js";

@@ -1,9 +1,4 @@
-// createRedisClient(): RedisClientType — instantiates the Redis client (call
-//   redisClient.connect() separately at boot — see index.ts)
-// redisClient — exported singleton instance
-// disconnectRedis(): Promise<void> — used in graceful shutdown
-
-// src/config/redis
+// src/config/redis.ts
 import { createClient, type RedisClientType } from "redis";
 import { createModuleLogger, logError } from "../utils/logger.js";
 import { env } from "./env.js";
@@ -51,7 +46,6 @@ const redisClient: RedisClientType = createRedisClient();
 
 async function disconnectRedis(): Promise<void> {
     if (!redisClient.isOpen) {
-        // already disconnected — nothing to do
         return;
     }
 
