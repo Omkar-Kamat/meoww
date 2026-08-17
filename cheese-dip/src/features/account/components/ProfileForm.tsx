@@ -1,0 +1,65 @@
+import React, { useState } from "react";
+import { useAuthSession } from "../../auth";
+import { accountApi } from "../api/accountApi";
+
+export const ProfileForm = () => {
+  const { user, fetchMe } = useAuthSession();
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [msg, setMsg] = useState("");
+  const [error, setError] = useState("");
+
+  const [prevUserId, setPrevUserId] = useState(user?.id);
+
+  if (user && user.id !== prevUserId) {
+    setName(user.name);
+    setUsername(user.username);
+    setPrevUserId(user.id);
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMsg("");
+    setError("");
+    try {
+      await accountApi.updateProfile({ name, username });
+      await fetchMe();
+      setMsg("Profile updated successfully!");
+    } catch (err) {
+      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to update profile");
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "20px", borderRadius: "8px" }}>
+      <h3>Update Profile</h3>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
+          <input 
+            type="text" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            required 
+            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+          />
+        </div>
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", marginBottom: "5px" }}>Username</label>
+          <input 
+            type="text" 
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} 
+            required 
+            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+          />
+        </div>
+        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+        {msg && <div style={{ color: "green", marginBottom: "10px" }}>{msg}</div>}
+        <button type="submit" style={{ padding: "10px 15px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  );
+};
