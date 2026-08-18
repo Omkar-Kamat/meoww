@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { LandingPage } from "../pages/LandingPage";
 import { ChatPage } from "../pages/ChatPage";
 import { SettingsPage } from "../pages/SettingsPage";
@@ -34,6 +34,15 @@ export const AppRoutes = () => {
           <ProtectedRoute>
             <SettingsPage />
           </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="*" 
+        element={
+          <div style={{ padding: "50px", textAlign: "center" }}>
+            <h2>404 - Page Not Found</h2>
+            <Link to="/">Go Home</Link>
+          </div>
         } 
       />
     </Routes>

@@ -143,7 +143,7 @@ export const ChatPage = () => {
         <div style={{ flex: 1, border: "1px solid #ccc", borderRadius: "8px", padding: "15px", display: "flex", flexDirection: "column" }}>
           <h3>Text Chat</h3>
           <MessageList messages={messages} />
-          <MessageInput onSend={sendMessage} disabled={!isMatched} />
+          <MessageInput key={matchData?.roomId ?? "idle"} onSend={sendMessage} disabled={!isMatched} />
         </div>
       </div>
 
