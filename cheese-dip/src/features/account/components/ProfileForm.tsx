@@ -29,6 +29,13 @@ export const ProfileForm = () => {
     e.preventDefault();
     setMsg("");
     setError("");
+
+    const reservedWords = ["admin", "meoww", "support", "test"];
+    if (reservedWords.includes(username.toLowerCase())) {
+      setError("This username is not allowed");
+      return;
+    }
+
     try {
       await accountApi.updateProfile({ name, username });
       await fetchMe();
@@ -37,6 +44,8 @@ export const ProfileForm = () => {
       const apiErr = getApiError(err);
       if (apiErr?.code === "USERNAME_EXISTS") {
         setError("This username is already taken.");
+      } else if (apiErr?.meta?.errors) {
+        setError(apiErr.meta.errors.map(e => e.message).join(", "));
       } else {
         setError(getErrorMessage(err, "Failed to update profile"));
       }

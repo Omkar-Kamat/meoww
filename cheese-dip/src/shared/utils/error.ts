@@ -3,7 +3,10 @@ import axios from "axios";
 export interface AppErrorResponse {
   message: string;
   code?: string;
-  meta?: Record<string, unknown>;
+  meta?: {
+    errors?: Array<{ path: string[]; message: string }>;
+    [key: string]: unknown;
+  };
 }
 
 export const getApiError = (err: unknown): AppErrorResponse | null => {

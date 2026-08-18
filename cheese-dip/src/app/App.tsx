@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppProviders } from "./providers";
 import { AppRoutes } from "./routes";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
@@ -7,6 +7,7 @@ import { socketClient } from "../shared/realtime/socketClient";
 
 export const App = () => {
   const { fetchMe, user, isRefreshing, setIsRefreshing } = useAuthStore();
+  const [isReconnecting, setIsReconnecting] = useState(false);
 
   useEffect(() => {
     // Attempt to fetch current user session on mount
@@ -56,14 +57,21 @@ export const App = () => {
         useAuthStore.getState().logout();
       };
 
+      const handleConnect = () => setIsReconnecting(false);
+      const handleDisconnect = () => setIsReconnecting(true);
+
       socketClient.on("token-expired", handleTokenExpired);
       socketClient.on("token-expiring-soon", handleTokenExpiringSoon);
       socketClient.on("session-terminated", handleSessionTerminated);
+      socketClient.on("connect", handleConnect);
+      socketClient.on("disconnect", handleDisconnect);
 
       return () => {
         socketClient.off("token-expired", handleTokenExpired);
         socketClient.off("token-expiring-soon", handleTokenExpiringSoon);
         socketClient.off("session-terminated", handleSessionTerminated);
+        socketClient.off("connect", handleConnect);
+        socketClient.off("disconnect", handleDisconnect);
         socketClient.disconnect();
       };
     } else {
@@ -81,6 +89,14 @@ export const App = () => {
           backgroundColor: "#17a2b8", color: "white", textAlign: "center", padding: "5px", fontSize: "14px"
         }}>
           Refreshing session...
+        </div>
+      )}
+      {isReconnecting && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", zIndex: 9999,
+          backgroundColor: "#ffc107", color: "black", textAlign: "center", padding: "5px", fontSize: "14px"
+        }}>
+          Reconnecting...
         </div>
       )}
       <AppRoutes />

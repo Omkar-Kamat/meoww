@@ -37,6 +37,16 @@ export const ResetPasswordForm = () => {
       return;
     }
 
+    if (userId.length !== 24 || !/^[0-9a-f]+$/.test(userId)) {
+      setError("Invalid user ID");
+      return;
+    }
+
+    if (token.length !== 64 || !/^[a-f0-9]+$/.test(token)) {
+      setError("Invalid reset token");
+      return;
+    }
+
     try {
       await authApi.resetPassword({ userId, token, password });
       setMsg("Password reset successful. Redirecting to login...");

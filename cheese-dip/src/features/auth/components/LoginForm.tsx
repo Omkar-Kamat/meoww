@@ -53,6 +53,7 @@ export const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
+              maxLength={100}
             />
           </FieldRow>
           {error && (

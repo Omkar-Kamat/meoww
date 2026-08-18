@@ -2,6 +2,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { LandingPage } from "../pages/LandingPage";
 import { ChatPage } from "../pages/ChatPage";
 import { SettingsPage } from "../pages/SettingsPage";
+import { NotFound } from "../pages/NotFound";
 import { ProtectedRoute } from "../routes/ProtectedRoute";
 import { 
   LoginForm, 
@@ -36,15 +37,7 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      <Route 
-        path="*" 
-        element={
-          <div style={{ padding: "50px", textAlign: "center" }}>
-            <h2>404 - Page Not Found</h2>
-            <Link to="/">Go Home</Link>
-          </div>
-        } 
-      />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
