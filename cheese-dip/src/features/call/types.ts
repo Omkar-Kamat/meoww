@@ -20,5 +20,6 @@ export interface UseWebRTCReturn {
   stats: ConnectionStats;
   isConnecting: boolean;
   cleanupAll: () => void;
-  // Expose these if needed by other orchestrators, but mostly managed internally
+  error: string | null;
+  retry: () => void;
 }

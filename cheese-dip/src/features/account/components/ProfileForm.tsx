@@ -7,8 +7,8 @@ import { Button } from "../../../shared/components/Button";
 
 export const ProfileForm = () => {
   const { user, fetchMe } = useAuthSession();
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState(user?.name ?? "");
+  const [username, setUsername] = useState(user?.username ?? "");
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 

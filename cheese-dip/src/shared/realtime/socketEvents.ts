@@ -8,9 +8,9 @@ export interface ServerToClientEvents {
   answer: (payload: { answer: RTCSessionDescriptionInit; roomId?: string }) => void;
   "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => void;
   "receive-message": (message: { text: string; fromSelf: boolean }) => void;
-  "token-expired": () => void;
-  "token-expiring-soon": () => void;
-  "session-terminated": () => void;
+  "token-expired": (payload: { code: string; message: string }) => void;
+  "token-expiring-soon": (payload: { code: string; message: string; expiresInMs: number }) => void;
+  "session-terminated": (payload: { reason: string }) => void;
 }
 
 export interface ClientToServerEvents {

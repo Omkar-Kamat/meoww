@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { Link } from "react-router-dom";
@@ -11,7 +12,7 @@ export const ForgotPasswordForm = () => {
   const [error, setError] = useState("");
   const [msg, setMsg] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setMsg("");

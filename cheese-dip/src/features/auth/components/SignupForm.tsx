@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
@@ -18,12 +19,13 @@ export const SignupForm = () => {
   const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setUsernameError("");
     setEmailError("");
 
+    // keep in sync with auth.schema.ts
     const reservedWords = ["admin", "meoww", "support", "test"];
     if (reservedWords.includes(username.toLowerCase())) {
       setUsernameError("Username is reserved");

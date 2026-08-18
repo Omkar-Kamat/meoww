@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
@@ -14,7 +15,7 @@ export const LoginForm = () => {
   const { fetchMe } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     try {

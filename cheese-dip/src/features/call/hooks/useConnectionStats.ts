@@ -12,6 +12,7 @@ export const useConnectionStats = (minBitrate: number = 20) => {
 
     let lastBytesSent = 0;
     let lastTimestamp = 0;
+    let lastPacketsLost = 0;
 
     intervalRef.current = window.setInterval(async () => {
       if (!pcRef.current || pcRef.current.signalingState === "closed") {
@@ -21,25 +22,33 @@ export const useConnectionStats = (minBitrate: number = 20) => {
 
       const rawStats = await pcRef.current.getStats();
       let bytesSent = 0;
-      let timestamp = 0;
+      const timestamp = Date.now();
+      let packetsLost = 0;
 
       rawStats.forEach((report) => {
-        if (report.type === "outbound-rtp" && report.kind === "video") {
-          bytesSent = report.bytesSent;
-          timestamp = report.timestamp;
+        if (report.type === "outbound-rtp") {
+          bytesSent += report.bytesSent || 0;
+        }
+        if (report.type === "remote-inbound-rtp") {
+          packetsLost += report.packetsLost || 0;
         }
       });
 
       if (lastTimestamp > 0) {
         const bytes = bytesSent - lastBytesSent;
         const time = timestamp - lastTimestamp;
+        const newPacketsLost = packetsLost - lastPacketsLost;
         
         if (time > 0) {
           const bitrate = (bytes * 8) / time; // kbps roughly
           
           let quality: ConnectionStats["quality"] = "good";
-          if (bitrate < minBitrate) quality = "poor";
-          if (bitrate === 0) quality = "offline";
+          const state = pcRef.current?.iceConnectionState;
+          if (state === "disconnected" || state === "failed" || pcRef.current?.connectionState === "disconnected" || pcRef.current?.connectionState === "failed") {
+            quality = "offline";
+          } else if (bitrate < minBitrate || newPacketsLost > 10) {
+            quality = "poor";
+          }
 
           setStats({ bitrate: Math.round(bitrate), quality });
         }
@@ -47,6 +56,7 @@ export const useConnectionStats = (minBitrate: number = 20) => {
 
       lastBytesSent = bytesSent;
       lastTimestamp = timestamp;
+      lastPacketsLost = packetsLost;
     }, 2000);
   }, [minBitrate]);
 

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -20,7 +21,7 @@ export const ResetPasswordForm = () => {
   const userId = queryParams.get("userId") || "";
   const token = queryParams.get("token") || "";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setMsg("");

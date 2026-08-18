@@ -8,6 +8,8 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const { stats, startStats, stopStats } = useConnectionStats();
@@ -42,6 +44,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
     let mounted = true;
 
     const init = async () => {
+      setError(null);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         if (!mounted) {
@@ -73,6 +76,17 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
           }
         };
 
+        pc.oniceconnectionstatechange = () => {
+          if (pc.iceConnectionState === "disconnected" || pc.iceConnectionState === "failed") {
+            setIsConnecting(true);
+            if (isInitiator) {
+              pc.restartIce();
+            }
+          } else if (pc.iceConnectionState === "connected") {
+            setIsConnecting(false);
+          }
+        };
+
         const pending = pendingSignalsRef.current.splice(0);
         for (const run of pending) await run();
 
@@ -83,6 +97,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
         }
       } catch (err) {
         console.error("Failed to init WebRTC", err);
+        setError(err instanceof Error ? err.message : "Failed to initialize WebRTC");
       }
     };
 
@@ -92,7 +107,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
       mounted = false;
       cleanupAll();
     };
-  }, [roomId, isInitiator, cleanupAll, startStats]);
+  }, [roomId, isInitiator, cleanupAll, startStats, retryCount]);
 
   // Socket event listeners
   useEffect(() => {
@@ -190,11 +205,20 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
     };
   }, [roomId]);
 
+  const retry = useCallback(() => {
+    cleanupAll();
+    setIsConnecting(true);
+    setError(null);
+    setRetryCount(c => c + 1);
+  }, [cleanupAll]);
+
   return {
     localStream,
     remoteStream,
     stats,
     isConnecting,
     cleanupAll,
+    error,
+    retry,
   };
 };

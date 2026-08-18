@@ -37,12 +37,14 @@ export const useMessages = (roomId: string | undefined) => {
   }, [roomId]);
 
   const sendMessage = useCallback((text: string) => {
-    if (!text.trim()) return;
+    if (!roomId || !text.trim()) return false;
     socketClient.emit("send-message", { text });
-  }, []);
+    return true;
+  }, [roomId]);
 
   return {
     messages,
     sendMessage,
+    canSend: !!roomId,
   };
 };

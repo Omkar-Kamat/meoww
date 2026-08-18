@@ -1,14 +1,22 @@
+import { useState } from "react";
 import { useAuthSession } from "../features/auth";
 import { useMatchmaking } from "../features/matchmaking";
 import { useWebRTC, useCallControls, VideoTile, CallControlBar } from "../features/call";
 import { useMessages, MessageList, MessageInput } from "../features/chat-messages";
 import { trustSafetyApi } from "../features/trust-safety";
 import { useNavigate } from "react-router-dom";
+import { Modal } from "../shared/components/Modal";
+import { Input } from "../shared/components/Input";
+import { Button } from "../shared/components/Button";
 
 export const ChatPage = () => {
   const { logout } = useAuthSession();
   const navigate = useNavigate();
   const { status, matchData, search, stopSearch, skip, leaveRoom } = useMatchmaking();
+
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [isBlockOpen, setIsBlockOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -24,15 +32,16 @@ export const ChatPage = () => {
   const { messages, sendMessage } = useMessages(isMatched ? matchData?.roomId : undefined);
 
   const handleReport = async () => {
-    const reason = window.prompt("Why are you reporting this user?");
-    if (!reason || !matchData?.peerId || !matchData?.roomId) return;
+    if (!reportReason || !matchData?.peerId || !matchData?.roomId) return;
     try {
       await trustSafetyApi.report({
         reportedUserId: matchData.peerId,
         roomId: matchData.roomId,
-        reason
+        reason: reportReason
       });
       alert("Report submitted.");
+      setIsReportOpen(false);
+      setReportReason("");
     } catch {
       alert("Failed to submit report.");
     }
@@ -40,12 +49,12 @@ export const ChatPage = () => {
 
   const handleBlock = async () => {
     if (!matchData?.peerId) return;
-    if (!window.confirm("Are you sure you want to block this user?")) return;
     try {
       await trustSafetyApi.block({
         blockedUserId: matchData.peerId
       });
       alert("User blocked.");
+      setIsBlockOpen(false);
       skip();
     } catch {
       alert("Failed to block user.");
@@ -71,14 +80,23 @@ export const ChatPage = () => {
         <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: "20px" }}>
           <div style={{ flex: 1, border: "1px dashed #ccc", display: "flex", gap: "10px", padding: "10px", borderRadius: "8px" }}>
             {isMatched ? (
-              <>
-                <div style={{ flex: 1 }}>
-                  <VideoTile stream={webrtc.localStream} label="You" isLocal />
+              webrtc.error ? (
+                <div style={{ display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "15px" }}>
+                  <p style={{ color: "red", textAlign: "center" }}>{webrtc.error}</p>
+                  <Button onClick={webrtc.retry}>
+                    Retry Connection
+                  </Button>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <VideoTile stream={webrtc.remoteStream} label="Peer" />
-                </div>
-              </>
+              ) : (
+                <>
+                  <div style={{ flex: 1 }}>
+                    <VideoTile stream={webrtc.localStream} label="You" isLocal />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <VideoTile stream={webrtc.remoteStream} label="Peer" />
+                  </div>
+                </>
+              )
             ) : (
               <div style={{ display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "15px" }}>
                 <p>Status: <strong>{status}</strong></p>
@@ -102,8 +120,8 @@ export const ChatPage = () => {
               onVideo={controls.toggleVideo}
               onSkip={skip}
               onEnd={leaveRoom}
-              onReport={handleReport}
-              onBlock={handleBlock}
+              onReport={() => setIsReportOpen(true)}
+              onBlock={() => setIsBlockOpen(true)}
               isMuted={controls.isMuted}
               isVideoOff={controls.isVideoOff}
             />
@@ -123,6 +141,27 @@ export const ChatPage = () => {
           <MessageInput onSend={sendMessage} disabled={!isMatched} />
         </div>
       </div>
+
+      <Modal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} title="Report User">
+        <p>Why are you reporting this user?</p>
+        <Input 
+          value={reportReason} 
+          onChange={(e) => setReportReason(e.target.value)} 
+          placeholder="Harassment, nudity, etc." 
+        />
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
+          <Button style={{ backgroundColor: "#6c757d" }} onClick={() => setIsReportOpen(false)}>Cancel</Button>
+          <Button style={{ backgroundColor: "#007bff" }} onClick={handleReport}>Submit Report</Button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isBlockOpen} onClose={() => setIsBlockOpen(false)} title="Block User">
+        <p>Are you sure you want to block this user? You will be skipped to the next match.</p>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
+          <Button style={{ backgroundColor: "#6c757d" }} onClick={() => setIsBlockOpen(false)}>Cancel</Button>
+          <Button style={{ backgroundColor: "#dc3545" }} onClick={handleBlock}>Block User</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -38,6 +38,6 @@ api.interceptors.response.use(
 
 function shouldSkipRefresh(url?: string): boolean {
   if (!url) return false;
-  const skipUrls = ["/api/auth/login", "/api/auth/signup", "/api/auth/refresh"];
+  const skipUrls = ["/api/auth/login", "/api/auth/signup", "/api/auth/refresh", "/api/auth/logout"];
   return skipUrls.some((skipUrl) => url.includes(skipUrl));
 }

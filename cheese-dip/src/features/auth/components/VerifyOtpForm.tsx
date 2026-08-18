@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type { FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
@@ -16,7 +17,7 @@ export const VerifyOtpForm = () => {
   const location = useLocation();
   const email = location.state?.email || "";
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!email) {
       navigate("/signup");
     }
@@ -24,7 +25,7 @@ export const VerifyOtpForm = () => {
 
   if (!email) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setMsg("");

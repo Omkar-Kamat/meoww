@@ -30,7 +30,8 @@ export const App = () => {
         socketClient.connect();
       }
 
-      const handleTokenExpired = () => {
+      const handleTokenExpired = (payload: { code: string; message: string }) => {
+        alert(payload.message || "Your session has expired. Please log in again.");
         useAuthStore.getState().logout();
       };
       
@@ -44,7 +45,10 @@ export const App = () => {
         }
       };
 
-      const handleSessionTerminated = () => {
+      const handleSessionTerminated = (payload: { reason: string }) => {
+        alert(payload.reason === "another_session_detected" 
+          ? "You have been logged out because you logged in on another device." 
+          : "Your session has been terminated.");
         useAuthStore.getState().logout();
       };
 
