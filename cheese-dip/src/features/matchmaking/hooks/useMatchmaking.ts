@@ -43,12 +43,13 @@ export const useMatchmaking = () => {
   }, []);
 
   const skip = useCallback(() => {
-    socketClient.emit("leave-room");
+    socketClient.emit("leave-room", () => {
+      // automatically search again
+      socketClient.emit("search");
+      setStatus("queued");
+    });
     setStatus("idle");
     setMatchData(null);
-    // automatically search again
-    socketClient.emit("search");
-    setStatus("queued");
   }, []);
 
   const leaveRoom = useCallback(() => {

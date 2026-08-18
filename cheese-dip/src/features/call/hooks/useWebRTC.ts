@@ -12,6 +12,9 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const { stats, startStats, stopStats } = useConnectionStats();
 
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const pendingSignalsRef = useRef<Array<() => Promise<void>>>([]);
+
   const cleanupPeer = useCallback(() => {
     if (pcRef.current) {
       pcRef.current.close();
@@ -23,12 +26,13 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
   const cleanupAll = useCallback(() => {
     cleanupPeer();
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
       setLocalStream(null);
     }
     setRemoteStream(null);
-  }, [cleanupPeer, localStream]);
+  }, [cleanupPeer]);
 
   // Request media and init connection
   useEffect(() => {
@@ -44,6 +48,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
           return;
         }
         setLocalStream(stream);
+        localStreamRef.current = stream;
 
         const credentials = await webrtcApi.getTurnCredentials();
         const pc = new RTCPeerConnection({ iceServers: credentials.iceServers });
@@ -66,6 +71,9 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
             socketClient.emit("ice-candidate", { candidate: event.candidate });
           }
         };
+
+        const pending = pendingSignalsRef.current.splice(0);
+        for (const run of pending) await run();
 
         if (isInitiator) {
           const offer = await pc.createOffer();
@@ -93,57 +101,81 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
     const handleOffer = async (payload: { offer: RTCSessionDescriptionInit; roomId?: string }) => {
       if (payload.roomId && payload.roomId !== roomId) return;
-      const pc = pcRef.current;
-      if (!pc) return;
-      await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
+      const run = async () => {
+        const pc = pcRef.current;
+        if (!pc) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
 
-      while (candidateQueue.length > 0) {
-        const candidate = candidateQueue.shift();
-        if (candidate) {
-          try {
-            await pc.addIceCandidate(new RTCIceCandidate(candidate));
-          } catch (e) {
-            console.error("Error adding queued ice candidate", e);
+        while (candidateQueue.length > 0) {
+          const candidate = candidateQueue.shift();
+          if (candidate) {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (e) {
+              console.error("Error adding queued ice candidate", e);
+            }
           }
         }
-      }
 
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socketClient.emit("answer", { answer });
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socketClient.emit("answer", { answer });
+      };
+
+      if (!pcRef.current) {
+        pendingSignalsRef.current.push(run);
+        return;
+      }
+      await run();
     };
 
     const handleAnswer = async (payload: { answer: RTCSessionDescriptionInit; roomId?: string }) => {
       if (payload.roomId && payload.roomId !== roomId) return;
-      const pc = pcRef.current;
-      if (!pc) return;
-      await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
+      const run = async () => {
+        const pc = pcRef.current;
+        if (!pc) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
 
-      while (candidateQueue.length > 0) {
-        const candidate = candidateQueue.shift();
-        if (candidate) {
-          try {
-            await pc.addIceCandidate(new RTCIceCandidate(candidate));
-          } catch (e) {
-            console.error("Error adding queued ice candidate", e);
+        while (candidateQueue.length > 0) {
+          const candidate = candidateQueue.shift();
+          if (candidate) {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (e) {
+              console.error("Error adding queued ice candidate", e);
+            }
           }
         }
+      };
+
+      if (!pcRef.current) {
+        pendingSignalsRef.current.push(run);
+        return;
       }
+      await run();
     };
 
     const handleIceCandidate = async (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => {
       if (payload.roomId && payload.roomId !== roomId) return;
-      const pc = pcRef.current;
-      if (!pc) return;
-      if (!pc.remoteDescription) {
-        candidateQueue.push(payload.candidate);
+      const run = async () => {
+        const pc = pcRef.current;
+        if (!pc) return;
+        if (!pc.remoteDescription) {
+          candidateQueue.push(payload.candidate);
+          return;
+        }
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+        } catch (e) {
+          console.error("Error adding received ice candidate", e);
+        }
+      };
+
+      if (!pcRef.current) {
+        pendingSignalsRef.current.push(run);
         return;
       }
-      try {
-        await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
-      } catch (e) {
-        console.error("Error adding received ice candidate", e);
-      }
+      await run();
     };
 
     socketClient.on("offer", handleOffer);

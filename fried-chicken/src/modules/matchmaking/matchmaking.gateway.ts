@@ -28,6 +28,12 @@ export function registerMatchmakingHandlers(service: MatchmakingService, socket:
 
     socket.on(
         "leave-room",
-        safeHandler(authedSocket, "leave-room", () => service.handleLeaveRoom(authedSocket.userId)),
+        safeHandler(authedSocket, "leave-room", async (callback?: () => void) => {
+            const actions = await service.handleLeaveRoom(authedSocket.userId);
+            if (callback && typeof callback === "function") {
+                callback();
+            }
+            return actions;
+        }),
     );
 }

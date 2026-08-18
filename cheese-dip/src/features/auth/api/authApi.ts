@@ -33,6 +33,9 @@ export const authApi = {
   },
   fetchMe: async (): Promise<SessionUser> => {
     const res = await api.get("/api/users/me");
-    return res.data.data;
+    return res.data.user;
+  },
+  refresh: async () => {
+    await api.post("/api/auth/refresh");
   },
 };

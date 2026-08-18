@@ -9,13 +9,14 @@ export interface ServerToClientEvents {
   "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => void;
   "receive-message": (message: { text: string; fromSelf: boolean }) => void;
   "token-expired": () => void;
+  "token-expiring-soon": () => void;
   "session-terminated": () => void;
 }
 
 export interface ClientToServerEvents {
   search: () => void;
   "cancel-search": () => void;
-  "leave-room": () => void;
+  "leave-room": (callback?: () => void) => void;
   
   // Stubs for future features
   offer: (payload: { offer: RTCSessionDescriptionInit }) => void;

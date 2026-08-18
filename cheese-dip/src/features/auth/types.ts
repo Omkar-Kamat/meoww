@@ -9,7 +9,6 @@ export interface SessionUser {
 
 export interface LoginRequest {
   email?: string;
-  username?: string;
   password: string;
 }
 

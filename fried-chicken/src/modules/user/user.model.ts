@@ -41,9 +41,16 @@ const userSchema = new Schema<UserDocument>({
 
 export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>("User", userSchema);
 
-export function toPublicUser(user: UserDocument): Omit<UserFields, "passwordHash"> {
-    const { passwordHash: _passwordHash, ...safeUser } = user.toObject<UserFields>();
-    return safeUser;
+export function toPublicUser(user: UserDocument) {
+    const obj = user.toObject<UserFields & { _id: unknown }>();
+    return {
+        id: String(obj._id),
+        name: obj.name,
+        username: obj.username,
+        email: obj.email,
+        isEmailVerified: obj.isVerified,
+        profilePhotoUrl: obj.profileImage || undefined,
+    };
 }
 
 export default UserModel;
