@@ -91,9 +91,11 @@ export const useMatchmaking = () => {
     setStatus("skipping");
     socketClient.emit("leave-room", () => {
       if (!isMountedRef.current) return;
-      // automatically search again
-      socketClient.emit("search");
-      setStatus("queued");
+      setTimeout(() => {
+        if (!isMountedRef.current) return;
+        socketClient.emit("search");
+        setStatus("queued");
+      }, 300);
     });
     setMatchData(null);
   }, []);

@@ -4,7 +4,7 @@ import { webrtcApi } from "../api/webrtcApi";
 import type { UseWebRTCReturn } from "../types";
 import { useConnectionStats } from "./useConnectionStats";
 
-export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): UseWebRTCReturn => {
+export const useWebRTC = (isInitiator: boolean, roomId: string | undefined, preAcquiredStream: MediaStream | null): UseWebRTCReturn => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -30,7 +30,6 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
     cleanupPeer();
     pendingSignalsRef.current = [];
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
       setLocalStream(null);
     }
@@ -41,16 +40,15 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
   useEffect(() => {
     if (!roomId) return;
 
-    let mounted = true;
+
 
     const init = async () => {
       setError(null);
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (!mounted) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
+        if (!preAcquiredStream) {
+          throw new Error("No media stream available");
         }
+        const stream = preAcquiredStream;
         setLocalStream(stream);
         localStreamRef.current = stream;
 
@@ -72,7 +70,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            socketClient.emit("ice-candidate", { candidate: event.candidate.toJSON() });
+            socketClient.emit("ice-candidate", { candidate: event.candidate.toJSON(), roomId });
           }
         };
 
@@ -83,7 +81,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
               try {
                 const offer = await pc.createOffer({ iceRestart: true });
                 await pc.setLocalDescription(offer);
-                socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp } });
+                socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp }, roomId });
               } catch (err) {
                 console.error("ICE restart failed", err);
               }
@@ -105,7 +103,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
         if (isInitiator) {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp } });
+          socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp }, roomId });
         }
       } catch (err) {
         console.error("Failed to init WebRTC", err);
@@ -116,10 +114,9 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
     init();
 
     return () => {
-      mounted = false;
       cleanupAll();
     };
-  }, [roomId, isInitiator, cleanupAll, startStats, retryCount]);
+  }, [roomId, isInitiator, preAcquiredStream, cleanupAll, startStats, retryCount]);
 
   // Socket event listeners
   useEffect(() => {
@@ -132,22 +129,27 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
       const run = async () => {
         const pc = pcRef.current;
         if (!pc) return;
-        await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(payload.offer));
 
-        while (candidateQueue.length > 0) {
-          const candidate = candidateQueue.shift();
-          if (candidate) {
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate));
-            } catch (e) {
-              console.error("Error adding queued ice candidate", e);
+          while (candidateQueue.length > 0) {
+            const candidate = candidateQueue.shift();
+            if (candidate) {
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate));
+              } catch (e) {
+                console.error("Error adding queued ice candidate", e);
+              }
             }
           }
-        }
 
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socketClient.emit("answer", { answer: { type: answer.type, sdp: answer.sdp } });
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          socketClient.emit("answer", { answer: { type: answer.type, sdp: answer.sdp }, roomId });
+        } catch (e) {
+          console.error("Failed to process offer", e);
+          candidateQueue.length = 0;
+        }
       };
 
       if (!pcRef.current) {
@@ -162,17 +164,22 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
       const run = async () => {
         const pc = pcRef.current;
         if (!pc) return;
-        await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
 
-        while (candidateQueue.length > 0) {
-          const candidate = candidateQueue.shift();
-          if (candidate) {
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate));
-            } catch (e) {
-              console.error("Error adding queued ice candidate", e);
+          while (candidateQueue.length > 0) {
+            const candidate = candidateQueue.shift();
+            if (candidate) {
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidate));
+              } catch (e) {
+                console.error("Error adding queued ice candidate", e);
+              }
             }
           }
+        } catch (e) {
+          console.error("Failed to process answer", e);
+          candidateQueue.length = 0;
         }
       };
 

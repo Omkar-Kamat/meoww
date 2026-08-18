@@ -15,9 +15,9 @@ const iceCandidateSchema = z.object({
     usernameFragment: z.string().max(255).nullable().optional(),
 });
 
-const offerPayloadSchema = z.object({ offer: sdpSchema });
-const answerPayloadSchema = z.object({ answer: sdpSchema });
-const iceCandidatePayloadSchema = z.object({ candidate: iceCandidateSchema });
+const offerPayloadSchema = z.object({ offer: sdpSchema, roomId: z.string().max(255).optional() });
+const answerPayloadSchema = z.object({ answer: sdpSchema, roomId: z.string().max(255).optional() });
+const iceCandidatePayloadSchema = z.object({ candidate: iceCandidateSchema, roomId: z.string().max(255).optional() });
 const messagePayloadSchema = z.object({ text: z.string().max(500) });
 
 import { safeHandler } from "../../realtime/socket.utils.js";
@@ -41,7 +41,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
         "offer",
         safeHandler(authedSocket, "offer", (data: unknown) => {
             const parsed = parseSocketPayload(offerPayloadSchema, data);
-            return service.relayOffer(authedSocket, parsed.offer);
+            return service.relayOffer(authedSocket, parsed.offer, parsed.roomId);
         }),
     );
 
@@ -49,7 +49,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
         "answer",
         safeHandler(authedSocket, "answer", (data: unknown) => {
             const parsed = parseSocketPayload(answerPayloadSchema, data);
-            return service.relayAnswer(authedSocket, parsed.answer);
+            return service.relayAnswer(authedSocket, parsed.answer, parsed.roomId);
         }),
     );
 
@@ -57,7 +57,7 @@ export function registerWebrtcHandlers(service: WebrtcService, socket: Socket): 
         "ice-candidate",
         safeHandler(authedSocket, "ice-candidate", (data: unknown) => {
             const parsed = parseSocketPayload(iceCandidatePayloadSchema, data);
-            return service.relayIceCandidate(authedSocket, parsed.candidate);
+            return service.relayIceCandidate(authedSocket, parsed.candidate, parsed.roomId);
         }),
     );
 

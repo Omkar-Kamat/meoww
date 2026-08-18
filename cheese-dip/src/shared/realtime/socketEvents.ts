@@ -19,8 +19,8 @@ export interface ClientToServerEvents {
   "leave-room": (callback?: () => void) => void;
   
   // Stubs for future features
-  offer: (payload: { offer: RTCSessionDescriptionInit }) => void;
-  answer: (payload: { answer: RTCSessionDescriptionInit }) => void;
-  "ice-candidate": (payload: { candidate: RTCIceCandidateInit }) => void;
+  offer: (payload: { offer: RTCSessionDescriptionInit; roomId?: string }) => void;
+  answer: (payload: { answer: RTCSessionDescriptionInit; roomId?: string }) => void;
+  "ice-candidate": (payload: { candidate: RTCIceCandidateInit; roomId?: string }) => void;
   "send-message": (payload: { text: string }) => void;
 }

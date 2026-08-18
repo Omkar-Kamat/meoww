@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthSession } from "../features/auth";
 import { useMatchmaking } from "../features/matchmaking";
 import { useWebRTC, useCallControls, VideoTile, CallControlBar } from "../features/call";
@@ -14,10 +14,37 @@ export const ChatPage = () => {
   const { status, matchData, search, stopSearch, skip, leaveRoom, reconnectNotice } = useMatchmaking();
 
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ peerId: string; roomId: string } | null>(null);
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [reportError, setReportError] = useState("");
   const [isBlockOpen, setIsBlockOpen] = useState(false);
+  
+  const [globalStream, setGlobalStream] = useState<MediaStream | null>(null);
+  const [streamError, setStreamError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    let streamRef: MediaStream | null = null;
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        if (!mounted) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
+        streamRef = stream;
+        setGlobalStream(stream);
+      })
+      .catch(err => {
+        if (mounted) setStreamError(err.message);
+      });
+    return () => {
+      mounted = false;
+      if (streamRef) {
+        streamRef.getTracks().forEach(t => t.stop());
+      }
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -26,7 +53,7 @@ export const ChatPage = () => {
 
   // Only init WebRTC if matched
   const isMatched = status === "matched" && matchData !== null;
-  const webrtc = useWebRTC(matchData?.isInitiator || false, matchData?.roomId);
+  const webrtc = useWebRTC(matchData?.isInitiator || false, matchData?.roomId, globalStream);
   const controls = useCallControls(webrtc.localStream);
   
   // Chat messages logic
@@ -38,14 +65,15 @@ export const ChatPage = () => {
       setReportError("Please select a reason");
       return;
     }
-    if (!matchData?.peerId || !matchData?.roomId) return;
+    if (!reportTarget) return;
     try {
       await trustSafetyApi.report({
-        reportedUserId: matchData.peerId,
-        roomId: matchData.roomId,
+        reportedUserId: reportTarget.peerId,
+        roomId: reportTarget.roomId,
         reason: `${reportReason}${reportDetails ? ': ' + reportDetails : ''}`.substring(0, 1000)
       });
       setIsReportOpen(false);
+      setReportTarget(null);
       setReportReason("");
       setReportDetails("");
     } catch (err) {
@@ -92,7 +120,7 @@ export const ChatPage = () => {
                       <VideoTile stream={webrtc.localStream} label="You" isLocal />
                     </div>
                   )}
-                  <p style={{ color: "red", textAlign: "center", zIndex: 1 }}>{webrtc.error}</p>
+                  <p style={{ color: "red", textAlign: "center", zIndex: 1 }}>{webrtc.error || streamError}</p>
                   <Button onClick={webrtc.retry} style={{ zIndex: 1 }}>
                     Retry Connection
                   </Button>
@@ -130,7 +158,12 @@ export const ChatPage = () => {
               onVideo={controls.toggleVideo}
               onSkip={skip}
               onEnd={leaveRoom}
-              onReport={() => setIsReportOpen(true)}
+              onReport={() => {
+                if (matchData?.peerId && matchData?.roomId) {
+                  setReportTarget({ peerId: matchData.peerId, roomId: matchData.roomId });
+                  setIsReportOpen(true);
+                }
+              }}
               onBlock={() => setIsBlockOpen(true)}
               isMuted={controls.isMuted}
               isVideoOff={controls.isVideoOff}
@@ -152,7 +185,7 @@ export const ChatPage = () => {
         </div>
       </div>
 
-      <Modal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} title="Report User">
+      <Modal isOpen={isReportOpen} onClose={() => { setIsReportOpen(false); setReportTarget(null); }} title="Report User">
         <p>Why are you reporting this user?</p>
         <select 
           value={reportReason} 
@@ -176,7 +209,7 @@ export const ChatPage = () => {
           <div style={{ color: "red", fontSize: "14px", marginTop: "10px" }}>{reportError}</div>
         )}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
-          <Button style={{ backgroundColor: "#6c757d" }} onClick={() => setIsReportOpen(false)}>Cancel</Button>
+          <Button style={{ backgroundColor: "#6c757d" }} onClick={() => { setIsReportOpen(false); setReportTarget(null); }}>Cancel</Button>
           <Button style={{ backgroundColor: "#007bff" }} onClick={handleReport}>Submit Report</Button>
         </div>
       </Modal>

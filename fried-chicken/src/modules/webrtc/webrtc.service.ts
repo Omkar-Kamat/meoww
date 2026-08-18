@@ -2,9 +2,9 @@ import type { AuthedSocket } from "./webrtc.types.js";
 import type { EmitAction } from "../../realtime/socket.types.js";
 
 export interface WebrtcService {
-    relayOffer(socket: AuthedSocket, offer: unknown): Promise<EmitAction[]>;
-    relayAnswer(socket: AuthedSocket, answer: unknown): Promise<EmitAction[]>;
-    relayIceCandidate(socket: AuthedSocket, candidate: unknown): Promise<EmitAction[]>;
+    relayOffer(socket: AuthedSocket, offer: unknown, roomId?: string): Promise<EmitAction[]>;
+    relayAnswer(socket: AuthedSocket, answer: unknown, roomId?: string): Promise<EmitAction[]>;
+    relayIceCandidate(socket: AuthedSocket, candidate: unknown, roomId?: string): Promise<EmitAction[]>;
     relayMessage(socket: AuthedSocket, text: string): Promise<EmitAction[]>;
 }
 
@@ -12,14 +12,14 @@ export function createWebrtcService(
     getPeerSocketId: (userId: string) => Promise<string | null>,
 ): WebrtcService {
     function relay(eventName: string, payloadKey: string) {
-        return async (socket: AuthedSocket, payloadData: unknown): Promise<EmitAction[]> => {
+        return async (socket: AuthedSocket, payloadData: unknown, roomId?: string): Promise<EmitAction[]> => {
             const peerSocketId = await getPeerSocketId(socket.userId);
             return peerSocketId
                 ? [
                       {
                           target: peerSocketId,
                           event: eventName,
-                          payload: { [payloadKey]: payloadData },
+                          payload: { [payloadKey]: payloadData, roomId },
                       },
                   ]
                 : [];

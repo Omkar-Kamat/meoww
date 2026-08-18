@@ -25,10 +25,24 @@ api.interceptors.response.use(
           });
         }
         await refreshPromise;
+        // Fix Axios double-stringification of JSON payloads on retry
+        if (
+          originalRequest.data &&
+          typeof originalRequest.data === "string" &&
+          originalRequest.headers?.["Content-Type"]?.includes("application/json")
+        ) {
+          try {
+            originalRequest.data = JSON.parse(originalRequest.data);
+          } catch {
+            // keep as string if parsing fails
+          }
+        }
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: any) {
         // Handle refresh failure (e.g., redirect to login)
-        window.dispatchEvent(new Event("auth-expired"));
+        if (refreshError.response?.status === 401 || refreshError.response?.status === 403) {
+          window.dispatchEvent(new Event("auth-expired"));
+        }
         return Promise.reject(refreshError);
       }
     }
@@ -38,6 +52,6 @@ api.interceptors.response.use(
 
 function shouldSkipRefresh(url?: string): boolean {
   if (!url) return false;
-  const skipUrls = ["/api/auth/login", "/api/auth/signup", "/api/auth/refresh", "/api/auth/logout"];
-  return skipUrls.some((skipUrl) => url.includes(skipUrl));
+  // Skip all auth endpoints to prevent unauthenticated 401s (e.g. invalid OTP, wrong password) from triggering a refresh
+  return url.includes("/api/auth/");
 }

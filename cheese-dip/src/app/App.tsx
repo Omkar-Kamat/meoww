@@ -27,8 +27,9 @@ export const App = () => {
 
   useEffect(() => {
     if (userId) {
+      let connectTimer: ReturnType<typeof setTimeout>;
       if (!socketClient.connected) {
-        socketClient.connect();
+        connectTimer = setTimeout(() => socketClient.connect(), 0);
       }
 
       const handleTokenExpired = (payload: { code: string; message: string }) => {
@@ -40,9 +41,8 @@ export const App = () => {
         try {
           setIsRefreshing(true);
           await authApi.refresh();
-          // Note: Removed the deliberate disconnect/connect cycle. 
-          // Re-auth is cookie-based, so it will seamlessly be picked up 
-          // on the next natural reconnect without interrupting active calls.
+          socketClient.disconnect();
+          socketClient.connect();
         } catch {
           useAuthStore.getState().logout();
         } finally {
@@ -67,6 +67,7 @@ export const App = () => {
       socketClient.on("disconnect", handleDisconnect);
 
       return () => {
+        clearTimeout(connectTimer);
         socketClient.off("token-expired", handleTokenExpired);
         socketClient.off("token-expiring-soon", handleTokenExpiringSoon);
         socketClient.off("session-terminated", handleSessionTerminated);
