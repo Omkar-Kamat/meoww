@@ -25,6 +25,7 @@ export const MessageInput = ({ onSend, disabled = false }: MessageInputProps) =>
         onChange={(e) => setText(e.target.value)}
         placeholder="Type a message..."
         disabled={disabled}
+        maxLength={500}
         style={{ flex: 1, padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
       />
       <button 

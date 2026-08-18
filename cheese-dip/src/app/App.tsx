@@ -6,7 +6,7 @@ import { authApi } from "../features/auth/api/authApi";
 import { socketClient } from "../shared/realtime/socketClient";
 
 export const App = () => {
-  const { fetchMe, user } = useAuthStore();
+  const { fetchMe, user, isRefreshing, setIsRefreshing } = useAuthStore();
 
   useEffect(() => {
     // Attempt to fetch current user session on mount
@@ -37,12 +37,15 @@ export const App = () => {
       
       const handleTokenExpiringSoon = async () => {
         try {
+          setIsRefreshing(true);
           await authApi.refresh();
           // Note: Removed the deliberate disconnect/connect cycle. 
           // Re-auth is cookie-based, so it will seamlessly be picked up 
           // on the next natural reconnect without interrupting active calls.
         } catch {
           useAuthStore.getState().logout();
+        } finally {
+          setIsRefreshing(false);
         }
       };
 
@@ -68,10 +71,18 @@ export const App = () => {
         socketClient.disconnect();
       }
     }
-  }, [userId]);
+  }, [userId, setIsRefreshing]);
 
   return (
     <AppProviders>
+      {isRefreshing && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", zIndex: 9999,
+          backgroundColor: "#17a2b8", color: "white", textAlign: "center", padding: "5px", fontSize: "14px"
+        }}>
+          Refreshing session...
+        </div>
+      )}
       <AppRoutes />
     </AppProviders>
   );

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
-import { getErrorMessage } from "../../../shared/utils/error";
+import { getErrorMessage, getApiError } from "../../../shared/utils/error";
 import { Input } from "../../../shared/components/Input";
 import { Button } from "../../../shared/components/Button";
 import { FieldRow } from "../../../shared/components/FieldRow";
+import { RULES } from "../../../shared/utils/ui.config";
 
 export const ProfileForm = () => {
   const { user, fetchMe } = useAuthSession();
@@ -23,7 +25,7 @@ export const ProfileForm = () => {
     setPrevUserId(user.id);
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMsg("");
     setError("");
@@ -32,7 +34,12 @@ export const ProfileForm = () => {
       await fetchMe();
       setMsg("Profile updated successfully!");
     } catch (err) {
-      setError(getErrorMessage(err, "Failed to update profile"));
+      const apiErr = getApiError(err);
+      if (apiErr?.code === "USERNAME_EXISTS") {
+        setError("This username is already taken.");
+      } else {
+        setError(getErrorMessage(err, "Failed to update profile"));
+      }
     }
   };
 
@@ -53,6 +60,8 @@ export const ProfileForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            minLength={2}
+            maxLength={50}
           />
         </FieldRow>
         <FieldRow label="Username">
@@ -61,6 +70,10 @@ export const ProfileForm = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            minLength={RULES.USERNAME_MIN_LENGTH}
+            maxLength={RULES.USERNAME_MAX_LENGTH}
+            pattern="^[a-z0-9_]+$"
+            title="Lowercase letters, numbers, and underscores only"
           />
         </FieldRow>
         {error && (

@@ -67,6 +67,8 @@ export const SignupForm = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              minLength={2}
+              maxLength={50}
             />
           </FieldRow>
           <FieldRow label="Username" error={usernameError}>
@@ -77,7 +79,7 @@ export const SignupForm = () => {
               required
               minLength={RULES.USERNAME_MIN_LENGTH}
               maxLength={RULES.USERNAME_MAX_LENGTH}
-              pattern="[a-z0-9_]+"
+              pattern="^[a-z0-9_]+$"
               title="Lowercase letters, numbers, and underscores only"
             />
           </FieldRow>
@@ -96,6 +98,7 @@ export const SignupForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
+              maxLength={100}
             />
           </FieldRow>
           {error && (

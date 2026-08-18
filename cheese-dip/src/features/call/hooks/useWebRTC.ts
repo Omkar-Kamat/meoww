@@ -72,7 +72,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            socketClient.emit("ice-candidate", { candidate: event.candidate });
+            socketClient.emit("ice-candidate", { candidate: event.candidate.toJSON() });
           }
         };
 
@@ -83,7 +83,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
               try {
                 const offer = await pc.createOffer({ iceRestart: true });
                 await pc.setLocalDescription(offer);
-                socketClient.emit("offer", { offer });
+                socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp } });
               } catch (err) {
                 console.error("ICE restart failed", err);
               }
@@ -94,12 +94,18 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
         };
 
         const pending = pendingSignalsRef.current.splice(0);
-        for (const run of pending) await run();
+        for (const run of pending) {
+          try {
+            await run();
+          } catch (err) {
+            console.error("Failed to process pending WebRTC signal", err);
+          }
+        }
 
         if (isInitiator) {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socketClient.emit("offer", { offer });
+          socketClient.emit("offer", { offer: { type: offer.type, sdp: offer.sdp } });
         }
       } catch (err) {
         console.error("Failed to init WebRTC", err);
@@ -141,7 +147,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        socketClient.emit("answer", { answer });
+        socketClient.emit("answer", { answer: { type: answer.type, sdp: answer.sdp } });
       };
 
       if (!pcRef.current) {

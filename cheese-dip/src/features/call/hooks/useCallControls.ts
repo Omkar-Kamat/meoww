@@ -6,10 +6,17 @@ export const useCallControls = (localStream: MediaStream | null) => {
 
   useEffect(() => {
     if (!localStream) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMuted(false);
-    setIsVideoOff(false);
-  }, [localStream]);
+    
+    const audioTrack = localStream.getAudioTracks()[0];
+    if (audioTrack) {
+      audioTrack.enabled = !isMuted;
+    }
+    
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.enabled = !isVideoOff;
+    }
+  }, [localStream, isMuted, isVideoOff]);
 
   const toggleMute = useCallback(() => {
     if (!localStream) return;

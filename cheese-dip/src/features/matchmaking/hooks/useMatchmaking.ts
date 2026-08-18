@@ -5,6 +5,7 @@ import type { MatchStatus, MatchedPayload } from "../types";
 export const useMatchmaking = () => {
   const [status, setStatus] = useState<MatchStatus>("idle");
   const [matchData, setMatchData] = useState<MatchedPayload | null>(null);
+  const [reconnectNotice, setReconnectNotice] = useState("");
 
   const statusRef = useRef(status);
   const isMountedRef = useRef(true);
@@ -42,15 +43,12 @@ export const useMatchmaking = () => {
     const onConnect = () => {
       const currentStatus = statusRef.current;
       if (currentStatus === "matched" || currentStatus === "queued") {
-        const notice = document.createElement("div");
-        notice.textContent = "Reconnecting — your call was interrupted";
-        Object.assign(notice.style, {
-          position: "fixed", bottom: "20px", left: "50%", transform: "translateX(-50%)",
-          backgroundColor: "#333", color: "white", padding: "10px 20px",
-          borderRadius: "4px", zIndex: "9999"
-        });
-        document.body.appendChild(notice);
-        setTimeout(() => notice.remove(), 4000);
+        setReconnectNotice("Reconnecting — your call was interrupted");
+        setTimeout(() => {
+          if (isMountedRef.current) {
+             setReconnectNotice("");
+          }
+        }, 4000);
       }
       setStatus("idle");
       setMatchData(null);
@@ -112,6 +110,7 @@ export const useMatchmaking = () => {
     search,
     stopSearch,
     skip,
-    leaveRoom
+    leaveRoom,
+    reconnectNotice
   };
 };

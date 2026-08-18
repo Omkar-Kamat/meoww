@@ -11,11 +11,12 @@ import { Button } from "../shared/components/Button";
 export const ChatPage = () => {
   const { logout } = useAuthSession();
   const navigate = useNavigate();
-  const { status, matchData, search, stopSearch, skip, leaveRoom } = useMatchmaking();
+  const { status, matchData, search, stopSearch, skip, leaveRoom, reconnectNotice } = useMatchmaking();
 
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
+  const [reportError, setReportError] = useState("");
   const [isBlockOpen, setIsBlockOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -32,12 +33,17 @@ export const ChatPage = () => {
   const { messages, sendMessage } = useMessages(isMatched ? matchData?.roomId : undefined);
 
   const handleReport = async () => {
-    if (!reportReason || !matchData?.peerId || !matchData?.roomId) return;
+    setReportError("");
+    if (!reportReason) {
+      setReportError("Please select a reason");
+      return;
+    }
+    if (!matchData?.peerId || !matchData?.roomId) return;
     try {
       await trustSafetyApi.report({
         reportedUserId: matchData.peerId,
         roomId: matchData.roomId,
-        reason: `${reportReason}${reportDetails ? ': ' + reportDetails : ''}`
+        reason: `${reportReason}${reportDetails ? ': ' + reportDetails : ''}`.substring(0, 1000)
       });
       setIsReportOpen(false);
       setReportReason("");
@@ -166,6 +172,9 @@ export const ChatPage = () => {
           maxLength={1000}
           style={{ width: "100%", padding: "8px", minHeight: "80px", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontFamily: "inherit" }}
         />
+        {reportError && (
+          <div style={{ color: "red", fontSize: "14px", marginTop: "10px" }}>{reportError}</div>
+        )}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
           <Button style={{ backgroundColor: "#6c757d" }} onClick={() => setIsReportOpen(false)}>Cancel</Button>
           <Button style={{ backgroundColor: "#007bff" }} onClick={handleReport}>Submit Report</Button>
@@ -179,6 +188,16 @@ export const ChatPage = () => {
           <Button style={{ backgroundColor: "#dc3545" }} onClick={handleBlock}>Block User</Button>
         </div>
       </Modal>
+
+      {reconnectNotice && (
+        <div style={{
+          position: "fixed", bottom: "20px", left: "50%", transform: "translateX(-50%)",
+          backgroundColor: "#333", color: "white", padding: "10px 20px",
+          borderRadius: "4px", zIndex: 9999
+        }}>
+          {reconnectNotice}
+        </div>
+      )}
     </div>
   );
 };

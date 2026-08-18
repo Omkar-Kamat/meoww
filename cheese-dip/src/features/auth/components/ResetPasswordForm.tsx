@@ -61,6 +61,7 @@ export const ResetPasswordForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
+              maxLength={100}
             />
           </FieldRow>
           <FieldRow label="Confirm New Password" error={matchError}>
@@ -70,6 +71,7 @@ export const ResetPasswordForm = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
+              maxLength={100}
             />
           </FieldRow>
           {error && (

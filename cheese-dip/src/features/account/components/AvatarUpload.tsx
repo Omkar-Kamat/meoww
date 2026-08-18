@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
 import { getErrorMessage } from "../../../shared/utils/error";
@@ -11,7 +12,7 @@ export const AvatarUpload = () => {
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) return;
 

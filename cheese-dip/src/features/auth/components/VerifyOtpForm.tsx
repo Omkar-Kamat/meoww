@@ -61,6 +61,7 @@ export const VerifyOtpForm = () => {
           <FieldRow label="OTP Code" error={error}>
             <Input
               type="text"
+              minLength={6}
               maxLength={6}
               value={code}
               onChange={(e) => setCode(e.target.value)}

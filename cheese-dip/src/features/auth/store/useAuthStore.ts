@@ -4,14 +4,18 @@ import { authApi } from "../api/authApi";
 import { socketClient } from "../../../shared/realtime/socketClient";
 
 interface AuthStore extends AuthState {
+  isRefreshing: boolean;
   fetchMe: () => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: SessionUser | null) => void;
+  setIsRefreshing: (val: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   isAuthChecked: false,
+  isRefreshing: false,
+  setIsRefreshing: (val) => set({ isRefreshing: val }),
   setUser: (user) => set({ user }),
   fetchMe: async () => {
     try {
