@@ -81,9 +81,14 @@ export const ChatPage = () => {
           <div style={{ flex: 1, border: "1px dashed #ccc", display: "flex", gap: "10px", padding: "10px", borderRadius: "8px" }}>
             {isMatched ? (
               webrtc.error ? (
-                <div style={{ display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "15px" }}>
-                  <p style={{ color: "red", textAlign: "center" }}>{webrtc.error}</p>
-                  <Button onClick={webrtc.retry}>
+                <div style={{ position: "relative", display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "15px" }}>
+                  {webrtc.localStream && (
+                    <div style={{ position: "absolute", top: "10px", right: "10px", width: "150px", borderRadius: "8px", overflow: "hidden", zIndex: 2 }}>
+                      <VideoTile stream={webrtc.localStream} label="You" isLocal />
+                    </div>
+                  )}
+                  <p style={{ color: "red", textAlign: "center", zIndex: 1 }}>{webrtc.error}</p>
+                  <Button onClick={webrtc.retry} style={{ zIndex: 1 }}>
                     Retry Connection
                   </Button>
                 </div>

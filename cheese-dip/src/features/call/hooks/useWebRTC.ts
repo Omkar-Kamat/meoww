@@ -76,11 +76,17 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
           }
         };
 
-        pc.oniceconnectionstatechange = () => {
+        pc.oniceconnectionstatechange = async () => {
           if (pc.iceConnectionState === "disconnected" || pc.iceConnectionState === "failed") {
             setIsConnecting(true);
             if (isInitiator) {
-              pc.restartIce();
+              try {
+                const offer = await pc.createOffer({ iceRestart: true });
+                await pc.setLocalDescription(offer);
+                socketClient.emit("offer", { offer });
+              } catch (err) {
+                console.error("ICE restart failed", err);
+              }
             }
           } else if (pc.iceConnectionState === "connected") {
             setIsConnecting(false);

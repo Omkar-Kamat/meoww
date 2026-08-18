@@ -38,8 +38,9 @@ export const App = () => {
       const handleTokenExpiringSoon = async () => {
         try {
           await authApi.refresh();
-          socketClient.disconnect();
-          socketClient.connect();
+          // Note: Removed the deliberate disconnect/connect cycle. 
+          // Re-auth is cookie-based, so it will seamlessly be picked up 
+          // on the next natural reconnect without interrupting active calls.
         } catch {
           useAuthStore.getState().logout();
         }
