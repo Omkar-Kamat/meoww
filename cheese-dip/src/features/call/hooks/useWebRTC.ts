@@ -26,6 +26,7 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined): Use
 
   const cleanupAll = useCallback(() => {
     cleanupPeer();
+    pendingSignalsRef.current = [];
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;

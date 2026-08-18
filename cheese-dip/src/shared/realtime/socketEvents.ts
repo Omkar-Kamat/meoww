@@ -1,6 +1,6 @@
 export interface ServerToClientEvents {
   queued: () => void;
-  matched: (payload: { roomId: string; isInitiator: boolean }) => void;
+  matched: (payload: { roomId: string; isInitiator: boolean; peerId: string }) => void;
   "peer-disconnected": () => void;
   
   // Stubs for future features (WebRTC, chat)

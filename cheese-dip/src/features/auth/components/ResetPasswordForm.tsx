@@ -4,6 +4,8 @@ import { authApi } from "../api/authApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getErrorMessage } from "../../../shared/utils/error";
 import { RULES } from "../../../shared/utils/ui.config";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const ResetPasswordForm = () => {
   const [password, setPassword] = useState("");
@@ -46,29 +48,29 @@ export const ResetPasswordForm = () => {
         <AuthHeading title="Reset Password" subtitle="Enter your new password" />
         <form onSubmit={handleSubmit}>
           <FieldRow label="New Password">
-            <input 
+            <Input 
               type="password" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
               minLength={RULES.PASSWORD_MIN_LENGTH}
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
+               
             />
           </FieldRow>
           <FieldRow label="Confirm New Password" error={error}>
-            <input 
+            <Input 
               type="password" 
               value={confirmPassword} 
               onChange={(e) => setConfirmPassword(e.target.value)} 
               required 
               minLength={RULES.PASSWORD_MIN_LENGTH}
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
+               
             />
           </FieldRow>
           {msg && <div style={{ color: "green", fontSize: "14px", marginBottom: "10px" }}>{msg}</div>}
-          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", marginTop: "10px" }}>
+          <Button type="submit" fullWidth>
             Reset Password
-          </button>
+          </Button>
         </form>
       </AuthCard>
     </AuthShell>

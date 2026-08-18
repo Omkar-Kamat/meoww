@@ -1,1 +1,1 @@
-// TODO: Implement trust-safety feature (report, block, moderation)
+export * from "./api/trustSafetyApi";

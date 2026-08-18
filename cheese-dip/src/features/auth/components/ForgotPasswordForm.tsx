@@ -3,6 +3,8 @@ import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
 import { authApi } from "../api/authApi";
 import { Link } from "react-router-dom";
 import { getErrorMessage } from "../../../shared/utils/error";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
@@ -27,18 +29,18 @@ export const ForgotPasswordForm = () => {
         <AuthHeading title="Forgot Password" subtitle="Enter your email to receive a reset link" />
         <form onSubmit={handleSubmit}>
           <FieldRow label="Email" error={error}>
-            <input 
+            <Input 
               type="email" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
+               
             />
           </FieldRow>
           {msg && <div style={{ color: "green", fontSize: "14px", marginBottom: "10px" }}>{msg}</div>}
-          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", marginTop: "10px" }}>
+          <Button type="submit" fullWidth>
             Send Reset Link
-          </button>
+          </Button>
         </form>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
           <Link to="/login" style={{ fontSize: "14px", color: "#007bff" }}>Back to Login</Link>

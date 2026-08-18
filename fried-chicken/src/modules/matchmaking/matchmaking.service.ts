@@ -11,6 +11,7 @@ import * as sessionStore from "../../realtime/session.store.js";
 import { createModuleLogger } from "../../utils/logger.js";
 import type { AuthedSocket, MatchResult } from "./matchmaking.types.js";
 import type { EmitAction } from "../../realtime/socket.types.js";
+import { BlockModel } from "../trust-safety/trust-safety.model.js";
 
 const log = createModuleLogger("matchmaking");
 
@@ -39,6 +40,18 @@ export function createMatchmakingService(
                 return { match: null, actions };
             }
 
+            const isBlocked = await BlockModel.exists({
+                $or: [
+                    { blockerId: userId, blockedId: partnerId },
+                    { blockerId: partnerId, blockedId: userId },
+                ],
+            });
+
+            if (isBlocked) {
+                await store.addToQueue(partnerId);
+                continue;
+            }
+
             const partnerSocketId = await sessionStore.getUserSocket(partnerId);
             if (!partnerSocketId) {
                 continue;
@@ -56,11 +69,11 @@ export function createMatchmakingService(
             actions.push({
                 target: partnerSocketId,
                 event: "matched",
-                payload: { roomId, isInitiator: !isInitiator },
+                payload: { roomId, isInitiator: !isInitiator, peerId: userId },
             });
 
             return {
-                match: { roomId, isInitiator, peerSocketId: partnerSocketId },
+                match: { roomId, isInitiator, peerSocketId: partnerSocketId, peerId: partnerId },
                 actions,
             };
         }
@@ -92,6 +105,7 @@ export function createMatchmakingService(
                 payload: {
                     roomId: match.roomId,
                     isInitiator: match.isInitiator,
+                    peerId: match.peerId,
                 },
             });
 

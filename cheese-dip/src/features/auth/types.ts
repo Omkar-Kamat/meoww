@@ -8,7 +8,7 @@ export interface SessionUser {
 }
 
 export interface LoginRequest {
-  email?: string;
+  email: string;
   password: string;
 }
 

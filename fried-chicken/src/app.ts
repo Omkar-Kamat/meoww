@@ -17,6 +17,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import otpRoutes from "./modules/otp/otp.routes.js";
 import webrtcRoutes from "./modules/webrtc/webrtc.routes.js";
+import trustSafetyRoutes from "./modules/trust-safety/trust-safety.routes.js";
 import { httpLogger, createModuleLogger } from "./utils/logger.js";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware.js";
 import { env } from "./config/env.js";
@@ -92,6 +93,7 @@ export function createApp(): Application {
     app.use("/api/users", userRoutes);
     app.use("/api/otp", otpRoutes);
     app.use("/api/webrtc", webrtcRoutes);
+    app.use("/api/trust-safety", trustSafetyRoutes);
 
     registerHealthRoutes(app);
 

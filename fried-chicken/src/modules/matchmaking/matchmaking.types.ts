@@ -13,4 +13,5 @@ export interface MatchResult {
     roomId: string;
     isInitiator: boolean;
     peerSocketId: string;
+    peerId: string;
 }

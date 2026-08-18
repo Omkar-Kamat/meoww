@@ -4,6 +4,8 @@ import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, Link } from "react-router-dom";
 import { getApiError } from "../../../shared/utils/error";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -35,26 +37,26 @@ export const LoginForm = () => {
         <AuthHeading title="Welcome Back" subtitle="Login to your account" />
         <form onSubmit={handleSubmit}>
           <FieldRow label="Email" error={error}>
-            <input 
+            <Input 
               type="email" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
+               
             />
           </FieldRow>
           <FieldRow label="Password">
-            <input 
+            <Input 
               type="password" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} 
+               
             />
           </FieldRow>
-          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", marginTop: "10px" }}>
+          <Button type="submit" fullWidth>
             Login
-          </button>
+          </Button>
         </form>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
           <Link to="/forgot-password" style={{ fontSize: "14px", color: "#007bff" }}>Forgot Password?</Link>

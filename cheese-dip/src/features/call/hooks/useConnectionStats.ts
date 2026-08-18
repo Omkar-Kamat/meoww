@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ConnectionStats } from "../types";
 
-export const useConnectionStats = () => {
+export const useConnectionStats = (minBitrate: number = 20) => {
   const [stats, setStats] = useState<ConnectionStats>({ bitrate: 0, quality: "offline" });
   const intervalRef = useRef<number | null>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -38,7 +38,7 @@ export const useConnectionStats = () => {
           const bitrate = (bytes * 8) / time; // kbps roughly
           
           let quality: ConnectionStats["quality"] = "good";
-          if (bitrate < 20) quality = "poor";
+          if (bitrate < minBitrate) quality = "poor";
           if (bitrate === 0) quality = "offline";
 
           setStats({ bitrate: Math.round(bitrate), quality });
@@ -48,7 +48,7 @@ export const useConnectionStats = () => {
       lastBytesSent = bytesSent;
       lastTimestamp = timestamp;
     }, 2000);
-  }, []);
+  }, [minBitrate]);
 
   const stopStats = useCallback(() => {
     if (intervalRef.current) {

@@ -4,6 +4,8 @@ import { authApi } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import { getApiError } from "../../../shared/utils/error";
 import { RULES } from "../../../shared/utils/ui.config";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const SignupForm = () => {
   const [name, setName] = useState("");
@@ -57,24 +59,24 @@ export const SignupForm = () => {
         <AuthHeading title="Create an Account" />
         <form onSubmit={handleSubmit}>
           <FieldRow label="Name">
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+            <Input type="text" value={name} onChange={(e) => setName(e.target.value)} required  />
           </FieldRow>
           <FieldRow label="Username" error={usernameError}>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={RULES.USERNAME_MIN_LENGTH} maxLength={RULES.USERNAME_MAX_LENGTH} pattern="[a-z0-9_]+" title="Lowercase letters, numbers, and underscores only" style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+            <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={RULES.USERNAME_MIN_LENGTH} maxLength={RULES.USERNAME_MAX_LENGTH} pattern="[a-z0-9_]+" title="Lowercase letters, numbers, and underscores only"  />
           </FieldRow>
           <FieldRow label="Email" error={emailError}>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required  />
           </FieldRow>
           <FieldRow label="Password">
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={RULES.PASSWORD_MIN_LENGTH} style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={RULES.PASSWORD_MIN_LENGTH}  />
           </FieldRow>
           {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
           <FieldRow label="Profile Photo (Optional)">
-            <input type="file" onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)} style={{ width: "100%", padding: "8px", boxSizing: "border-box" }} accept="image/*" />
+            <Input type="file" onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}  accept="image/*" />
           </FieldRow>
-          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#28a745", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", marginTop: "10px" }}>
+          <Button type="submit" fullWidth style={{ backgroundColor: "#28a745" }}>
             Sign Up
-          </button>
+          </Button>
         </form>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
           <Link to="/login" style={{ fontSize: "14px", color: "#007bff" }}>Already have an account? Login</Link>

@@ -2,6 +2,7 @@ import { useAuthSession } from "../features/auth";
 import { useMatchmaking } from "../features/matchmaking";
 import { useWebRTC, useCallControls, VideoTile, CallControlBar } from "../features/call";
 import { useMessages, MessageList, MessageInput } from "../features/chat-messages";
+import { trustSafetyApi } from "../features/trust-safety";
 import { useNavigate } from "react-router-dom";
 
 export const ChatPage = () => {
@@ -21,6 +22,35 @@ export const ChatPage = () => {
   
   // Chat messages logic
   const { messages, sendMessage } = useMessages(isMatched ? matchData?.roomId : undefined);
+
+  const handleReport = async () => {
+    const reason = window.prompt("Why are you reporting this user?");
+    if (!reason || !matchData?.peerId || !matchData?.roomId) return;
+    try {
+      await trustSafetyApi.report({
+        reportedUserId: matchData.peerId,
+        roomId: matchData.roomId,
+        reason
+      });
+      alert("Report submitted.");
+    } catch {
+      alert("Failed to submit report.");
+    }
+  };
+
+  const handleBlock = async () => {
+    if (!matchData?.peerId) return;
+    if (!window.confirm("Are you sure you want to block this user?")) return;
+    try {
+      await trustSafetyApi.block({
+        blockedUserId: matchData.peerId
+      });
+      alert("User blocked.");
+      skip();
+    } catch {
+      alert("Failed to block user.");
+    }
+  };
 
   return (
     <div style={{ padding: "20px", display: "flex", flexDirection: "column", height: "100vh", boxSizing: "border-box" }}>
@@ -72,6 +102,8 @@ export const ChatPage = () => {
               onVideo={controls.toggleVideo}
               onSkip={skip}
               onEnd={leaveRoom}
+              onReport={handleReport}
+              onBlock={handleBlock}
               isMuted={controls.isMuted}
               isVideoOff={controls.isVideoOff}
             />

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
 import { getErrorMessage } from "../../../shared/utils/error";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const AvatarUpload = () => {
   const { user, fetchMe } = useAuthSession();
@@ -44,18 +46,18 @@ export const AvatarUpload = () => {
           </div>
         )}
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <input 
+          <Input 
             type="file" 
             accept="image/*"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
           />
-          <button 
+          <Button 
             type="submit" 
             disabled={!file}
-            style={{ padding: "8px 12px", backgroundColor: file ? "#28a745" : "#ccc", color: "white", border: "none", borderRadius: "4px", cursor: file ? "pointer" : "not-allowed", alignSelf: "flex-start" }}
+            style={{ alignSelf: "flex-start", backgroundColor: file ? "#28a745" : "#ccc" }}
           >
             Upload New Avatar
-          </button>
+          </Button>
         </form>
       </div>
       {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}

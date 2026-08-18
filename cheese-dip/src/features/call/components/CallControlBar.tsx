@@ -4,11 +4,13 @@ interface CallControlBarProps {
   onVideo: () => void;
   onEnd: () => void;
   onSkip: () => void;
+  onReport: () => void;
+  onBlock: () => void;
   isMuted: boolean;
   isVideoOff: boolean;
 }
 
-export const CallControlBar = ({ onMute, onVideo, onEnd, onSkip, isMuted, isVideoOff }: CallControlBarProps) => {
+export const CallControlBar = ({ onMute, onVideo, onEnd, onSkip, onReport, onBlock, isMuted, isVideoOff }: CallControlBarProps) => {
   return (
     <div style={{ display: "flex", gap: "10px", padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "8px", justifyContent: "center" }}>
       <button 
@@ -28,6 +30,18 @@ export const CallControlBar = ({ onMute, onVideo, onEnd, onSkip, isMuted, isVide
         style={{ padding: "10px 20px", cursor: "pointer", backgroundColor: "#ffc107", color: "black", border: "none", borderRadius: "4px" }}
       >
         Skip
+      </button>
+      <button 
+        onClick={onReport} 
+        style={{ padding: "10px 20px", cursor: "pointer", backgroundColor: "#17a2b8", color: "white", border: "none", borderRadius: "4px" }}
+      >
+        Report
+      </button>
+      <button 
+        onClick={onBlock} 
+        style={{ padding: "10px 20px", cursor: "pointer", backgroundColor: "#343a40", color: "white", border: "none", borderRadius: "4px" }}
+      >
+        Block
       </button>
       <button 
         onClick={onEnd} 

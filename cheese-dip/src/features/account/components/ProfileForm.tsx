@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAuthSession } from "../../auth";
 import { accountApi } from "../api/accountApi";
 import { getErrorMessage } from "../../../shared/utils/error";
+import { Input } from "../../../shared/components/Input";
+import { Button } from "../../../shared/components/Button";
 
 export const ProfileForm = () => {
   const { user, fetchMe } = useAuthSession();
@@ -39,29 +41,29 @@ export const ProfileForm = () => {
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "15px" }}>
           <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
-          <input 
+          <Input 
             type="text" 
             value={name} 
             onChange={(e) => setName(e.target.value)} 
             required 
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+            
           />
         </div>
         <div style={{ marginBottom: "15px" }}>
           <label style={{ display: "block", marginBottom: "5px" }}>Username</label>
-          <input 
+          <Input 
             type="text" 
             value={username} 
             onChange={(e) => setUsername(e.target.value)} 
             required 
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+            
           />
         </div>
         {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
         {msg && <div style={{ color: "green", marginBottom: "10px" }}>{msg}</div>}
-        <button type="submit" style={{ padding: "10px 15px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+        <Button type="submit" >
           Save Changes
-        </button>
+        </Button>
       </form>
     </div>
   );

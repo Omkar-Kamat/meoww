@@ -3,6 +3,7 @@ import { ProfileForm, AvatarUpload, accountApi } from "../features/account";
 import { useAuthSession } from "../features/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { getErrorMessage } from "../shared/utils/error";
+import { Button } from "../shared/components/Button";
 
 export const SettingsPage = () => {
   const { user, logout } = useAuthSession();
@@ -38,12 +39,12 @@ export const SettingsPage = () => {
         <h3 style={{ color: "#dc3545", marginTop: 0 }}>Danger Zone</h3>
         <p>Once you delete your account, there is no going back. Please be certain.</p>
         {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-        <button 
+        <Button 
           onClick={handleDeleteAccount}
-          style={{ padding: "10px 15px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+          style={{ backgroundColor: "#dc3545" }}
         >
           Delete Account
-        </button>
+        </Button>
       </div>
     </div>
   );
