@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
+import { AuthCard, AuthHeading, AuthShell } from "./AuthShell";
+import { FieldRow } from "../../../shared/components/FieldRow";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, Link } from "react-router-dom";
@@ -37,33 +38,41 @@ export const LoginForm = () => {
       <AuthCard>
         <AuthHeading title="Welcome Back" subtitle="Login to your account" />
         <form onSubmit={handleSubmit}>
-          <FieldRow label="Email" error={error}>
-            <Input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
-               
+          <FieldRow label="Email">
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </FieldRow>
           <FieldRow label="Password">
-            <Input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-               
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </FieldRow>
+          {error && (
+            <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+          )}
           <Button type="submit" fullWidth>
             Login
           </Button>
         </form>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <Link to="/forgot-password" style={{ fontSize: "14px", color: "#007bff" }}>Forgot Password?</Link>
+          <Link
+            to="/forgot-password"
+            style={{ fontSize: "14px", color: "#007bff" }}
+          >
+            Forgot Password?
+          </Link>
         </div>
         <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <Link to="/signup" style={{ fontSize: "14px", color: "#007bff" }}>Don't have an account? Sign up</Link>
+          <Link to="/signup" style={{ fontSize: "14px", color: "#007bff" }}>
+            Don't have an account? Sign up
+          </Link>
         </div>
       </AuthCard>
     </AuthShell>

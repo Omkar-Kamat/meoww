@@ -4,6 +4,7 @@ import { accountApi } from "../api/accountApi";
 import { getErrorMessage } from "../../../shared/utils/error";
 import { Input } from "../../../shared/components/Input";
 import { Button } from "../../../shared/components/Button";
+import { FieldRow } from "../../../shared/components/FieldRow";
 
 export const ProfileForm = () => {
   const { user, fetchMe } = useAuthSession();
@@ -36,34 +37,39 @@ export const ProfileForm = () => {
   };
 
   return (
-    <div style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "20px", borderRadius: "8px" }}>
+    <div
+      style={{
+        marginBottom: "30px",
+        border: "1px solid #ccc",
+        padding: "20px",
+        borderRadius: "8px",
+      }}
+    >
       <h3>Update Profile</h3>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
-          <Input 
-            type="text" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            required 
-            
+        <FieldRow label="Name">
+          <Input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Username</label>
-          <Input 
-            type="text" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            required 
-            
+        </FieldRow>
+        <FieldRow label="Username">
+          <Input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
           />
-        </div>
-        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-        {msg && <div style={{ color: "green", marginBottom: "10px" }}>{msg}</div>}
-        <Button type="submit" >
-          Save Changes
-        </Button>
+        </FieldRow>
+        {error && (
+          <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+        )}
+        {msg && (
+          <div style={{ color: "green", marginBottom: "10px" }}>{msg}</div>
+        )}
+        <Button type="submit">Save Changes</Button>
       </form>
     </div>
   );

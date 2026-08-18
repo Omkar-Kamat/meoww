@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
+import { AuthCard, AuthHeading, AuthShell } from "./AuthShell";
+import { FieldRow } from "../../../shared/components/FieldRow";
 import { authApi } from "../api/authApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getErrorMessage } from "../../../shared/utils/error";
@@ -12,6 +13,7 @@ export const ResetPasswordForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [matchError, setMatchError] = useState("");
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,9 +26,10 @@ export const ResetPasswordForm = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setMatchError("");
     setMsg("");
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setMatchError("Passwords do not match");
       return;
     }
     if (!userId || !token) {
@@ -46,29 +49,43 @@ export const ResetPasswordForm = () => {
   return (
     <AuthShell>
       <AuthCard>
-        <AuthHeading title="Reset Password" subtitle="Enter your new password" />
+        <AuthHeading
+          title="Reset Password"
+          subtitle="Enter your new password"
+        />
         <form onSubmit={handleSubmit}>
           <FieldRow label="New Password">
-            <Input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               minLength={RULES.PASSWORD_MIN_LENGTH}
-               
             />
           </FieldRow>
-          <FieldRow label="Confirm New Password" error={error}>
-            <Input 
-              type="password" 
-              value={confirmPassword} 
-              onChange={(e) => setConfirmPassword(e.target.value)} 
-              required 
+          <FieldRow label="Confirm New Password" error={matchError}>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
               minLength={RULES.PASSWORD_MIN_LENGTH}
-               
             />
           </FieldRow>
-          {msg && <div style={{ color: "green", fontSize: "14px", marginBottom: "10px" }}>{msg}</div>}
+          {error && (
+            <div
+              style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}
+            >
+              {error}
+            </div>
+          )}
+          {msg && (
+            <div
+              style={{ color: "green", fontSize: "14px", marginBottom: "10px" }}
+            >
+              {msg}
+            </div>
+          )}
           <Button type="submit" fullWidth>
             Reset Password
           </Button>

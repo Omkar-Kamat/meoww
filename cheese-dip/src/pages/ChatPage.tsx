@@ -6,7 +6,6 @@ import { useMessages, MessageList, MessageInput } from "../features/chat-message
 import { trustSafetyApi } from "../features/trust-safety";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../shared/components/Modal";
-import { Input } from "../shared/components/Input";
 import { Button } from "../shared/components/Button";
 
 export const ChatPage = () => {
@@ -16,6 +15,7 @@ export const ChatPage = () => {
 
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
   const [isBlockOpen, setIsBlockOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -37,13 +37,13 @@ export const ChatPage = () => {
       await trustSafetyApi.report({
         reportedUserId: matchData.peerId,
         roomId: matchData.roomId,
-        reason: reportReason
+        reason: `${reportReason}${reportDetails ? ': ' + reportDetails : ''}`
       });
-      alert("Report submitted.");
       setIsReportOpen(false);
       setReportReason("");
-    } catch {
-      alert("Failed to submit report.");
+      setReportDetails("");
+    } catch (err) {
+      console.error("Failed to submit report", err);
     }
   };
 
@@ -53,11 +53,10 @@ export const ChatPage = () => {
       await trustSafetyApi.block({
         blockedUserId: matchData.peerId
       });
-      alert("User blocked.");
       setIsBlockOpen(false);
       skip();
-    } catch {
-      alert("Failed to block user.");
+    } catch (err) {
+      console.error("Failed to block user", err);
     }
   };
 
@@ -149,10 +148,23 @@ export const ChatPage = () => {
 
       <Modal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} title="Report User">
         <p>Why are you reporting this user?</p>
-        <Input 
+        <select 
           value={reportReason} 
-          onChange={(e) => setReportReason(e.target.value)} 
-          placeholder="Harassment, nudity, etc." 
+          onChange={(e) => setReportReason(e.target.value)}
+          style={{ width: "100%", padding: "8px", marginBottom: "10px", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box" }}
+        >
+          <option value="">Select a reason...</option>
+          <option value="harassment">Harassment or Abuse</option>
+          <option value="inappropriate">Inappropriate Content</option>
+          <option value="spam">Spam</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea 
+          value={reportDetails}
+          onChange={(e) => setReportDetails(e.target.value)}
+          placeholder="Optional details (max 1000 chars)"
+          maxLength={1000}
+          style={{ width: "100%", padding: "8px", minHeight: "80px", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontFamily: "inherit" }}
         />
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
           <Button style={{ backgroundColor: "#6c757d" }} onClick={() => setIsReportOpen(false)}>Cancel</Button>

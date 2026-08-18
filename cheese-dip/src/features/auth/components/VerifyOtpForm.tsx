@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useState, useEffect } from "react";
-import { AuthCard, AuthHeading, AuthShell, FieldRow } from "./AuthShell";
+import { AuthCard, AuthHeading, AuthShell } from "./AuthShell";
+import { FieldRow } from "../../../shared/components/FieldRow";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -52,25 +53,48 @@ export const VerifyOtpForm = () => {
   return (
     <AuthShell>
       <AuthCard>
-        <AuthHeading title="Verify Email" subtitle={`Enter the 6-digit code sent to ${email}`} />
+        <AuthHeading
+          title="Verify Email"
+          subtitle={`Enter the 6-digit code sent to ${email}`}
+        />
         <form onSubmit={handleSubmit}>
           <FieldRow label="OTP Code" error={error}>
-            <Input 
-              type="text" 
+            <Input
+              type="text"
               maxLength={6}
-              value={code} 
-              onChange={(e) => setCode(e.target.value)} 
-              required 
-              style={{ textAlign: "center", letterSpacing: "5px", fontSize: "18px" }} 
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              required
+              style={{
+                textAlign: "center",
+                letterSpacing: "5px",
+                fontSize: "18px",
+              }}
             />
           </FieldRow>
-          {msg && <div style={{ color: "green", fontSize: "12px", marginBottom: "10px" }}>{msg}</div>}
+          {msg && (
+            <div
+              style={{ color: "green", fontSize: "12px", marginBottom: "10px" }}
+            >
+              {msg}
+            </div>
+          )}
           <Button type="submit" fullWidth>
             Verify
           </Button>
         </form>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <Button onClick={handleResend} style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", fontSize: "14px", textDecoration: "underline" }}>
+          <Button
+            onClick={handleResend}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#007bff",
+              cursor: "pointer",
+              fontSize: "14px",
+              textDecoration: "underline",
+            }}
+          >
             Resend Code
           </Button>
         </div>
