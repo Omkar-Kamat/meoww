@@ -80,19 +80,26 @@ export function mountGateways(io: Server): void {
             log.info({ userId: socket.userId }, "User disconnected");
             clearTokenTimers(socket);
             if (socket.userId) {
-                mmService
-                    .handleDisconnect(socket.userId)
-                    .then((actions) => {
-                        for (const action of actions) {
-                            io.to(action.target).emit(action.event, action.payload);
+                const userId = socket.userId;
+                setTimeout(() => {
+                    void (async () => {
+                        try {
+                            const currentSocketId = await sessionStore.getUserSocket(userId);
+                            if (currentSocketId && currentSocketId !== socket.id) {
+                                return; // User reconnected, skip cleanup
+                            }
+                            const actions = await mmService.handleDisconnect(userId);
+                            for (const action of actions) {
+                                io.to(action.target).emit(action.event, action.payload);
+                            }
+                        } catch (err: unknown) {
+                            log.error(
+                                { err, userId, event: "disconnect" },
+                                "Error in matchmaking disconnect handler",
+                            );
                         }
-                    })
-                    .catch((err: unknown) => {
-                        log.error(
-                            { err, userId: socket.userId, event: "disconnect" },
-                            "Error in matchmaking disconnect handler",
-                        );
-                    });
+                    })();
+                }, 3000); // 3-second grace period for reconnects
             }
         });
     });

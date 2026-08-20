@@ -32,6 +32,12 @@ export const SignupForm = () => {
       setUsernameError("Username is reserved");
       return;
     }
+    
+    if (profilePhoto && profilePhoto.size > RULES.MAX_AVATAR_SIZE_BYTES) {
+      setError("Profile photo must be smaller than 5MB");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", name);

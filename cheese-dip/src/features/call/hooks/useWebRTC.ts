@@ -213,14 +213,20 @@ export const useWebRTC = (isInitiator: boolean, roomId: string | undefined, preA
       await run();
     };
 
+    const handleSocketError = (payload: { message: string }) => {
+      setError(payload.message);
+    };
+
     socketClient.on("offer", handleOffer);
     socketClient.on("answer", handleAnswer);
     socketClient.on("ice-candidate", handleIceCandidate);
+    socketClient.on("error", handleSocketError);
 
     return () => {
       socketClient.off("offer", handleOffer);
       socketClient.off("answer", handleAnswer);
       socketClient.off("ice-candidate", handleIceCandidate);
+      socketClient.off("error", handleSocketError);
     };
   }, [roomId]);
 

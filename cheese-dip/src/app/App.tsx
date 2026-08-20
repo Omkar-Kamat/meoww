@@ -59,12 +59,16 @@ export const App = () => {
 
       const handleConnect = () => setIsReconnecting(false);
       const handleDisconnect = () => setIsReconnecting(true);
+      const handleSocketError = (payload: { message: string }) => {
+        console.error("Socket error:", payload.message);
+      };
 
       socketClient.on("token-expired", handleTokenExpired);
       socketClient.on("token-expiring-soon", handleTokenExpiringSoon);
       socketClient.on("session-terminated", handleSessionTerminated);
       socketClient.on("connect", handleConnect);
       socketClient.on("disconnect", handleDisconnect);
+      socketClient.on("error", handleSocketError);
 
       return () => {
         clearTimeout(connectTimer);
@@ -73,6 +77,7 @@ export const App = () => {
         socketClient.off("session-terminated", handleSessionTerminated);
         socketClient.off("connect", handleConnect);
         socketClient.off("disconnect", handleDisconnect);
+        socketClient.off("error", handleSocketError);
         socketClient.disconnect();
       };
     } else {

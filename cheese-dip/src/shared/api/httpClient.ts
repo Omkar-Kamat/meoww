@@ -38,9 +38,9 @@ api.interceptors.response.use(
           }
         }
         return api(originalRequest);
-      } catch (refreshError: any) {
+      } catch (refreshError: unknown) {
         // Handle refresh failure (e.g., redirect to login)
-        if (refreshError.response?.status === 401 || refreshError.response?.status === 403) {
+        if (axios.isAxiosError(refreshError) && (refreshError.response?.status === 401 || refreshError.response?.status === 403)) {
           window.dispatchEvent(new Event("auth-expired"));
         }
         return Promise.reject(refreshError);

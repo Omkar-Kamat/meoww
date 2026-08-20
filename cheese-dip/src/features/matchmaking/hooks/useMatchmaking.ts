@@ -20,6 +20,8 @@ export const useMatchmaking = () => {
     };
   }, []);
 
+  const wasInterruptedRef = useRef(false);
+
   useEffect(() => {
     const onQueued = () => {
       setStatus("queued");
@@ -36,22 +38,22 @@ export const useMatchmaking = () => {
     };
 
     const onDisconnect = () => {
-      setStatus("idle");
-      setMatchData(null);
+      wasInterruptedRef.current = statusRef.current === "matched" || statusRef.current === "queued";
     };
 
     const onConnect = () => {
-      const currentStatus = statusRef.current;
-      if (currentStatus === "matched" || currentStatus === "queued") {
+      if (wasInterruptedRef.current) {
         setReconnectNotice("Reconnecting — your call was interrupted");
+        wasInterruptedRef.current = false;
         setTimeout(() => {
           if (isMountedRef.current) {
              setReconnectNotice("");
           }
         }, 4000);
+      } else {
+        setStatus("idle");
+        setMatchData(null);
       }
-      setStatus("idle");
-      setMatchData(null);
     };
 
     socketClient.on("queued", onQueued);

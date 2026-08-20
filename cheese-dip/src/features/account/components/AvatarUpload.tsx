@@ -5,6 +5,7 @@ import { accountApi } from "../api/accountApi";
 import { getErrorMessage } from "../../../shared/utils/error";
 import { Input } from "../../../shared/components/Input";
 import { Button } from "../../../shared/components/Button";
+import { RULES } from "../../../shared/utils/ui.config";
 
 export const AvatarUpload = () => {
   const { user, fetchMe } = useAuthSession();
@@ -18,6 +19,12 @@ export const AvatarUpload = () => {
 
     setMsg("");
     setError("");
+    
+    if (file.size > RULES.MAX_AVATAR_SIZE_BYTES) {
+      setError("Image must be smaller than 5MB");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("avatar", file);

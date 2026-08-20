@@ -10,8 +10,12 @@ export const VideoTile = ({ stream, label, isLocal = false }: VideoTileProps) =>
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
+    if (videoRef.current) {
+      if (stream) {
+        videoRef.current.srcObject = stream;
+      } else {
+        videoRef.current.srcObject = null;
+      }
     }
   }, [stream]);
 

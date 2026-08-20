@@ -13,6 +13,7 @@ export const useConnectionStats = (minBitrate: number = 20) => {
     let lastBytesSent = 0;
     let lastTimestamp = 0;
     let lastPacketsLost = 0;
+    let tickCount = 0;
 
     intervalRef.current = window.setInterval(async () => {
       if (!pcRef.current || pcRef.current.signalingState === "closed") {
@@ -35,6 +36,7 @@ export const useConnectionStats = (minBitrate: number = 20) => {
       });
 
       if (lastTimestamp > 0) {
+        tickCount++;
         const bytes = bytesSent - lastBytesSent;
         const time = timestamp - lastTimestamp;
         const newPacketsLost = packetsLost - lastPacketsLost;
@@ -46,7 +48,7 @@ export const useConnectionStats = (minBitrate: number = 20) => {
           const state = pcRef.current?.iceConnectionState;
           if (state === "disconnected" || state === "failed" || pcRef.current?.connectionState === "disconnected" || pcRef.current?.connectionState === "failed") {
             quality = "offline";
-          } else if (bitrate < minBitrate || newPacketsLost > 10) {
+          } else if (tickCount >= 2 && (bitrate < minBitrate || newPacketsLost > 10)) {
             quality = "poor";
           }
 
