@@ -42,7 +42,7 @@ export function createRateLimiter(options: RateLimitOptions): ReturnType<typeof 
         standardHeaders: true,
         legacyHeaders: false,
         store: makeStore(name),
-        message: { error: message },
+        message: { message, code: "RATE_LIMITED" },
         handler: (req, res, _next, opts) => {
             log.warn(
                 { path: req.originalUrl, key: makeKeyGenerator(perUser)(req) },

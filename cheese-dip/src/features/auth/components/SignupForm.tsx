@@ -50,10 +50,10 @@ export const SignupForm = () => {
         setUsernameError(apiErr.message);
       } else if (apiErr?.code === "EMAIL_EXISTS") {
         setEmailError(apiErr.message);
-      } else if (apiErr?.meta?.errors) {
-        apiErr.meta.errors.forEach((e) => {
-          if (e.path.includes("username")) setUsernameError(e.message);
-          if (e.path.includes("email")) setEmailError(e.message);
+      } else if (apiErr?.meta?.issues) {
+        apiErr.meta.issues.forEach((issue) => {
+          if (issue.path === "username") setUsernameError(issue.message);
+          if (issue.path === "email") setEmailError(issue.message);
         });
       } else {
         setError(apiErr?.message || "Signup failed");

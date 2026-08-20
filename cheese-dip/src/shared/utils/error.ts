@@ -4,7 +4,7 @@ export interface AppErrorResponse {
   message: string;
   code?: string;
   meta?: {
-    errors?: Array<{ path: string[]; message: string }>;
+    issues?: Array<{ path: string; message: string }>;
     [key: string]: unknown;
   };
 }

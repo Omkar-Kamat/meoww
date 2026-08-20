@@ -42,10 +42,10 @@ export const ProfileForm = () => {
       setMsg("Profile updated successfully!");
     } catch (err) {
       const apiErr = getApiError(err);
-      if (apiErr?.code === "USERNAME_EXISTS") {
+      if (apiErr?.code === "USERNAME_TAKEN" || apiErr?.code === "USERNAME_EXISTS") {
         setError("This username is already taken.");
-      } else if (apiErr?.meta?.errors) {
-        setError(apiErr.meta.errors.map(e => e.message).join(", "));
+      } else if (apiErr?.meta?.issues) {
+        setError(apiErr.meta.issues.map(issue => issue.message).join(", "));
       } else {
         setError(getErrorMessage(err, "Failed to update profile"));
       }
