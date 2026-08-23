@@ -3,11 +3,12 @@ import { useState } from "react";
 import { AuthCard, AuthHeading, AuthShell } from "./AuthShell";
 import { FieldRow } from "../../../shared/components/FieldRow";
 import { authApi } from "../api/authApi";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { getApiError } from "../../../shared/utils/error";
 import { RULES } from "../../../shared/utils/ui.config";
-import { Input } from "../../../shared/components/Input";
-import { Button } from "../../../shared/components/Button";
+import { TextField, Button, Text, Link, Flex, Box } from "@radix-ui/themes";
+import { MorphIcon } from "morphicons/react";
+import { Mail, Lock, User, AtSign, UserPlus, Sparkles } from "lucide";
 
 export const SignupForm = () => {
   const [name, setName] = useState("");
@@ -18,6 +19,7 @@ export const SignupForm = () => {
   const [error, setError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -73,18 +75,26 @@ export const SignupForm = () => {
         <AuthHeading title="Create an Account" />
         <form onSubmit={handleSubmit}>
           <FieldRow label="Name">
-            <Input
+            <TextField.Root
               type="text"
+              placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               minLength={2}
               maxLength={50}
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={User} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
+
           <FieldRow label="Username" error={usernameError}>
-            <Input
+            <TextField.Root
               type="text"
+              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -92,49 +102,95 @@ export const SignupForm = () => {
               maxLength={RULES.USERNAME_MAX_LENGTH}
               pattern="^[a-z0-9_]+$"
               title="Lowercase letters, numbers, and underscores only"
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={AtSign} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
+
           <FieldRow label="Email" error={emailError}>
-            <Input
+            <TextField.Root
               type="email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={Mail} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
+
           <FieldRow label="Password">
-            <Input
+            <TextField.Root
               type="password"
+              placeholder="Choose a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
               maxLength={100}
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={Lock} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
-          {error && (
-            <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
-          )}
+
           <FieldRow label="Profile Photo (Optional)">
-            <Input
-              type="file"
-              onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
-              accept="image/*"
-            />
+            <Box style={{ position: "relative" }}>
+              <input
+                type="file"
+                onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
+                accept="image/*"
+                style={{ 
+                  width: "100%", padding: "6px", 
+                  background: "var(--gray-a3)", 
+                  border: "1px solid var(--gray-a5)", 
+                  borderRadius: "var(--radius-3)",
+                  color: "var(--gray-12)"
+                }}
+              />
+            </Box>
           </FieldRow>
-          <Button
-            type="submit"
-            fullWidth
-            style={{ backgroundColor: "#28a745" }}
+
+          {error && (
+            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }}>
+              {error}
+            </Text>
+          )}
+
+          <Button 
+            type="submit" 
+            size="3" 
+            style={{ width: "100%", marginTop: "10px", cursor: "pointer" }}
+            onMouseEnter={() => setIsHoveringSubmit(true)}
+            onMouseLeave={() => setIsHoveringSubmit(false)}
           >
             Sign Up
+            <MorphIcon 
+              icon={isHoveringSubmit ? Sparkles : UserPlus} 
+              size={18} 
+              spring="bouncy"
+            />
           </Button>
         </form>
-        <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <Link to="/login" style={{ fontSize: "14px", color: "#007bff" }}>
-            Already have an account? Login
-          </Link>
-        </div>
+        
+        <Flex direction="column" mt="5" align="center">
+          <Text size="2" color="gray">
+            Already have an account?{" "}
+            <Link asChild>
+              <RouterLink to="/login">
+                Login
+              </RouterLink>
+            </Link>
+          </Text>
+        </Flex>
       </AuthCard>
     </AuthShell>
   );

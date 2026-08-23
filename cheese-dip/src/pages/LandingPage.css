@@ -1,0 +1,172 @@
+.landing-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-background);
+  color: var(--gray-12);
+  font-family: var(--default-font-family);
+  overflow: hidden;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--ruby-a3) 0%, rgba(0, 0, 0, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.content {
+  text-align: center;
+  z-index: 1;
+  max-width: 600px;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, var(--ruby-9), var(--ruby-11));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: var(--gray-11);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--ruby-9);
+  color: var(--ruby-9-contrast, white);
+  box-shadow: 0 4px 14px 0 var(--ruby-a5);
+}
+
+.btn-primary:hover {
+  background: var(--ruby-10);
+  box-shadow: 0 6px 20px var(--ruby-a6);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--gray-a3);
+  color: var(--gray-12);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--gray-a5);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-a4);
+  transform: translateY(-2px);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--gray-a3);
+  border: 1px solid var(--gray-a5);
+  color: var(--gray-12);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.theme-toggle:hover {
+  background: var(--gray-a4);
+  transform: scale(1.05);
+}
+
+.tooltip-content {
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ruby-1);
+  background-color: var(--ruby-12);
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+  user-select: none;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  z-index: 100;
+}
+
+.tooltip-arrow {
+  fill: var(--ruby-12);
+}
+
+@keyframes slideUpAndFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRightAndFade {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDownAndFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeftAndFade {
+  from { opacity: 0; transform: translateX(4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.tooltip-content[data-state='delayed-open'][data-side='top'] {
+  animation-name: slideDownAndFade;
+}
+.tooltip-content[data-state='delayed-open'][data-side='right'] {
+  animation-name: slideLeftAndFade;
+}
+.tooltip-content[data-state='delayed-open'][data-side='bottom'] {
+  animation-name: slideUpAndFade;
+}
+.tooltip-content[data-state='delayed-open'][data-side='left'] {
+  animation-name: slideRightAndFade;
+}

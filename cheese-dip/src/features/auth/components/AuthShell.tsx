@@ -1,18 +1,42 @@
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { Flex, Card, Heading, Text, Box } from "@radix-ui/themes";
 
 export const AuthShell = ({ children }: { children: ReactNode }) => {
   return (
-    <div
-      style={{
-        display: "flex",
+    <Box 
+      style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        alignItems: "center", 
         justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        backgroundColor: "#f0f0f0",
+        background: "var(--color-background)",
+        padding: "20px",
+        position: "relative",
+        overflow: "hidden"
       }}
     >
-      {children}
-    </div>
+      <div 
+        style={{
+          position: "absolute",
+          width: "600px",
+          height: "600px",
+          background: "radial-gradient(circle, var(--ruby-a3) 0%, rgba(0, 0, 0, 0) 70%)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none"
+        }}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ width: "100%", maxWidth: "420px", zIndex: 1 }}
+      >
+        {children}
+      </motion.div>
+    </Box>
   );
 };
 
@@ -24,28 +48,31 @@ export const AuthHeading = ({
   subtitle?: string;
 }) => {
   return (
-    <div style={{ marginBottom: "20px", textAlign: "center" }}>
-      <h2 style={{ margin: 0, fontSize: "24px" }}>{title}</h2>
+    <Flex direction="column" gap="2" mb="6" align="center">
+      <Heading size="7" weight="bold" style={{ 
+        background: "linear-gradient(to right, var(--ruby-9), var(--ruby-11))",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent"
+      }}>
+        {title}
+      </Heading>
       {subtitle && (
-        <p style={{ margin: "5px 0 0", color: "#666" }}>{subtitle}</p>
+        <Text size="3" color="gray">
+          {subtitle}
+        </Text>
       )}
-    </div>
+    </Flex>
   );
 };
 
 export const AuthCard = ({ children }: { children: ReactNode }) => {
   return (
-    <div
-      style={{
-        backgroundColor: "#fff",
-        padding: "40px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        width: "100%",
-        maxWidth: "400px",
-      }}
-    >
+    <Card size="4" style={{ 
+      boxShadow: "0 8px 32px var(--ruby-a3)", 
+      border: "1px solid var(--gray-a4)",
+      backgroundColor: "var(--color-panel-solid)"
+    }}>
       {children}
-    </div>
+    </Card>
   );
 };

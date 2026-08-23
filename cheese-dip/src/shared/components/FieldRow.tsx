@@ -1,11 +1,18 @@
 import type { ReactNode } from "react";
+import { Flex, Text } from "@radix-ui/themes";
 
 export const FieldRow = ({ label, error, children }: { label: string; error?: string; children: ReactNode }) => {
   return (
-    <div style={{ marginBottom: "15px" }}>
-      <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>{label}</label>
+    <Flex direction="column" gap="1" mb="4">
+      <Text as="label" size="2" weight="bold" color="gray">
+        {label}
+      </Text>
       {children}
-      {error && <span style={{ color: "red", fontSize: "12px", display: "block", marginTop: "5px" }}>{error}</span>}
-    </div>
+      {error && (
+        <Text color="ruby" size="1" mt="1">
+          {error}
+        </Text>
+      )}
+    </Flex>
   );
 };
