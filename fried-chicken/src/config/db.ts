@@ -1,5 +1,6 @@
 // src/config/db.ts
-import mongoose, { ConnectionStates, type ConnectOptions } from "mongoose";
+import mongoose, { type ConnectOptions } from "mongoose";
+const { ConnectionStates } = mongoose;
 import { createModuleLogger, logError } from "../utils/logger.js";
 
 const log = createModuleLogger("mongodb");

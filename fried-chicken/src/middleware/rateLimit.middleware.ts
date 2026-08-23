@@ -18,7 +18,13 @@ interface RateLimitOptions {
 
 function makeStore(name: string): RedisStore {
     return new RedisStore({
-        sendCommand: (...args: string[]) => redisClient.sendCommand(args),
+        sendCommand: async (...args: string[]): Promise<any> => {
+            if (!redisClient.isOpen) {
+                if (args[0] === "SCRIPT") return "dummy-sha";
+                return null;
+            }
+            return redisClient.sendCommand(args);
+        },
         prefix: `rl:${name}:`,
     });
 }
@@ -43,6 +49,7 @@ export function createRateLimiter(options: RateLimitOptions): ReturnType<typeof 
         legacyHeaders: false,
         store: makeStore(name),
         message: { message, code: "RATE_LIMITED" },
+        validate: false,
         handler: (req, res, _next, opts) => {
             log.warn(
                 { path: req.originalUrl, key: makeKeyGenerator(perUser)(req) },

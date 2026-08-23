@@ -1,4 +1,5 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import mongoose, { type Document, type Model } from "mongoose";
+const { Schema } = mongoose;
 
 export interface TokenFields {
     purpose: string;

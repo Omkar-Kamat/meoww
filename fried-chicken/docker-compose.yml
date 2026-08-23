@@ -6,3 +6,9 @@ services:
         volumes:
             - ./infra/turnserver.conf:/etc/coturn/turnserver.conf:ro
         command: ["-c", "/etc/coturn/turnserver.conf"]
+    redis:
+        image: redis:7-alpine
+        restart: unless-stopped
+        command: redis-server --requirepass local_redis_password
+        ports:
+            - "6379:6379"

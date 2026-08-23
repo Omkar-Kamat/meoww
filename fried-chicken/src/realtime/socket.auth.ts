@@ -2,7 +2,8 @@
 
 // src/realtime/socket.auth.ts
 import type { Socket } from "socket.io";
-import jwt, { TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+const { TokenExpiredError } = jwt;
 import { parseCookie } from "cookie";
 import { env } from "../config/env.js";
 

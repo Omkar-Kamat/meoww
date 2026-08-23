@@ -1,7 +1,8 @@
 // UserModel — exported Mongoose model
 
 // src/modules/user/user.model
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import mongoose, { type Document, type Model } from "mongoose";
+const { Schema } = mongoose;
 
 export interface UserFields {
     name: string;

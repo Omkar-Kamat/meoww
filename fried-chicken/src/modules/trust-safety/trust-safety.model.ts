@@ -1,4 +1,5 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+const { Schema } = mongoose;
 import type { Document, Model } from "mongoose";
 
 export interface ReportDocument extends Document {

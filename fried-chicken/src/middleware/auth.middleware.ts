@@ -1,5 +1,6 @@
 // src/middleware/auth.middleware.ts
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+const { JsonWebTokenError, TokenExpiredError } = jwt;
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import { env } from "../config/env.js";
