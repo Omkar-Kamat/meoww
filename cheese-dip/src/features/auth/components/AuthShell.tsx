@@ -1,20 +1,14 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Flex, Card, Heading, Text, Box } from "@radix-ui/themes";
+import { Flex, Card, Heading, Text } from "@radix-ui/themes";
 
 export const AuthShell = ({ children }: { children: ReactNode }) => {
   return (
-    <Box 
-      style={{ 
-        minHeight: "100vh", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center",
-        background: "var(--color-background)",
-        padding: "20px",
-        position: "relative",
-        overflow: "hidden"
-      }}
+    <Flex 
+      className="page-container"
+      align="center"
+      justify="center"
+      style={{ overflow: "hidden" }}
     >
       <div 
         style={{
@@ -31,12 +25,12 @@ export const AuthShell = ({ children }: { children: ReactNode }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         style={{ width: "100%", maxWidth: "420px", zIndex: 1 }}
       >
         {children}
       </motion.div>
-    </Box>
+    </Flex>
   );
 };
 

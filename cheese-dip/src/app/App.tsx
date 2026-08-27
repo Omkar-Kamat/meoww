@@ -90,18 +90,12 @@ export const App = () => {
   return (
     <AppProviders>
       {isRefreshing && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, width: "100%", zIndex: 9999,
-          backgroundColor: "#17a2b8", color: "white", textAlign: "center", padding: "5px", fontSize: "14px"
-        }}>
+        <div className="banner banner-info">
           Refreshing session...
         </div>
       )}
       {isReconnecting && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, width: "100%", zIndex: 9999,
-          backgroundColor: "#ffc107", color: "black", textAlign: "center", padding: "5px", fontSize: "14px"
-        }}>
+        <div className="banner banner-warning">
           Reconnecting...
         </div>
       )}

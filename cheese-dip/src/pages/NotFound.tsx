@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
+import { Flex, Heading, Button } from "@radix-ui/themes";
 
 export const NotFound = () => {
   return (
-    <div style={{ padding: "50px", textAlign: "center" }}>
-      <h2>404 - Page Not Found</h2>
-      <Link to="/">Go Home</Link>
-    </div>
+    <Flex className="page-container" align="center" justify="center" direction="column" gap="5">
+      <Heading size="8">404 - Page Not Found</Heading>
+      <Button asChild size="3" variant="solid" color="ruby">
+        <Link to="/">Go Home</Link>
+      </Button>
+    </Flex>
   );
 };

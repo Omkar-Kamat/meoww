@@ -3,8 +3,8 @@ import { ProfileForm, AvatarUpload, accountApi } from "../features/account";
 import { useAuthSession } from "../features/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { getErrorMessage } from "../shared/utils/error";
-import { Button } from "../shared/components/Button";
 import { Modal } from "../shared/components/Modal";
+import { Flex, Box, Heading, Text, Button, TextField, Card } from "@radix-ui/themes";
 
 export const SettingsPage = () => {
   const { user, logout } = useAuthSession();
@@ -28,26 +28,32 @@ export const SettingsPage = () => {
   if (!user) return null;
 
   return (
-    <div style={{ padding: "30px", maxWidth: "600px", margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h2>Account Settings</h2>
-        <Link to="/chat" style={{ textDecoration: "none", color: "#007bff" }}>Back to Chat</Link>
-      </div>
+    <Flex align="center" direction="column" className="page-container">
+      <Box width="100%" maxWidth="600px">
+        <Flex justify="between" align="center" mb="5">
+          <Heading size="6">Account Settings</Heading>
+          <Button variant="soft" color="gray" asChild>
+            <Link to="/chat" style={{ textDecoration: "none" }}>Back to Chat</Link>
+          </Button>
+        </Flex>
       
-      <AvatarUpload />
-      <ProfileForm />
+        <AvatarUpload />
+        <ProfileForm />
 
-      <div style={{ border: "1px solid #dc3545", padding: "20px", borderRadius: "8px", marginTop: "40px" }}>
-        <h3 style={{ color: "#dc3545", marginTop: 0 }}>Danger Zone</h3>
-        <p>Once you delete your account, there is no going back. Please be certain.</p>
-        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-        <Button 
-          onClick={() => setIsDeleteModalOpen(true)}
-          style={{ backgroundColor: "#dc3545" }}
-        >
-          Delete Account
-        </Button>
-      </div>
+        <Card size="3" style={{ marginTop: "2.5rem", borderColor: "var(--tomato-a5)" }}>
+          <Heading size="4" color="tomato" mb="3">Danger Zone</Heading>
+          <Text as="p" color="gray" mb="4">Once you delete your account, there is no going back. Please be certain.</Text>
+          {error && <Text as="div" color="tomato" mb="3" size="2">{error}</Text>}
+          <Button 
+            onClick={() => setIsDeleteModalOpen(true)}
+            color="tomato"
+            variant="solid"
+            size="3"
+          >
+            Delete Account
+          </Button>
+        </Card>
+      </Box>
 
       <Modal
         isOpen={isDeleteModalOpen}
@@ -57,29 +63,32 @@ export const SettingsPage = () => {
         }}
         title="Delete Account"
       >
-        <p>This action cannot be undone. All your data will be permanently removed.</p>
-        <p>Please type <strong>{user?.username}</strong> to confirm:</p>
-        <input
-          type="text"
-          value={deleteConfirmText}
-          onChange={(e) => setDeleteConfirmText(e.target.value)}
-          placeholder={user?.username}
-          style={{ width: "100%", padding: "10px", marginBottom: "15px", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box" }}
-        />
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-          <Button onClick={() => {
-            setIsDeleteModalOpen(false);
-            setDeleteConfirmText("");
-          }} style={{ backgroundColor: "#6c757d" }}>Cancel</Button>
-          <Button 
-            onClick={confirmDeleteAccount}
-            disabled={deleteConfirmText !== user?.username}
-            style={{ backgroundColor: deleteConfirmText !== user?.username ? "#ccc" : "#dc3545", cursor: deleteConfirmText !== user?.username ? "not-allowed" : "pointer" }}
-          >
-            Delete Permanently
-          </Button>
-        </div>
+        <Flex direction="column" gap="4">
+          <Text color="gray">This action cannot be undone. All your data will be permanently removed.</Text>
+          <Text>Please type <strong>{user?.username}</strong> to confirm:</Text>
+          <TextField.Root
+            value={deleteConfirmText}
+            onChange={(e) => setDeleteConfirmText(e.target.value)}
+            placeholder={user?.username}
+            size="3"
+          />
+          <Flex justify="end" gap="3" mt="2">
+            <Button variant="soft" color="gray" size="3" onClick={() => {
+              setIsDeleteModalOpen(false);
+              setDeleteConfirmText("");
+            }}>Cancel</Button>
+            <Button 
+              color="tomato"
+              variant="solid"
+              size="3"
+              onClick={confirmDeleteAccount}
+              disabled={deleteConfirmText !== user?.username}
+            >
+              Delete Permanently
+            </Button>
+          </Flex>
+        </Flex>
       </Modal>
-    </div>
+    </Flex>
   );
 };
