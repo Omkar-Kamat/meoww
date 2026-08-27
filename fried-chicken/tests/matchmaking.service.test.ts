@@ -19,6 +19,17 @@ vi.mock("../src/realtime/session.store.js", () => ({
     clearUserSocket: vi.fn(),
 }));
 
+// tryMatch() checks the trust-safety block list before pairing two users.
+// Without this mock, BlockModel.exists() makes a real Mongoose call with no
+// DB connection configured for this unit test, which hangs until the test
+// timeout rather than failing fast — mock it out like the other collaborators.
+// vi.mock factories are hoisted above top-level declarations, so the mock fn
+// itself must be created via vi.hoisted() rather than a plain top-level const.
+const { mockBlockExists } = vi.hoisted(() => ({ mockBlockExists: vi.fn() }));
+vi.mock("../src/modules/trust-safety/trust-safety.model.js", () => ({
+    BlockModel: { exists: mockBlockExists },
+}));
+
 describe("MatchmakingService", () => {
     let checkSocketLive: Mock<(socketId: string) => Promise<boolean>>;
     let service: ReturnType<typeof createMatchmakingService>;
@@ -26,6 +37,7 @@ describe("MatchmakingService", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         checkSocketLive = vi.fn().mockResolvedValue(true);
+        mockBlockExists.mockResolvedValue(null);
         service = createMatchmakingService(checkSocketLive);
     });
 
@@ -116,6 +128,30 @@ describe("MatchmakingService", () => {
             expect(store.addToQueue).toHaveBeenCalledWith("userA");
             expect(result.match).toBeNull();
             expect(result.actions).toEqual([]);
+        });
+
+        it("should skip a partner who has blocked (or is blocked by) the user, and re-queue them", async () => {
+            vi.mocked(store.popOrEnqueue)
+                .mockResolvedValueOnce("userB")
+                .mockResolvedValueOnce("userC");
+
+            mockBlockExists.mockImplementation((filter: unknown) => {
+                const query = filter as { $or: { blockerId: string; blockedId: string }[] };
+                const involvesUserB = query.$or.some(
+                    (c) => c.blockerId === "userB" || c.blockedId === "userB",
+                );
+                return Promise.resolve(involvesUserB ? ({ _id: "block1" } as never) : null);
+            });
+
+            vi.mocked(sessionStore.getUserSocket).mockResolvedValue("socketC");
+            vi.mocked(store.createRoomAtomic).mockResolvedValue("room123");
+
+            const result = await service.tryMatch("userA");
+
+            expect(store.addToQueue).toHaveBeenCalledWith("userB");
+            expect(result.match).not.toBeNull();
+            expect(result.match?.peerId).toBe("userC");
+            expect(store.popOrEnqueue).toHaveBeenCalledTimes(2);
         });
     });
 });

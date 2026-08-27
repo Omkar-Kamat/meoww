@@ -1,6 +1,6 @@
 // src/middleware/rateLimit.middleware.ts
 import rateLimit, { ipKeyGenerator, type Options } from "express-rate-limit";
-import { RedisStore } from "rate-limit-redis";
+import { RedisStore, type RedisReply } from "rate-limit-redis";
 import type { Request } from "express";
 import redisClient from "../config/redis.js";
 import { createModuleLogger } from "../utils/logger.js";
@@ -18,12 +18,16 @@ interface RateLimitOptions {
 
 function makeStore(name: string): RedisStore {
     return new RedisStore({
-        sendCommand: async (...args: string[]): Promise<any> => {
+        sendCommand: async (...args: string[]): Promise<RedisReply> => {
             if (!redisClient.isOpen) {
                 if (args[0] === "SCRIPT") return "dummy-sha";
-                return null;
+                // rate-limit-redis's RedisReply type doesn't include `null`,
+                // but a real Redis GET on a missing key does reply with null
+                // and the store handles that fine — this fallback mirrors
+                // that behavior while Redis is unreachable ("fail open").
+                return null as unknown as RedisReply;
             }
-            return redisClient.sendCommand(args);
+            return (await redisClient.sendCommand(args)) as unknown as RedisReply;
         },
         prefix: `rl:${name}:`,
     });

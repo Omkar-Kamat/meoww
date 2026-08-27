@@ -1,14 +1,24 @@
 /* eslint-disable */
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 import { Server, type Socket } from "socket.io";
 import { mountGateways } from "../src/realtime/socket.server.js";
 import * as matchmakingService from "../src/modules/matchmaking/matchmaking.service.js";
+import * as sessionStore from "../src/realtime/session.store.js";
 
 vi.mock("../src/modules/matchmaking/matchmaking.service.js", () => ({
     createMatchmakingService: vi.fn(),
 }));
 vi.mock("../src/modules/webrtc/webrtc.service.js", () => ({
     createWebrtcService: vi.fn(),
+}));
+// The disconnect handler re-checks session.store before running cleanup, to
+// skip cleanup if the user already reconnected under a new socket id during
+// the grace period. Mock it so the test doesn't hit a real (unconnected)
+// Redis client.
+vi.mock("../src/realtime/session.store.js", () => ({
+    getUserSocket: vi.fn(),
+    setUserSocket: vi.fn(),
+    clearUserSocket: vi.fn(),
 }));
 
 describe("socket.server", () => {
@@ -19,6 +29,7 @@ describe("socket.server", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.useFakeTimers();
 
         io = new Server();
         mockTo = vi.fn().mockReturnValue(io);
@@ -32,7 +43,13 @@ describe("socket.server", () => {
             handleDisconnect: mockHandleDisconnect,
         } as unknown as ReturnType<typeof matchmakingService.createMatchmakingService>);
 
+        vi.mocked(sessionStore.getUserSocket).mockResolvedValue(null);
+
         mountGateways(io);
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it("should process actions returned by handleDisconnect and emit them to targets", async () => {
@@ -58,7 +75,10 @@ describe("socket.server", () => {
         ]);
 
         disconnectHandler();
-        await Promise.resolve();
+
+        // Cleanup runs after a 3s grace period (to skip it on quick
+        // reconnects), so advance past that before asserting.
+        await vi.advanceTimersByTimeAsync(3000);
 
         expect(mockHandleDisconnect).toHaveBeenCalledWith("userA");
         expect(mockTo).toHaveBeenCalledWith("socketB");
