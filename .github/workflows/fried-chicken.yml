@@ -11,27 +11,57 @@ on:
       - '.github/workflows/fried-chicken.yml'
 
 jobs:
-  build-and-test:
+  lint-and-format:
     runs-on: ubuntu-latest
-    
     defaults:
       run:
         working-directory: ./fried-chicken
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-
     steps:
     - uses: actions/checkout@v4
-
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 22.x
         cache: 'npm'
         cache-dependency-path: 'fried-chicken/package-lock.json'
+    - name: Install dependencies
+      run: npm ci
+    - name: Run Linter
+      run: npx eslint .
+    - name: Check Formatting
+      run: npx prettier --check .
 
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fried-chicken
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: 'fried-chicken/package-lock.json'
+    - name: Install dependencies
+      run: npm ci
+    - name: Run TypeScript Compiler (Typecheck)
+      run: npx tsc --noEmit
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fried-chicken
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: 'fried-chicken/package-lock.json'
     - name: Start MongoDB & Redis for integration tests
       uses: supercharge/mongodb-github-action@1.11.0
       with:
@@ -39,19 +69,8 @@ jobs:
     - uses: supercharge/redis-github-action@1.8.0
       with:
         redis-version: '7'
-
     - name: Install dependencies
       run: npm ci
-
-    - name: Run Linter
-      run: npx eslint .
-
-    - name: Check Formatting
-      run: npx prettier --check .
-
-    - name: Run TypeScript Compiler (Typecheck)
-      run: npx tsc --noEmit
-
     - name: Run Tests
       run: npm test
       env:

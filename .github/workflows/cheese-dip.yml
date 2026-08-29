@@ -1,0 +1,68 @@
+name: cheese-dip CI
+
+on:
+  push:
+    paths:
+      - 'cheese-dip/**'
+      - '.github/workflows/cheese-dip.yml'
+  pull_request:
+    paths:
+      - 'cheese-dip/**'
+      - '.github/workflows/cheese-dip.yml'
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cheese-dip
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: 'cheese-dip/package-lock.json'
+    - name: Install dependencies
+      run: npm ci
+    - name: Run Linter
+      run: npm run lint
+    - name: Check Formatting
+      run: npx prettier --check .
+
+  typecheck-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cheese-dip
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: 'cheese-dip/package-lock.json'
+    - name: Install dependencies
+      run: npm ci
+    - name: Build
+      run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cheese-dip
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: 'cheese-dip/package-lock.json'
+    - name: Install dependencies
+      run: npm ci
+    - name: Run Tests
+      run: npm run test:ci
