@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         try {
             await authApi.logout();
         } catch {
+            // ignore logout errors
         } finally {
             set({ user: null });
             socketClient.disconnect();

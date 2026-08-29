@@ -32,7 +32,9 @@ api.interceptors.response.use(
                 ) {
                     try {
                         originalRequest.data = JSON.parse(originalRequest.data);
-                    } catch {}
+                    } catch {
+                        // ignore parsing errors
+                    }
                 }
                 return api(originalRequest);
             } catch (refreshError: unknown) {
