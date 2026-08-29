@@ -7,7 +7,7 @@ process.env.FRONTEND_URL = "http://localhost:3000";
 process.env.CLOUDINARY_CLOUD_NAME = "mock";
 process.env.CLOUDINARY_API_KEY = "mock";
 process.env.CLOUDINARY_API_SECRET = "mock";
-process.env.MONGO_URI = "mongodb://localhost:27017/test"; // Overridden later
+process.env.MONGO_URI = "mongodb://localhost:27017/test";
 process.env.BREVO_API_KEY = "mockkey";
 process.env.EMAIL_FROM = "test@example.com";
 process.env.BASE_URL = "http://localhost:5000";
@@ -17,7 +17,6 @@ process.env.REDIS_PASSWORD = "mock";
 process.env.TURN_DOMAIN = "test.turn.com";
 process.env.TURN_SECRET = "mock_secret_that_is_long_enough_for_zod_to_be_happy_32_chars!";
 
-// Mock redis
 vi.mock("../src/config/redis.js", () => {
     const mockStore = new Map();
     return {
@@ -40,7 +39,6 @@ vi.mock("../src/config/redis.js", () => {
     };
 });
 
-// Mock email service
 vi.mock("../src/services/email.service.js", () => {
     return {
         sendVerificationEmail: vi.fn(() => Promise.resolve()),
@@ -49,7 +47,6 @@ vi.mock("../src/services/email.service.js", () => {
     };
 });
 
-// Mock rate limiters
 vi.mock("../src/middleware/rateLimit.middleware.js", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dummy = (req: any, res: any, next: () => void) => {

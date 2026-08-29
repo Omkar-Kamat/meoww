@@ -1,153 +1,189 @@
 .landing-container {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-background);
-  color: var(--gray-12);
-  font-family: 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  position: relative;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-background);
+    color: var(--gray-12);
+    font-family:
+        "Geist Sans",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    position: relative;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+    overflow-x: hidden;
 }
 
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 1rem 2rem;
-  z-index: 50;
-  background: var(--color-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--gray-a3);
-  box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem 2rem;
+    z-index: 50;
+    background: var(--color-background);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-a3);
+    box-sizing: border-box;
 }
 
 @supports (background: color-mix(in srgb, var(--color-background) 80%, transparent)) {
-  .navbar {
-    background: color-mix(in srgb, var(--color-background) 80%, transparent);
-  }
+    .navbar {
+        background: color-mix(in srgb, var(--color-background) 80%, transparent);
+    }
 }
 
 .hero-section {
-  padding-top: 8rem;
-  padding-bottom: 4rem;
+    padding-top: 8rem;
+    padding-bottom: 4rem;
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--ruby-9), var(--ruby-11));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+    background: linear-gradient(135deg, var(--ruby-9), var(--ruby-11));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
 }
 
 .hero-visual-inner {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 32px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--gray-a2);
-  border: 1px solid var(--gray-a4);
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 32px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--gray-a2);
+    border: 1px solid var(--gray-a4);
 }
 
 .hero-placeholder-mesh {
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(at 0% 0%, var(--ruby-a4) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, var(--cyan-a4) 0px, transparent 50%);
-  filter: blur(40px);
-  opacity: 0.8;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(at 0% 0%, var(--ruby-a4) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, var(--cyan-a4) 0px, transparent 50%);
+    filter: blur(40px);
+    opacity: 0.8;
 }
 
-/* Bento Grid */
 .bento-card {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
-  background: var(--gray-a2);
+    transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s ease;
+    background: var(--gray-a2);
 }
 
 .bento-card:hover {
-  transform: translateY(-2px);
-  /* Linear Principle: No drop shadows on dark surfaces */
+    transform: translateY(-2px);
 }
 
 .bento-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (min-width: 768px) {
-  .col-span-md-2 {
-    grid-column: span 2;
-  }
+    .col-span-md-2 {
+        grid-column: span 2;
+    }
 }
 
-/* Tooltip Animations */
 .tooltip-content {
-  border-radius: 8px;
-  padding: 10px 15px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--ruby-1);
-  background-color: var(--ruby-12);
-  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-  user-select: none;
-  z-index: 100;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ruby-1);
+    background-color: var(--ruby-12);
+    box-shadow:
+        hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
+        hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+    user-select: none;
+    z-index: 100;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .tooltip-content {
-    animation-duration: 400ms;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity;
-  }
-  
-  .tooltip-content[data-state='delayed-open'][data-side='top'] {
-    animation-name: slideDownAndFade;
-  }
-  .tooltip-content[data-state='delayed-open'][data-side='right'] {
-    animation-name: slideLeftAndFade;
-  }
-  .tooltip-content[data-state='delayed-open'][data-side='bottom'] {
-    animation-name: slideUpAndFade;
-  }
-  .tooltip-content[data-state='delayed-open'][data-side='left'] {
-    animation-name: slideRightAndFade;
-  }
+    .tooltip-content {
+        animation-duration: 400ms;
+        animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform, opacity;
+    }
+
+    .tooltip-content[data-state="delayed-open"][data-side="top"] {
+        animation-name: slideDownAndFade;
+    }
+    .tooltip-content[data-state="delayed-open"][data-side="right"] {
+        animation-name: slideLeftAndFade;
+    }
+    .tooltip-content[data-state="delayed-open"][data-side="bottom"] {
+        animation-name: slideUpAndFade;
+    }
+    .tooltip-content[data-state="delayed-open"][data-side="left"] {
+        animation-name: slideRightAndFade;
+    }
 }
 
 .tooltip-arrow {
-  fill: var(--ruby-12);
+    fill: var(--ruby-12);
 }
 
 @keyframes slideUpAndFade {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideRightAndFade {
-  from { opacity: 0; transform: translateX(-4px); }
-  to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes slideDownAndFade {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideLeftAndFade {
-  from { opacity: 0; transform: translateX(4px); }
-  to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

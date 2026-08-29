@@ -22,7 +22,6 @@ describe("socket.utils", () => {
             const handler = safeHandler(socket, "test-action", fn);
             handler("arg1");
 
-            // Wait for promise resolution
             await new Promise((resolve) => setTimeout(resolve, 0));
 
             expect(fn).toHaveBeenCalledWith("arg1");
@@ -70,14 +69,12 @@ describe("socket.utils", () => {
                 to: toMock,
             } as unknown as BaseAuthedSocket;
 
-            // Rejecting promise to simulate error in async handler
             const fn = vi.fn().mockRejectedValue(new Error("Test Error"));
 
             const handler = safeHandler(socket, "test-action", fn);
             handler();
 
-            await new Promise((resolve) => setTimeout(resolve, 0)); // Allow promise rejection to handle
-
+            await new Promise((resolve) => setTimeout(resolve, 0));
             expect(emitMock).toHaveBeenCalledWith("error", {
                 message: "An unexpected error occurred.",
             });
@@ -94,7 +91,6 @@ describe("socket.utils", () => {
                 to: toMock,
             } as unknown as BaseAuthedSocket;
 
-            // Zod error simulated by throwing synchronously
             const fn = vi.fn().mockImplementation(() => {
                 throw new Error("Invalid payload");
             });

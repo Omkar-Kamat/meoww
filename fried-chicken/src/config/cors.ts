@@ -1,4 +1,3 @@
-// src/config/cors.ts
 import type { CorsOptions } from "cors";
 import { createModuleLogger } from "../utils/logger.js";
 

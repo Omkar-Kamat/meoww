@@ -1,8 +1,3 @@
-// sendEmail(to: string, subject: string, html: string): Promise<void>
-// sendVerificationEmail(to: string, code: string): Promise<void>
-// sendPasswordResetEmail(to: string, resetLink: string): Promise<void>
-
-// src/services/email.service
 import axios from "axios";
 import { env } from "../config/env.js";
 import { createModuleLogger, logError } from "../utils/logger.js";

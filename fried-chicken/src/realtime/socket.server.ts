@@ -1,7 +1,3 @@
-// createSocketServer(httpServer: HttpServer): Promise<Server> — instantiates Socket.io, attaches Redis adapter
-// mountGateways(io: Server) — on each connection, calls registerMatchmakingHandlers (and future gateways)
-
-// src/realtime/socket.server.ts
 import type { Server as HttpServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
@@ -33,8 +29,6 @@ export async function createSocketServer(httpServer: HttpServer): Promise<Server
         },
     });
 
-    // Awaited here so no socket can connect (and get routed only to this
-    // process) before cross-process routing via Redis is actually live.
     await attachRedisAdapter(io);
 
     io.use(socketAuthMiddleware);
@@ -86,7 +80,7 @@ export function mountGateways(io: Server): void {
                         try {
                             const currentSocketId = await sessionStore.getUserSocket(userId);
                             if (currentSocketId && currentSocketId !== socket.id) {
-                                return; // User reconnected, skip cleanup
+                                return;
                             }
                             const actions = await mmService.handleDisconnect(userId);
                             for (const action of actions) {
@@ -99,7 +93,7 @@ export function mountGateways(io: Server): void {
                             );
                         }
                     })();
-                }, 3000); // 3-second grace period for reconnects
+                }, 3000);
             }
         });
     });

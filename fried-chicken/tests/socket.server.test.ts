@@ -11,10 +11,6 @@ vi.mock("../src/modules/matchmaking/matchmaking.service.js", () => ({
 vi.mock("../src/modules/webrtc/webrtc.service.js", () => ({
     createWebrtcService: vi.fn(),
 }));
-// The disconnect handler re-checks session.store before running cleanup, to
-// skip cleanup if the user already reconnected under a new socket id during
-// the grace period. Mock it so the test doesn't hit a real (unconnected)
-// Redis client.
 vi.mock("../src/realtime/session.store.js", () => ({
     getUserSocket: vi.fn(),
     setUserSocket: vi.fn(),
@@ -76,8 +72,6 @@ describe("socket.server", () => {
 
         disconnectHandler();
 
-        // Cleanup runs after a 3s grace period (to skip it on quick
-        // reconnects), so advance past that before asserting.
         await vi.advanceTimersByTimeAsync(3000);
 
         expect(mockHandleDisconnect).toHaveBeenCalledWith("userA");

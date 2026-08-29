@@ -1,9 +1,3 @@
-// findUserById(id: string): Promise<UserDocument | null>
-// updateUser(id: string, data: UpdateUserInput): Promise<UserDocument>
-// setAvatar(id: string, imageUrl: string): Promise<UserDocument>
-// deleteUser(id: string): Promise<void>
-
-// src/modules/user/user.service.ts
 import UserModel, { type UserDocument } from "./user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import type { UpdateUserInput } from "./user.types.js";

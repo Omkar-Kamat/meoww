@@ -1,7 +1,3 @@
-// logger — exported logger instance (or thin wrapper around console/morgan tokens if you don't add a dedicated logging lib)
-// logError(err: unknown, context?: object): void
-
-// src/utils/logger
 import pino from "pino";
 import { pinoHttp } from "pino-http";
 import type { Logger, LoggerOptions } from "pino";

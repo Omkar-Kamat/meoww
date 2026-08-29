@@ -18,7 +18,10 @@ const reportSchema = new Schema<ReportDocument>({
     createdAt: { type: Date, default: Date.now },
 });
 
-export const ReportModel: Model<ReportDocument> = mongoose.model<ReportDocument>("Report", reportSchema);
+export const ReportModel: Model<ReportDocument> = mongoose.model<ReportDocument>(
+    "Report",
+    reportSchema,
+);
 
 export interface BlockDocument extends Document {
     blockerId: string;

@@ -1,8 +1,3 @@
-// createApp(): Application — builds and returns the configured Express app
-// registerHealthRoutes(app: Application) — /health, /health/deep
-// registerErrorHandler(app: Application) — mounts the global error middleware last
-
-// src/app.ts
 import express, { type Application, type Request, type Response } from "express";
 import helmet from "helmet";
 import cors from "cors";

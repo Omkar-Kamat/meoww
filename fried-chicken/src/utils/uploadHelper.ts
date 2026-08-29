@@ -1,4 +1,3 @@
-// src/utils/uploadHelper.ts
 import { uploadImageStream } from "../config/cloudinary.js";
 
 export async function uploadBufferToCloudinary(

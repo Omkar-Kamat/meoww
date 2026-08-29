@@ -1,4 +1,3 @@
-// src/middleware/auth.middleware.ts
 import jwt from "jsonwebtoken";
 const { JsonWebTokenError, TokenExpiredError } = jwt;
 import type { NextFunction, Request, Response } from "express";
@@ -62,9 +61,7 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
 
     try {
         req.userId = verifyToken(token);
-    } catch {
-        // ignore invalid tokens in optional auth
-    }
+    } catch {}
 
     next();
 }

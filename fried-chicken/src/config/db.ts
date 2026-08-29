@@ -1,4 +1,3 @@
-// src/config/db.ts
 import mongoose, { type ConnectOptions } from "mongoose";
 const { ConnectionStates } = mongoose;
 import { createModuleLogger, logError } from "../utils/logger.js";
@@ -29,7 +28,7 @@ const connectDB = async (): Promise<void> => {
             log.info(`Connected: ${conn.connection.host}`);
 
             mongoose.connection.on("disconnected", () => {
-                log.warn("Disconnected — Mongoose will attempt to reconnect");
+                log.warn("Disconnected: Mongoose will attempt to reconnect");
             });
             mongoose.connection.on("reconnected", () => {
                 log.info("Reconnected");

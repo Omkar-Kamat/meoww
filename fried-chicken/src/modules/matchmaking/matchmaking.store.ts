@@ -1,15 +1,3 @@
-// addToQueue(userId: string): Promise<void>
-// removeFromQueue(userId: string): Promise<void>
-// popOrEnqueue(userId: string): Promise<string | null>
-// createRoomAtomic(userA: string, userB: string): Promise<string>
-// getRoom(roomId: string): Promise<RoomRecord | null>
-// deleteRoom(roomId: string): Promise<void>
-// getPeerId(roomId: string, userId: string): Promise<string | null>
-// setUserRoom(userId: string, roomId: string): Promise<void>
-// getUserRoom(userId: string): Promise<string | null>
-// clearUserRoom(userId: string): Promise<void>
-
-// src/modules/matchmaking/matchmaking.store.ts
 import { v4 as uuidv4 } from "uuid";
 import type { RoomRecord } from "./matchmaking.types.js";
 import redisClient from "../../config/redis.js";
@@ -20,15 +8,8 @@ import {
     RELEASE_LOCK_SCRIPT,
 } from "./matchmaking.lua.js";
 
-// Note on queue fairness:
-// We use a Redis Set (O(1) add/remove/pop) for the matchmaking queue rather than a FIFO List
-// or Sorted Set. This means `popOrEnqueue` selects an arbitrary waiting user, offering no
-// strict guarantees on wait times (the longest-waiting user isn't guaranteed to be matched first).
-// For a random-pairing app with high throughput and short wait times, this is an acceptable
-// trade-off for the simplicity and performance of O(1) SADD/SPOP operations.
 const QUEUE_KEY = "mm:queue";
-const ROOM_TTL_SECONDS = 86400; // 24h
-
+const ROOM_TTL_SECONDS = 86400;
 const roomKey = (id: string): string => `mm:room:${id}`;
 const userRoomKey = (id: string): string => `mm:userroom:${id}`;
 

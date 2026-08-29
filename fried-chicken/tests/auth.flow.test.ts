@@ -37,7 +37,6 @@ describe("Auth Flow", () => {
     });
 
     it("should complete the full auth flow", async () => {
-        // 1. Signup
         const signupRes = await request(app).post("/api/auth/signup").send({
             name: "Test User",
             username: "testuser123",
@@ -53,7 +52,6 @@ describe("Auth Flow", () => {
         if (!verifyCallArgs) throw new Error("Expected verifyCallArgs");
         const code = verifyCallArgs[1] as string;
 
-        // 2. Verify
         const verifyRes = await request(app).post("/api/auth/verify").send({
             identifier: "test@example.com",
             code: code,
@@ -65,7 +63,6 @@ describe("Auth Flow", () => {
         const cookies = verifyRes.headers["set-cookie"];
         expect(cookies).toBeDefined();
 
-        // 3. Login
         const loginRes = await request(app).post("/api/auth/login").send({
             email: "test@example.com",
             password: "password123",
@@ -74,7 +71,6 @@ describe("Auth Flow", () => {
         expect(loginRes.status).toBe(200);
         expect((loginRes.body as { user: { email: string } }).user.email).toBe("test@example.com");
 
-        // 4. Forgot Password
         const forgotRes = await request(app).post("/api/auth/forgot-password").send({
             email: "test@example.com",
         });
@@ -92,7 +88,6 @@ describe("Auth Flow", () => {
         expect(userId).toBeTruthy();
         expect(token).toBeTruthy();
 
-        // 5. Reset Password
         const resetRes = await request(app).post("/api/auth/reset-password").send({
             userId,
             token,
@@ -101,7 +96,6 @@ describe("Auth Flow", () => {
 
         expect(resetRes.status).toBe(200);
 
-        // 6. Login with new password
         const newLoginRes = await request(app).post("/api/auth/login").send({
             email: "test@example.com",
             password: "newpassword123",

@@ -1,4 +1,3 @@
-// src/config/cloudinary
 import { v2 as cloudinary, type UploadApiOptions, type UploadApiResponse } from "cloudinary";
 import { createModuleLogger } from "../utils/logger.js";
 import multer, { type FileFilterCallback } from "multer";

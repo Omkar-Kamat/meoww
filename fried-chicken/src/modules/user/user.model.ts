@@ -1,6 +1,3 @@
-// UserModel — exported Mongoose model
-
-// src/modules/user/user.model
 import mongoose, { type Document, type Model } from "mongoose";
 const { Schema } = mongoose;
 

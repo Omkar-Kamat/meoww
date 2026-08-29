@@ -1,4 +1,3 @@
-// src/realtime/socket.types.ts
 import type { Socket } from "socket.io";
 import "socket.io";
 

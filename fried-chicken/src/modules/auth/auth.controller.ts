@@ -1,11 +1,3 @@
-// signup(req, res, next)
-// login(req, res, next)
-// logout(req, res, next)
-// refreshToken(req, res, next)
-// forgotPassword(req, res, next)
-// resetPassword(req, res, next)
-
-// src/modules/auth/auth.controller
 import type { NextFunction, Request, Response } from "express";
 import * as authService from "./auth.service.js";
 import * as otpService from "../otp/otp.service.js";
@@ -20,14 +12,6 @@ import type { resetPasswordSchema } from "./auth.schema.js";
 import type { z } from "zod";
 import { setAuthCookies, clearAuthCookies } from "../../utils/cookies.js";
 
-/**
- * POST /api/auth/signup
- *
- * Creates the account as unverified, sends an OTP to the given email,
- * and does NOT log the user in yet. Login is gated on isVerified
- * (enforced in auth.service.verifyCredentials). The client should
- * redirect to a "check your email" / OTP entry screen.
- */
 export async function signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const data = req.body as SignupInput;
@@ -54,12 +38,6 @@ export async function signup(req: Request, res: Response, next: NextFunction): P
     }
 }
 
-/**
- * POST /api/auth/verify
- *
- * Confirms the OTP sent at signup, marks the account verified,
- * and logs the user in (sets auth cookies) on success.
- */
 export async function verifySignupOtp(
     req: Request,
     res: Response,
@@ -90,9 +68,6 @@ export async function verifySignupOtp(
     }
 }
 
-/**
- * POST /api/auth/resend-verification
- */
 export async function resendSignupOtp(
     req: Request,
     res: Response,
@@ -102,7 +77,6 @@ export async function resendSignupOtp(
         const { identifier } = req.body as { identifier: string };
 
         const user = await authService.findUserByEmail(identifier);
-        // Same "don't leak account existence" pattern as forgotPassword
         if (user && !user.isVerified) {
             const code = await otpService.generateOtp(user.email);
             await sendVerificationEmail(user.email, code);
@@ -167,8 +141,6 @@ export async function forgotPassword(
             try {
                 await sendPasswordResetEmail(user.email, resetLink);
             } catch (err) {
-                // Swallow from the client's perspective (don't leak account existence),
-                // but still log so a broken email provider doesn't fail silently.
                 logError(err, { context: "forgot-password-email-send", userId: String(user._id) });
             }
         }

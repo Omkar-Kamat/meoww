@@ -1,6 +1,3 @@
-// router — exported Express router wiring the above controller methods to paths (POST /signup, POST /login, etc.)
-
-// src/modules/auth/auth.routes
 import express, { type Router } from "express";
 import * as authController from "./auth.controller.js";
 import { upload } from "../../config/cloudinary.js";

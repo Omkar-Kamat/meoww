@@ -17,7 +17,10 @@ const iceCandidateSchema = z.object({
 
 const offerPayloadSchema = z.object({ offer: sdpSchema, roomId: z.string().max(255).optional() });
 const answerPayloadSchema = z.object({ answer: sdpSchema, roomId: z.string().max(255).optional() });
-const iceCandidatePayloadSchema = z.object({ candidate: iceCandidateSchema, roomId: z.string().max(255).optional() });
+const iceCandidatePayloadSchema = z.object({
+    candidate: iceCandidateSchema,
+    roomId: z.string().max(255).optional(),
+});
 const messagePayloadSchema = z.object({ text: z.string().max(500) });
 
 import { safeHandler } from "../../realtime/socket.utils.js";

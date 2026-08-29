@@ -1,6 +1,3 @@
-// class AppError extends Error — constructor (message: string, statusCode: number, code?: string, meta?: Record<string, unknown>)
-
-// src/utils/AppError
 export class AppError extends Error {
     public readonly statusCode: number;
     public readonly code: string | undefined;

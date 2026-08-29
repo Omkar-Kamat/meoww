@@ -1,11 +1,3 @@
-// handleSearch(socket: AuthedSocket): Promise<void>
-// handleCancelSearch(userId: string): Promise<void>
-// handleLeaveRoom(userId: string): Promise<void>
-// handleDisconnect(userId: string): Promise<void>
-// tryMatch(userId: string): Promise<MatchResult | null>
-// fullCleanup(userId: string): Promise<void>
-
-// src/modules/matchmaking/matchmaking.service.ts
 import * as store from "./matchmaking.store.js";
 import * as sessionStore from "../../realtime/session.store.js";
 import { createModuleLogger } from "../../utils/logger.js";

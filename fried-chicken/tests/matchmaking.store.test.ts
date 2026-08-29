@@ -55,7 +55,7 @@ describe("Matchmaking Lua Scripts Integration (via ioredis-mock)", () => {
     it("popOrEnqueue should never match a user against themselves", async () => {
         await mockClient.sadd("mm:queue", "userA");
         const partner = await store.popOrEnqueue("userA");
-        expect(partner).toBeNull(); // Because they are removed, and queue is then empty
+        expect(partner).toBeNull();
     });
 
     it("createRoomAtomic should create room and set user references", async () => {
@@ -98,15 +98,12 @@ describe("Matchmaking Lua Scripts Integration (via ioredis-mock)", () => {
         const { status, token } = await store.checkAndLock("userA");
         expect(status).toBe("OK");
 
-        // Try releasing with wrong token
         await store.releaseLock("userA", "wrong-token");
         let lock = await mockClient.get(`mm:lock:userA`);
-        expect(lock).toBe(token); // Should still exist
-
-        // Release with correct token
+        expect(lock).toBe(token);
         if (!token) throw new Error("Expected token to be defined");
         await store.releaseLock("userA", token);
         lock = await mockClient.get(`mm:lock:userA`);
-        expect(lock).toBeNull(); // Should be deleted
+        expect(lock).toBeNull();
     });
 });

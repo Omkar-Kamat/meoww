@@ -1,9 +1,3 @@
-// getProfile(req, res, next)
-// updateProfile(req, res, next)
-// uploadAvatar(req, res, next)
-// deleteAccount(req, res, next)
-
-// src/modules/user/user.controller.ts
 import type { NextFunction, Request, Response } from "express";
 import * as userService from "./user.service.js";
 import { toPublicUser } from "./user.model.js";

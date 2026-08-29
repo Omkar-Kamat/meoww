@@ -1,6 +1,3 @@
-// registerMatchmakingHandlers(io: Server, socket: Socket) — binds socket.on("search", ...), socket.on("cancel-search", ...), socket.on("leave-room", ...) to service calls.
-// Disconnect handling is centralized in socket.server.ts (mountGateways), which calls mmService.handleDisconnect directly.
-
 import type { Socket } from "socket.io";
 import type { MatchmakingService } from "./matchmaking.service.js";
 import type { AuthedSocket } from "./matchmaking.types.js";

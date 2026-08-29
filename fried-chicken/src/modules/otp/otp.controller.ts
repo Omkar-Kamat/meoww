@@ -1,7 +1,3 @@
-// requestOtp(req, res, next)
-// verifyOtpHandler(req, res, next)
-
-// src/modules/otp/otp.controller.ts
 import type { NextFunction, Request, Response } from "express";
 import * as otpService from "./otp.service.js";
 import { sendVerificationEmail } from "../../services/email.service.js";

@@ -1,6 +1,3 @@
-// socketAuthMiddleware(socket: Socket, next: (err?: Error) => void) — verifies JWT on handshake, attaches socket.userId
-
-// src/realtime/socket.auth.ts
 import type { Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 const { TokenExpiredError } = jwt;

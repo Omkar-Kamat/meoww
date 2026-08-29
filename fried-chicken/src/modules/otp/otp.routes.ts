@@ -1,6 +1,3 @@
-// router — exported Express router (POST /request, POST /verify)
-
-// src/modules/otp/otp.routes.ts
 import express, { type Router } from "express";
 import * as otpController from "./otp.controller.js";
 import { validateBody } from "../../middleware/validate.middleware.js";

@@ -1,6 +1,3 @@
-// updateProfileSchema — Zod schema
-
-// src/modules/user/user.schema.ts
 import { z } from "zod";
 
 export const updateUserSchema = z

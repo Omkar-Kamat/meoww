@@ -1,12 +1,3 @@
-// createUser(data: SignupInput): Promise<UserDocument>
-// verifyCredentials(email: string, password: string): Promise<UserDocument>
-// generateAccessToken(userId: string): string
-// generateRefreshToken(userId: string): string
-// verifyRefreshToken(token: string): { userId: string }
-// createPasswordResetToken(userId: string): Promise<string>
-// consumePasswordResetToken(token: string, newPassword: string): Promise<void>
-
-// src/modules/auth/auth.service
 import bcrypt from "bcryptjs";
 import jwt, { type JwtPayload as JsonWebTokenPayload, type SignOptions } from "jsonwebtoken";
 import UserModel, { type UserDocument, type UserFields } from "../user/user.model.js";

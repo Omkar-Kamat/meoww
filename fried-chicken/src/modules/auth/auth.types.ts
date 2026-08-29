@@ -1,6 +1,3 @@
-// SignupInput, LoginInput, AuthTokens, JwtPayload — exported TS interfaces/types
-
-// src/modules/auth/auth.types
 export interface SignupInput {
     name: string;
     username: string;

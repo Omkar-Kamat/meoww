@@ -15,8 +15,8 @@ describe("validateBody middleware", () => {
             body: {
                 username: "testuser",
                 password: "password123",
-                admin: true, // This should be stripped
-                userId: "12345", // This should be stripped
+                admin: true,
+                userId: "12345",
             },
         } as Request;
 
@@ -26,7 +26,7 @@ describe("validateBody middleware", () => {
         const middleware = validateBody(schema);
         middleware(req, res, next);
 
-        expect(next).toHaveBeenCalledWith(); // Called with no arguments (success)
+        expect(next).toHaveBeenCalledWith();
         expect(req.body).toEqual({
             username: "testuser",
             password: "password123",
@@ -41,9 +41,7 @@ describe("validateBody middleware", () => {
         });
 
         const req = {
-            body: {
-                // missing username
-            },
+            body: {},
         } as Request;
 
         const res = {} as Response;

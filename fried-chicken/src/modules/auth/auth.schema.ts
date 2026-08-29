@@ -1,9 +1,3 @@
-// signupSchema — Zod schema
-// loginSchema
-// forgotPasswordSchema
-// resetPasswordSchema
-
-// src/modules/auth/auth.schema
 import { z } from "zod";
 
 export const signupSchema = z.object({

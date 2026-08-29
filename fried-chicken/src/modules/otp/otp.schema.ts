@@ -1,4 +1,3 @@
-// src/modules/otp/otp.schema.ts
 import { z } from "zod";
 
 export const otpRequestSchema = z.object({

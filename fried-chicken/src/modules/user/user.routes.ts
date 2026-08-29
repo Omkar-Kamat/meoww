@@ -1,6 +1,3 @@
-// router — exported Express router (GET /me, PATCH /me, POST /me/avatar, DELETE /me)
-
-// src/modules/user/user.routes.ts
 import express, { type Router } from "express";
 import * as userController from "./user.controller.js";
 import { requireAuth } from "../../middleware/auth.middleware.js";

@@ -1,6 +1,3 @@
-// MatchResult, AuthedSocket, RoomRecord — exported types
-
-// src/modules/matchmaking/matchmaking.types.ts
 import type { AuthedSocket } from "../../realtime/socket.types.js";
 export type { AuthedSocket };
 

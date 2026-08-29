@@ -1,8 +1,3 @@
-// generateOtp(identifier: string): Promise<string>
-// verifyOtp(identifier: string, code: string): Promise<boolean>
-// invalidateOtp(identifier: string): Promise<void>
-
-// src/modules/otp/otp.service.ts
 import { createToken, consumeToken, invalidateToken } from "../token/token.service.js";
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000;

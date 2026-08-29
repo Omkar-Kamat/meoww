@@ -19,12 +19,6 @@ vi.mock("../src/realtime/session.store.js", () => ({
     clearUserSocket: vi.fn(),
 }));
 
-// tryMatch() checks the trust-safety block list before pairing two users.
-// Without this mock, BlockModel.exists() makes a real Mongoose call with no
-// DB connection configured for this unit test, which hangs until the test
-// timeout rather than failing fast — mock it out like the other collaborators.
-// vi.mock factories are hoisted above top-level declarations, so the mock fn
-// itself must be created via vi.hoisted() rather than a plain top-level const.
 const { mockBlockExists } = vi.hoisted(() => ({ mockBlockExists: vi.fn() }));
 vi.mock("../src/modules/trust-safety/trust-safety.model.js", () => ({
     BlockModel: { exists: mockBlockExists },
@@ -120,8 +114,7 @@ describe("MatchmakingService", () => {
         it("should queue and return no match if retries are exhausted", async () => {
             vi.mocked(store.popOrEnqueue).mockResolvedValue("deadUser");
             vi.mocked(sessionStore.getUserSocket).mockResolvedValue("deadSocket");
-            checkSocketLive.mockResolvedValue(false); // all partners are dead
-
+            checkSocketLive.mockResolvedValue(false);
             const result = await service.tryMatch("userA");
 
             expect(store.popOrEnqueue).toHaveBeenCalledTimes(5);

@@ -1,4 +1,3 @@
-// src/middleware/validate.middleware.ts
 import type { NextFunction, Request, Response } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
 import type { ZodError } from "zod";

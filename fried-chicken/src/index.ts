@@ -1,7 +1,3 @@
-// bootstrap() — connects DB/Redis, creates HTTP server from Express app, initializes Socket.io, starts listening
-// handleShutdown(signal: string) — graceful shutdown on SIGTERM/SIGINT (close server, close DB/Redis connections)
-
-// src/index.ts
 import "dotenv/config";
 
 try {
@@ -40,7 +36,7 @@ async function bootstrap(): Promise<void> {
 }
 
 function handleShutdown(signal: string): void {
-    log.info(`${signal} received — shutting down gracefully`);
+    log.info(`${signal} received: shutting down gracefully`);
 
     server.close(() => {
         void (async () => {
@@ -64,7 +60,7 @@ function handleShutdown(signal: string): void {
     });
 
     setTimeout(() => {
-        log.error("Shutdown timeout reached — forcing exit");
+        log.error("Shutdown timeout reached: forcing exit");
         process.exit(1);
     }, SHUTDOWN_TIMEOUT_MS);
 }
