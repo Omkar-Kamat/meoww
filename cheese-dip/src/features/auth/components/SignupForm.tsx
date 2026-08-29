@@ -6,9 +6,9 @@ import { authApi } from "../api/authApi";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { getApiError } from "../../../shared/utils/error";
 import { RULES } from "../../../shared/utils/ui.config";
-import { TextField, Button, Text, Link, Flex, Box } from "@radix-ui/themes";
+import { TextField, Button, Text, Link, Flex, Avatar } from "@radix-ui/themes";
 import { MorphIcon } from "morphicons/react";
-import { Mail, Lock, User, AtSign, UserPlus, Sparkles } from "lucide";
+import { Mail, Lock, User, AtSign, UserPlus, Sparkles, Upload } from "lucide";
 
 export const SignupForm = () => {
   const [name, setName] = useState("");
@@ -19,8 +19,12 @@ export const SignupForm = () => {
   const [error, setError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const navigate = useNavigate();
+
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,6 +44,7 @@ export const SignupForm = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -66,6 +71,8 @@ export const SignupForm = () => {
       } else {
         setError(apiErr?.message || "Signup failed");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,8 +81,11 @@ export const SignupForm = () => {
       <AuthCard>
         <AuthHeading title="Create an Account" />
         <form onSubmit={handleSubmit}>
-          <FieldRow label="Name">
+          <FieldRow label="Name" htmlFor="name">
             <TextField.Root
+              id="name"
+              name="name"
+              autoComplete="name"
               type="text"
               placeholder="Full name"
               value={name}
@@ -91,8 +101,11 @@ export const SignupForm = () => {
             </TextField.Root>
           </FieldRow>
 
-          <FieldRow label="Username" error={usernameError}>
+          <FieldRow label="Username" htmlFor="username" error={usernameError}>
             <TextField.Root
+              id="username"
+              name="username"
+              autoComplete="username"
               type="text"
               placeholder="Username"
               value={username}
@@ -110,8 +123,11 @@ export const SignupForm = () => {
             </TextField.Root>
           </FieldRow>
 
-          <FieldRow label="Email" error={emailError}>
+          <FieldRow label="Email" htmlFor="email" error={emailError}>
             <TextField.Root
+              id="email"
+              name="email"
+              autoComplete="email"
               type="email"
               placeholder="Enter your email"
               value={email}
@@ -125,8 +141,11 @@ export const SignupForm = () => {
             </TextField.Root>
           </FieldRow>
 
-          <FieldRow label="Password">
+          <FieldRow label="Password" htmlFor="password">
             <TextField.Root
+              id="password"
+              name="password"
+              autoComplete="new-password"
               type="password"
               placeholder="Choose a password"
               value={password}
@@ -142,32 +161,68 @@ export const SignupForm = () => {
             </TextField.Root>
           </FieldRow>
 
-          <FieldRow label="Profile Photo (Optional)">
-            <Box style={{ position: "relative" }}>
+          <FieldRow label="Profile Photo (Optional)" htmlFor="profilePhoto">
+            <Flex align="center" gap="4">
               <input
+                id="profilePhoto"
+                name="profilePhoto"
                 type="file"
-                onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setProfilePhoto(file);
+                  if (previewUrl) URL.revokeObjectURL(previewUrl);
+                  setPreviewUrl(file ? URL.createObjectURL(file) : null);
+                }}
                 accept="image/*"
+                style={{ display: "none" }}
+              />
+              <Avatar
+                size="5"
+                src={previewUrl || undefined}
+                fallback={<MorphIcon icon={User} size={24} color="var(--gray-11)" />}
+                radius="full"
                 style={{ 
-                  width: "100%", padding: "6px", 
-                  background: "var(--gray-a3)", 
-                  border: "1px solid var(--gray-a5)", 
-                  borderRadius: "var(--radius-3)",
-                  color: "var(--gray-12)"
+                  boxShadow: "0 2px 10px var(--black-a3)",
+                  border: "1px solid var(--gray-a4)"
                 }}
               />
-            </Box>
+              <Flex direction="column" gap="1">
+                <Button 
+                  type="button" 
+                  variant="soft" 
+                  size="2" 
+                  color="gray"
+                  onClick={() => document.getElementById('profilePhoto')?.click()}
+                  style={{ cursor: "pointer" }}
+                >
+                  <MorphIcon icon={Upload} size={14} />
+                  {profilePhoto ? "Change Photo" : "Upload Photo"}
+                </Button>
+                {profilePhoto && (
+                  <Text size="1" color="ruby" style={{ cursor: "pointer", paddingLeft: "4px" }} onClick={() => {
+                    setProfilePhoto(null);
+                    if (previewUrl) {
+                      URL.revokeObjectURL(previewUrl);
+                      setPreviewUrl(null);
+                    }
+                  }}>
+                    Remove
+                  </Text>
+                )}
+              </Flex>
+            </Flex>
           </FieldRow>
 
           {error && (
-            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }}>
+            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }} aria-live="polite">
               {error}
             </Text>
           )}
 
           <Button 
             type="submit" 
-            size="3" 
+            size="3"
+            loading={isLoading}
             style={{ width: "100%", marginTop: "10px", cursor: "pointer" }}
             onMouseEnter={() => setIsHoveringSubmit(true)}
             onMouseLeave={() => setIsHoveringSubmit(false)}

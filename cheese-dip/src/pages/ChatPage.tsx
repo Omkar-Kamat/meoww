@@ -95,28 +95,30 @@ export const ChatPage = () => {
   };
 
   return (
-    <Flex direction="column" className="page-container" style={{ padding: "1.5rem", height: "100vh" }}>
-      <Flex justify="between" align="center" mb="4">
-        <Heading size="6" m="0">Chat Dashboard</Heading>
+    <Flex direction="column" className="page-container" style={{ padding: "0", height: "100vh", backgroundColor: "var(--color-background)" }}>
+      <Flex justify="between" align="center" style={{ padding: "0 2rem", height: "56px", borderBottom: "1px solid var(--gray-a4)", backgroundColor: "var(--gray-2)" }}>
+        <Flex align="center" gap="2">
+          <Heading size="4" m="0" style={{ letterSpacing: "-0.02em", fontWeight: 600 }}>Meoww Chat</Heading>
+        </Flex>
         <Flex gap="3">
-          <Button variant="soft" color="gray" onClick={() => navigate("/settings")}>
+          <Button variant="surface" color="gray" radius="medium" onClick={() => navigate("/settings")} style={{ cursor: "pointer" }}>
             Settings
           </Button>
-          <Button variant="solid" color="tomato" onClick={handleLogout}>
+          <Button variant="soft" color="tomato" radius="medium" onClick={handleLogout} style={{ cursor: "pointer" }}>
             Logout
           </Button>
         </Flex>
       </Flex>
       
-      <Flex flexGrow="1" gap="4" style={{ minHeight: 0 }}>
+      <Flex flexGrow="1" gap="4" style={{ minHeight: 0, padding: "1.5rem" }}>
         {/* Left side: Video & Call Controls */}
         <Flex direction="column" gap="4" style={{ flex: 2 }}>
-          <Card className="glass-panel" style={{ flex: 1, display: "flex", gap: "10px", minHeight: 0, padding: "10px" }}>
+          <Card variant="surface" style={{ flex: 1, display: "flex", gap: "10px", minHeight: 0, padding: "0", overflow: "hidden" }}>
             {isMatched ? (
               webrtc.error ? (
                 <Flex direction="column" align="center" justify="center" gap="3" style={{ position: "relative", width: "100%", height: "100%" }}>
                   {webrtc.localStream && (
-                    <Box style={{ position: "absolute", top: "10px", right: "10px", width: "150px", borderRadius: "8px", overflow: "hidden", zIndex: 2 }}>
+                    <Box style={{ position: "absolute", top: "20px", right: "20px", width: "160px", borderRadius: "12px", overflow: "hidden", zIndex: 2, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)", border: "1px solid var(--gray-a4)" }}>
                       <VideoTile stream={webrtc.localStream} label="You" isLocal />
                     </Box>
                   )}
@@ -138,21 +140,25 @@ export const ChatPage = () => {
             ) : (
               <Flex direction="column" align="center" justify="center" gap="3" style={{ width: "100%", height: "100%", position: "relative" }}>
                 {globalStream && (
-                  <Box style={{ position: "absolute", top: "10px", right: "10px", width: "150px", borderRadius: "8px", overflow: "hidden", zIndex: 2 }}>
+                  <Box style={{ position: "absolute", top: "20px", right: "20px", width: "160px", borderRadius: "12px", overflow: "hidden", zIndex: 2, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)", border: "1px solid var(--gray-a4)" }}>
                     <VideoTile stream={globalStream} label="You" isLocal />
                   </Box>
                 )}
-                <Text>Status: <Text weight="bold">{status}</Text></Text>
-                {status === "idle" && (
-                  <Button onClick={search} size="3" variant="solid" color="ruby">
-                    Start Matchmaking
-                  </Button>
-                )}
-                {status === "queued" && (
-                  <Button onClick={stopSearch} size="3" variant="soft" color="gray">
-                    Cancel Search
-                  </Button>
-                )}
+                <Text color="gray" size="2" style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>Status</Text>
+                <Heading size="5" style={{ letterSpacing: "-0.03em" }}>{status === "idle" ? "Ready to Connect" : status === "queued" ? "Finding a match..." : status}</Heading>
+                
+                <Box mt="4">
+                  {status === "idle" && (
+                    <Button onClick={search} size="4" variant="solid" color="ruby" radius="medium" style={{ cursor: "pointer" }}>
+                      Start Matchmaking
+                    </Button>
+                  )}
+                  {status === "queued" && (
+                    <Button onClick={stopSearch} size="4" variant="surface" color="gray" radius="medium" style={{ cursor: "pointer" }}>
+                      Cancel Search
+                    </Button>
+                  )}
+                </Box>
               </Flex>
             )}
           </Card>
@@ -183,8 +189,8 @@ export const ChatPage = () => {
         </Flex>
 
         {/* Right side: Text Chat */}
-        <Card className="glass-panel" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, padding: "15px" }}>
-          <Heading size="4" mb="3">Text Chat</Heading>
+        <Card variant="surface" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, padding: "15px" }}>
+          <Heading size="3" mb="3" style={{ borderBottom: "1px solid var(--gray-a4)", paddingBottom: "12px", color: "var(--gray-11)" }}>Text Chat</Heading>
           <MessageList messages={messages} />
           <MessageInput key={matchData?.roomId ?? "idle"} onSend={sendMessage} disabled={!isMatched} />
         </Card>

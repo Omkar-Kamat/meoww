@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { TextField, Button, Flex } from "@radix-ui/themes";
 
 interface MessageInputProps {
   onSend: (text: string) => void;
@@ -18,23 +19,30 @@ export const MessageInput = ({ onSend, disabled = false }: MessageInputProps) =>
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Type a message..."
-        disabled={disabled}
-        maxLength={500}
-        style={{ flex: 1, padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
-      />
-      <button 
-        type="submit" 
-        disabled={disabled || !text.trim()} 
-        style={{ padding: "10px 20px", backgroundColor: disabled || !text.trim() ? "#ccc" : "#28a745", color: "white", border: "none", borderRadius: "4px", cursor: disabled || !text.trim() ? "not-allowed" : "pointer" }}
-      >
-        Send
-      </button>
+    <form onSubmit={handleSubmit} style={{ marginTop: "12px" }}>
+      <Flex gap="2" align="center">
+        <TextField.Root
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type a message..."
+          disabled={disabled}
+          maxLength={500}
+          size="3"
+          variant="surface"
+          style={{ flex: 1, backgroundColor: "var(--gray-2)", borderRadius: "8px" }}
+        />
+        <Button 
+          type="submit" 
+          disabled={disabled || !text.trim()} 
+          size="3"
+          variant="solid"
+          color="ruby"
+          radius="medium"
+          style={{ cursor: disabled || !text.trim() ? "not-allowed" : "pointer" }}
+        >
+          Send
+        </Button>
+      </Flex>
     </form>
   );
 };

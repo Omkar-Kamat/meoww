@@ -6,8 +6,9 @@ import { authApi } from "../api/authApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getErrorMessage } from "../../../shared/utils/error";
 import { RULES } from "../../../shared/utils/ui.config";
-import { Input } from "../../../shared/components/Input";
-import { Button } from "../../../shared/components/Button";
+import { TextField, Button, Text } from "@radix-ui/themes";
+import { MorphIcon } from "morphicons/react";
+import { Lock, CheckCircle2 } from "lucide";
 
 export const ResetPasswordForm = () => {
   const [password, setPassword] = useState("");
@@ -15,6 +16,8 @@ export const ResetPasswordForm = () => {
   const [error, setError] = useState("");
   const [matchError, setMatchError] = useState("");
   const [msg, setMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,11 +51,14 @@ export const ResetPasswordForm = () => {
     }
 
     try {
+      setIsLoading(true);
       await authApi.resetPassword({ userId, token, password });
       setMsg("Password reset successful. Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(getErrorMessage(err, "Failed to reset password"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,42 +70,68 @@ export const ResetPasswordForm = () => {
           subtitle="Enter your new password"
         />
         <form onSubmit={handleSubmit}>
-          <FieldRow label="New Password">
-            <Input
+          <FieldRow label="New Password" htmlFor="password">
+            <TextField.Root
+              id="password"
+              name="password"
+              autoComplete="new-password"
               type="password"
+              placeholder="Enter new password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
               maxLength={100}
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={Lock} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
-          <FieldRow label="Confirm New Password" error={matchError}>
-            <Input
+          <FieldRow label="Confirm New Password" htmlFor="confirmPassword" error={matchError}>
+            <TextField.Root
+              id="confirmPassword"
+              name="confirmPassword"
+              autoComplete="new-password"
               type="password"
+              placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={RULES.PASSWORD_MIN_LENGTH}
               maxLength={100}
-            />
+              size="3"
+            >
+              <TextField.Slot>
+                <MorphIcon icon={Lock} size={16} color="var(--gray-a11)" />
+              </TextField.Slot>
+            </TextField.Root>
           </FieldRow>
           {error && (
-            <div
-              style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}
-            >
+            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }} aria-live="polite">
               {error}
-            </div>
+            </Text>
           )}
           {msg && (
-            <div
-              style={{ color: "green", fontSize: "14px", marginBottom: "10px" }}
-            >
+            <Text color="grass" size="2" style={{ display: "block", marginBottom: "15px" }} aria-live="polite">
               {msg}
-            </div>
+            </Text>
           )}
-          <Button type="submit" fullWidth>
+          <Button 
+            type="submit" 
+            size="3" 
+            loading={isLoading}
+            style={{ width: "100%", marginTop: "10px", cursor: "pointer" }}
+            onMouseEnter={() => setIsHoveringSubmit(true)}
+            onMouseLeave={() => setIsHoveringSubmit(false)}
+          >
             Reset Password
+            <MorphIcon 
+              icon={isHoveringSubmit ? CheckCircle2 : Lock} 
+              size={18} 
+              spring="snappy"
+            />
           </Button>
         </form>
       </AuthCard>

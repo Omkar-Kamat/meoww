@@ -3,147 +3,97 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   background: var(--color-background);
   color: var(--gray-12);
-  /* Apply premium font family from @fontsource/geist-sans if loaded */
   font-family: 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow: hidden;
   position: relative;
-  transition-property: background-color, color;
-  transition-duration: 0.3s;
-  transition-timing-function: ease;
-  padding: 0 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  z-index: 50;
+  background: var(--color-background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-a3);
   box-sizing: border-box;
 }
 
-.hero-split {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4rem;
-  max-width: 1200px;
-  width: 100%;
-  align-items: center;
-  z-index: 1;
-}
-
-@media (min-width: 768px) {
-  .hero-split {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+@supports (background: color-mix(in srgb, var(--color-background) 80%, transparent)) {
+  .navbar {
+    background: color-mix(in srgb, var(--color-background) 80%, transparent);
   }
 }
 
-.hero-content {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.hero-section {
+  padding-top: 8rem;
+  padding-bottom: 4rem;
 }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-@media (min-width: 1024px) {
-  .hero-title {
-    font-size: 4.5rem;
-  }
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  color: var(--gray-11);
-  margin-bottom: 2.5rem;
-  line-height: 1.5;
-  max-width: 480px;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-
-
-.hero-visual {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.text-gradient {
+  background: linear-gradient(135deg, var(--ruby-9), var(--ruby-11));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 
 .hero-visual-inner {
   position: relative;
   width: 100%;
-  max-width: 500px;
   aspect-ratio: 1 / 1;
   border-radius: 32px;
-  background: radial-gradient(circle at top left, var(--ruby-a3), transparent 70%);
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: var(--gray-a2);
+  border: 1px solid var(--gray-a4);
 }
 
-.hero-image {
+.hero-placeholder-mesh {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-  mask-image: radial-gradient(white, black);
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-  mix-blend-mode: luminosity;
-  opacity: 0.9;
-  transition: opacity 0.5s ease;
+  background: 
+    radial-gradient(at 0% 0%, var(--ruby-a4) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, var(--cyan-a4) 0px, transparent 50%);
+  filter: blur(40px);
+  opacity: 0.8;
 }
 
-[data-theme='dark'] .hero-image {
-  mix-blend-mode: normal;
+/* Bento Grid */
+.bento-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  background: var(--gray-a2);
 }
 
-.theme-toggle {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: var(--gray-a3);
-  border: 1px solid var(--gray-a5);
-  color: var(--gray-12);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.bento-card:hover {
+  transform: translateY(-2px);
+  /* Linear Principle: No drop shadows on dark surfaces */
+}
+
+.bento-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition-property: transform, background-color, box-shadow;
-  transition-duration: 0.2s;
-  transition-timing-function: ease;
-  z-index: 10;
 }
 
-.theme-toggle:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--ruby-9);
+@media (min-width: 768px) {
+  .col-span-md-2 {
+    grid-column: span 2;
+  }
 }
 
-.theme-toggle:hover {
-  background: var(--gray-a4);
-  transform: scale(1.05);
-}
-
-.theme-toggle:active {
-  transform: scale(0.95);
-}
-
+/* Tooltip Animations */
 .tooltip-content {
   border-radius: 8px;
   padding: 10px 15px;

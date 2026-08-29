@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Flex, Card, Heading, Text } from "@radix-ui/themes";
+import { Link } from "react-router-dom";
+import { MorphIcon } from "morphicons/react";
+import { Sparkles } from "lucide";
 
 export const AuthShell = ({ children }: { children: ReactNode }) => {
   return (
@@ -26,8 +29,14 @@ export const AuthShell = ({ children }: { children: ReactNode }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        style={{ width: "100%", maxWidth: "420px", zIndex: 1 }}
+        style={{ width: "100%", maxWidth: "420px", zIndex: 1, padding: "20px" }}
       >
+        <Flex align="center" justify="center" gap="2" mb="5">
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MorphIcon icon={Sparkles} size={28} color="var(--ruby-9)" />
+            <Text weight="bold" size="5" style={{ letterSpacing: '-0.02em' }}>Meoww</Text>
+          </Link>
+        </Flex>
         {children}
       </motion.div>
     </Flex>

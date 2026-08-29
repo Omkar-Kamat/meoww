@@ -14,6 +14,7 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
   const { fetchMe } = useAuthStore();
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export const LoginForm = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     try {
       await authApi.login({ email, password });
       await fetchMe();
@@ -32,6 +34,8 @@ export const LoginForm = () => {
         return;
       }
       setError(apiErr?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -40,8 +44,11 @@ export const LoginForm = () => {
       <AuthCard>
         <AuthHeading title="Welcome Back" subtitle="Login to your account" />
         <form onSubmit={handleSubmit}>
-          <FieldRow label="Email">
+          <FieldRow label="Email" htmlFor="email">
             <TextField.Root
+              id="email"
+              name="email"
+              autoComplete="email"
               type="email"
               placeholder="Enter your email"
               value={email}
@@ -55,8 +62,11 @@ export const LoginForm = () => {
             </TextField.Root>
           </FieldRow>
           
-          <FieldRow label="Password">
+          <FieldRow label="Password" htmlFor="password">
             <TextField.Root
+              id="password"
+              name="password"
+              autoComplete="current-password"
               type="password"
               placeholder="Enter your password"
               value={password}
@@ -73,7 +83,7 @@ export const LoginForm = () => {
           </FieldRow>
           
           {error && (
-            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }}>
+            <Text color="ruby" size="2" style={{ display: "block", marginBottom: "15px" }} aria-live="polite">
               {error}
             </Text>
           )}
@@ -81,6 +91,7 @@ export const LoginForm = () => {
           <Button 
             type="submit" 
             size="3" 
+            loading={isLoading}
             style={{ width: "100%", marginTop: "10px", cursor: "pointer" }}
             onMouseEnter={() => setIsHoveringSubmit(true)}
             onMouseLeave={() => setIsHoveringSubmit(false)}

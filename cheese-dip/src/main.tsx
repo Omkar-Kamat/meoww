@@ -9,8 +9,8 @@ import { ThemeProvider } from 'next-themes';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider attribute="class">
-      <Theme accentColor="ruby" style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)' }}>
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
+      <Theme appearance="dark" accentColor="ruby" style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)' }}>
         <App />
       </Theme>
     </ThemeProvider>
