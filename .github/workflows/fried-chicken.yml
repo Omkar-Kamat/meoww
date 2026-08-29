@@ -63,7 +63,7 @@ jobs:
         cache: 'npm'
         cache-dependency-path: 'fried-chicken/package-lock.json'
     - name: Start MongoDB & Redis for integration tests
-      uses: supercharge/mongodb-github-action@1.11.0
+      uses: supercharge/mongodb-github-action@1.12.1
       with:
         mongodb-version: '7.0'
     - uses: supercharge/redis-github-action@1.8.0
